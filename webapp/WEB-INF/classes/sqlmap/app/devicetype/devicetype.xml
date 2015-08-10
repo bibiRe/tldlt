@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 演示与教程手工映射SQL语句 -->
+<sqlMap namespace="App.DeviceType">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+    <!-- 查询未识别的警情全部记录 -->
+    <select id="getDeviceTypes" parameterClass="dto" resultClass="dto">
+        SELECT DeviceType_ID as id, name FROM DeviceType a WHERE 1 = 1
+        <dynamic>
+            <isNotEmpty prepend="AND" property="deviceTypeId">
+                a.DeviceType_ID like
+                '%$deviceTypeId$%'
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="deviceTypeName">
+                a.Name like
+                '%$deviceTypeName$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    <select id="getDeviceTypesCount" parameterClass="dto"
+        resultClass="java.lang.Integer">
+        SELECT Count(*) FROM DeviceType a WHERE 1 = 1
+        <dynamic>
+            <isNotEmpty prepend="AND" property="deviceTypeId">
+                a.DeviceType_ID like
+                '%$deviceTypeId$%'
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="deviceTypeName">
+                a.Name like
+                '%$deviceTypeName$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    <select id="getDeviceTypeById" parameterClass="string"
+        resultClass="dto">
+        SELECT DeviceType_ID as id, name, remark FROM DeviceType a WHERE
+        a.DeviceType_ID = '$id$'
+    </select>
+
+    <!-- 插入一条用户表记录 -->
+    <insert id="addInfo" parameterClass="dto">
+        INSERT INTO DEVICETYPE (
+        DeviceType_ID, Name, Remark)
+        VALUES (#id#, #name#, #remark#)
+    </insert>
+    <!-- 更新一条用户表记录 -->
+    <update id="updateInfo" parameterClass="dto">
+        UPDATE DEVICETYPE SET DeviceType_ID = #id#, Name = #name#, Remark = #remark#
+        WHERE DeviceType_ID = #oid#
+    </update>
+
+    <!-- 删除设备类型 -->
+    <delete id="deleteInfo" parameterClass="string">
+        DELETE FROM
+        DEVICETYPE
+        WHERE DeviceType_ID = #id#
+    </delete>
+</sqlMap>
