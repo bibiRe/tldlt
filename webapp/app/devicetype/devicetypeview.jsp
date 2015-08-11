@@ -3,13 +3,7 @@
 <G4Studio:html title="设备类型" >
 <G4Studio:import src="/app/devicetype/js/deviceType.js" />
 <G4Studio:ext.codeRender fields="QYBZ,SEX" />
-<%-- 自定义表格行高 
-<style type="text/css">
-    .x-grid3-row{
-        height:80px;
-    }
-</style>
---%>
+
 <G4Studio:body>
 
 </G4Studio:body>

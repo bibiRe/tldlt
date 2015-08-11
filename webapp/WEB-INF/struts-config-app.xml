@@ -9,11 +9,17 @@
 
 	<!-- Action映射 -->
 	<action-mappings type="org.g4studio.core.mvc.xstruts.action.ActionMapping">
-		<!-- Flashreport报表示例 -->
+		<!-- 设备类型 -->
 		<action name="baseActionForm" path="/deviceType" scope="request"
 			parameter="reqCode"
 			type="com.sysware.tldlt.app.web.devicetype.DeviceTypeAction">
 			<forward name="deviceTypeView" path="/devicetype/devicetypeview.jsp" />
+		</action>
+		<!-- 区域管理 -->
+		<action name="baseActionForm" path="/region" scope="request"
+			parameter="reqCode"
+			type="com.sysware.tldlt.app.web.region.RegionAction">
+			<forward name="regionView" path="/region/regionview.jsp" />
 		</action>
 
 	</action-mappings>

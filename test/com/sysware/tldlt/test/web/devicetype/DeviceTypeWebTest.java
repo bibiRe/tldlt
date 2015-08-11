@@ -1,7 +1,7 @@
 package com.sysware.tldlt.test.web.devicetype;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -18,11 +18,10 @@ import com.sysware.tldlt.test.web.CommonWebTest;
  */
 public class DeviceTypeWebTest extends CommonWebTest {
 
-    
     @Override
-    public void setUp() throws Exception {        
+    public void setUp() throws Exception {
         super.setUp();
-        loginByUser("developer", "111111");
+        loginDeveloperUser();
     }
 
     /**
@@ -31,11 +30,11 @@ public class DeviceTypeWebTest extends CommonWebTest {
      */
     @Test
     public void testOpen() throws InterruptedException {
-        Thread.sleep(3000);
-        WebElement topMenu = driver.findElement(By.xpath("//div/span[text()='基础数据']/../"));
-        topMenu.click();
-        WebElement menu = driver.findElement(By.xpath("//a/span[text()='设备类型']"));
-        assertThat(menu, notNullValue());
+        menuClick("基础数据", "设备类型");
+        Thread.sleep(3000);      
+        driver.switchTo().frame(driver.findElement(By.xpath("//iframe[contains(@src, 'deviceType.do')]")));
+        WebElement element = driver.findElement(By
+                .xpath("//div/span/span[text()='设备类型数据列表']"));
+        assertThat(element, notNullValue());
     }
-
 }
