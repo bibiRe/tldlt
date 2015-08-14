@@ -19,9 +19,59 @@
 			</isNotEmpty>
 
 			<isNotEmpty prepend="AND" property="regionName">
-				Name like '%$regionName$%'
+				Name like
+				'%$regionName$%'
 			</isNotEmpty>
 		</dynamic>
 	</select>
+	<select id="queryRegionsForManage" parameterClass="map"
+		resultClass="dto">
+		SELECT region_Id as regionid, name as regionname, type,
+		(SELECT name
+		FROM region
+		WHERE region_Id = a.parent_region_id) AS parentregionname,
+		(SELECT COUNT(*)
+		FROM eauser
+		WHERE deptid = a.deptid and enabled = '1') AS usercount,
+		(SELECT COUNT(*)
+		FROM earole
+		WHERE deptid = a.deptid) AS rolecount, parentid, leaf, sortno,
+		remark
+		FROM eadept a WHERE a.enabled='1'
+		<dynamic>
+			<isNotEmpty prepend="AND" property="deptid">
+				a.deptid like '$deptid$%'
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="parentid">
+				a.parentid = #parentid#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="deptname">
+				a.deptname like '%$deptname$%'
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="queryParam">
+				a.deptname like '%$queryParam$%'
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY sortno DESC
+	</select>
 
+	<select id="queryDeptsForManageForPageCount" parameterClass="map"
+		resultClass="java.lang.Integer">
+		SELECT count(*) as count
+		FROM eadept a WHERE a.enabled='1'
+		<dynamic>
+			<isNotEmpty prepend="AND" property="deptid">
+				a.deptid like '$deptid$%'
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="parentid">
+				a.parentid = #parentid#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="deptname">
+				a.deptname like '%$deptname$%'
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="queryParam">
+				a.deptname like '%$queryParam$%'
+			</isNotEmpty>
+		</dynamic>
+	</select>
 </sqlMap>

@@ -12,12 +12,14 @@ Ext.onReady(function() {
 			id: 0
 		});
 	}
-
-	var regionTree = new Ext.tree.TreePanel({
-		loader: new Ext.tree.TreeLoader({
+	function createTreeLoader() {
+		return new Ext.tree.TreeLoader({
 			baseAttrs: {},
-			dataUrl: '/app/region.do?reqCode=regionTreeInit'
-		}),
+			dataUrl: './region.do?reqCode=regionTreeInit'
+		});
+	}
+	var regionTree = new Ext.tree.TreePanel({
+		loader: createTreeLoader(),
 		root: createRootNode(),
 		title: '',
 		applyTo: 'regionTreeDiv',
@@ -160,50 +162,48 @@ Ext.onReady(function() {
 			queryParam: Ext.getCmp('regionName').getValue()
 		};
 	});
-
-	var pagesize_combo = new Ext.form.ComboBox({
-		name: 'pagesize',
-		hiddenName: 'pagesize',
-		typeAhead: true,
-		triggerAction: 'all',
-		lazyRender: true,
-		mode: 'local',
-		store: new Ext.data.ArrayStore({
-			fields: ['value', 'text'],
-			data: [
-				[10, '10条/页'],
-				[20, '20条/页'],
-				[50, '50条/页'],
-				[100, '100条/页'],
-				[250, '250条/页'],
-				[500, '500条/页']
-			]
-		}),
-		valueField: 'value',
-		displayField: 'text',
-		value: '50',
-		editable: false,
-		width: 85
+	
+	
+	
+	var pagesize_combo = new Ext.form.ComboBox( {
+		name : 'pagesize',
+		hiddenName : 'pagesize',
+		typeAhead : true,
+		triggerAction : 'all',
+		lazyRender : true,
+		mode : 'local',
+		store : new Ext.data.ArrayStore(
+				{
+					fields : [ 'value', 'text' ],
+					data : [ [ 10, '10条/页' ], [ 20, '20条/页' ],
+							[ 50, '50条/页' ], [ 100, '100条/页' ],
+							[ 250, '250条/页' ], [ 500, '500条/页' ] ]
+				}),
+		valueField : 'value',
+		displayField : 'text',
+		value : '50',
+		editable : false,
+		width : 85
 	});
 	var number = parseInt(pagesize_combo.getValue());
 	pagesize_combo.on("select", function(comboBox) {
 		bbar.pageSize = parseInt(comboBox.getValue());
 		number = parseInt(comboBox.getValue());
-		regionStore.reload({
-			params: {
-				start: 0,
-				limit: bbar.pageSize
+		store.reload( {
+			params : {
+				start : 0,
+				limit : bbar.pageSize
 			}
 		});
 	});
 
-	var bbar = new Ext.PagingToolbar({
-		pageSize: number,
-		store: regionStore,
-		displayInfo: true,
-		displayMsg: '显示{0}条到{1}条,共{2}条',
-		emptyMsg: "没有符合条件的记录",
-		items: ['-', '&nbsp;&nbsp;', pagesize_combo]
+	var bbar = new Ext.PagingToolbar( {
+		pageSize : number,
+		store : regionStore,
+		displayInfo : true,
+		displayMsg : '显示{0}条到{1}条,共{2}条',
+		emptyMsg : "没有符合条件的记录",
+		items : [ '-', '&nbsp;&nbsp;', pagesize_combo ]
 	});
 	var grid = new Ext.grid.GridPanel({
 		title: '<span class="commoncss">区域信息表</span>',
@@ -239,8 +239,8 @@ Ext.onReady(function() {
 				deleteRegionItems('1', '');
 			}
 		}, '->', new Ext.form.TextField({
-			id: 'queryParam',
-			name: 'queryParam',
+			id: 'regionName',
+			name: 'regionName',
 			emptyText: '请输入区域名称',
 			enableKeyEvents: true,
 			listeners: {
@@ -285,12 +285,9 @@ Ext.onReady(function() {
 	bbar.on("change", function() {
 		// grid.getSelectionModel().selectFirstRow();
 	});
-
+	
 	var addRegionTree = new Ext.tree.TreePanel({
-		loader: new Ext.tree.TreeLoader({
-			baseAttrs: {},
-			dataUrl: './region.do?reqCode=departmentTreeInit'
-		}),
+		loader: createTreeLoader(),
 		root: createRootNode(),
 		autoScroll: true,
 		animate: false,
@@ -411,11 +408,6 @@ Ext.onReady(function() {
 			iconCls: 'acceptIcon',
 			id: 'btn_id_save_update',
 			handler: function() {
-				if (runMode == '0') {
-					Ext.Msg.alert('提示',
-						'系统正处于演示模式下运行,您的操作被取消!该模式下只能进行查询操作!');
-					return;
-				}
 				var mode = Ext.getCmp('windowmode').getValue();
 				if (mode == 'add')
 					saveRegionItem();
