@@ -4,4 +4,5 @@
 <sqlMapConfig>
 	<settings useStatementNamespaces="true" />
 	<sqlMap resource="sqlmap/app/devicetype/devicetype.xml" />
+	<sqlMap resource="sqlmap/app/region/region.xml" />
 </sqlMapConfig>

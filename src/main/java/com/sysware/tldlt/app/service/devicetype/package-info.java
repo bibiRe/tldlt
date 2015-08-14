@@ -1,4 +1,4 @@
 /**
- * VO-设备类型.
+ * Service-设备类型.
  */
 package com.sysware.tldlt.app.service.devicetype;

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 演示与教程手工映射SQL语句 -->
+<sqlMap namespace="App.Region">
+	<typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+	<select id="queryRegionItemsByDto" parameterClass="map"
+		resultClass="dto">
+		SELECT region_Id as id, DEPTID as departmentId, Parent_Region_Id
+		as
+		parentId, RegionType, Name as text, Remark FROM REGION WHERE 1 = 1
+		<dynamic>
+			<isNotEmpty prepend="AND" property="parentId">
+				<isNotEqual property="parentId" compareValue="0">
+					Parent_Region_Id = #parentId#
+				</isNotEqual>
+				<isEqual property="parentId" compareValue="0">
+					isnull(Parent_Region_Id)
+				</isEqual>
+			</isNotEmpty>
+
+			<isNotEmpty prepend="AND" property="regionName">
+				Name like '%$regionName$%'
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+</sqlMap>
