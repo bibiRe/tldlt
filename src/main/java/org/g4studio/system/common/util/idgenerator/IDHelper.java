@@ -81,6 +81,11 @@ public class IDHelper {
 	 */
 	private static DefaultIDGenerator defaultIDGenerator_authorizeid_eauserauthorize = null;
 	
+
+	private static DefaultIDGenerator defaultIDGenerator_idGenerator_devmanuf = null;
+	
+	private static DefaultIDGenerator defaultIDGenerator_idGenerator_devmodel = null;
+	
 	
 	static {
 		IdGenerator idGenerator_eventid = new IdGenerator();
@@ -164,6 +169,39 @@ public class IDHelper {
 		IdGenerator idGenerator_authorizeid_eauserauthorize = new IdGenerator();
 		idGenerator_authorizeid_eauserauthorize.setFieldname("PARTID");
 		defaultIDGenerator_authorizeid_eauserauthorize = idGenerator_authorizeid_eauserauthorize.getDefaultIDGenerator();
+	}
+	
+	static
+	{
+		IdGenerator idGenerator_devmodel= new IdGenerator();
+		idGenerator_devmodel.setFieldname("DEVICEMANUF");
+		defaultIDGenerator_idGenerator_devmanuf = idGenerator_devmodel.getDefaultIDGenerator();
+	}
+	
+	static
+	{
+		IdGenerator idGenerator_devmodel= new IdGenerator();
+		idGenerator_devmodel.setFieldname("DEVICEMODEL");
+		defaultIDGenerator_idGenerator_devmodel = idGenerator_devmodel.getDefaultIDGenerator();
+	}
+	
+	
+	public static String NewDeviceModelID()
+	{
+		String id = defaultIDGenerator_idGenerator_devmodel.create();
+		
+		id = id.trim();
+		
+		return id;
+	}
+	
+	public static String NewDeviceManufID()
+	{
+		String id = defaultIDGenerator_idGenerator_devmanuf.create();
+		
+		id = id.trim();
+		
+		return id;
 	}
 
 	/**

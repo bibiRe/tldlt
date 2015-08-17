@@ -10,7 +10,6 @@
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 	
 	<alias alias="dataSourceApp" name="dataSourceG4"/>
-	<alias alias="baseTransactionProxyApp" name="baseTransactionProxyG4"/>
 	
 	<bean id="sqlMapClientApp" class="org.g4studio.core.orm.xibatis.support.SqlMapClientFactoryBean">
 		<property name="configLocations">
@@ -29,4 +28,31 @@
 		<property name="sqlMapClient" ref="sqlMapClientApp" />
 	</bean>
 	
+	<!-- JDBC事务管理器配置 -->
+	<bean id="transactionManagerApp" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource">
+			<ref bean="dataSourceApp" />
+		</property>
+	</bean>	
+	<!-- 配置事务代理的基类 -->
+	<bean id="baseTransactionProxyApp" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean" abstract="true">
+		<property name="transactionManager">
+			<ref bean="transactionManagerApp" />
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="save*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="do*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="insert*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="del*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="drop*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="edit*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="modify*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="call*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="batch*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="*">PROPAGATION_SUPPORTS,-Exception</prop>
+			</props>
+		</property>
+	</bean> 
 </beans>

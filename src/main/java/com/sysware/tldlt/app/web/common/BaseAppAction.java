@@ -1,6 +1,7 @@
 package com.sysware.tldlt.app.web.common;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +34,26 @@ public class BaseAppAction extends BaseAction {
      */
     protected BaseService service;
     /**
+     * 得到Dto翻页空返回.
+     * @param dto dto对象
+     * @param querySql 查询条件Sql.
+     * @param queryCountSql 查询条件总数Sql.
+     * @param response http response对象.
+     * @param mapping struts mapping对象.
+     * @return struts跳转地址.
+     * @throws Exception 异常对象.
+     */
+    public ActionForward geDtoPageNullForward(Dto dto,
+            String querySql, String queryCountSql,
+            HttpServletResponse response, ActionMapping mapping) throws Exception {
+        String jsonString = encodeList2PageJson(
+                appReader.queryForPage(querySql, dto),
+                (Integer) appReader.queryForObject(queryCountSql, dto), null);
+        write(jsonString, response);
+        return getNullForward(mapping);
+    }
+
+    /**
      * 返回空Forward.
      * @param mapping mapping对象.
      * @return 空Forward
@@ -56,12 +77,20 @@ public class BaseAppAction extends BaseAction {
             ActionForm form, HttpServletRequest request,
             HttpServletResponse response, String querySql,
             String queryCountSql) throws Exception {
+        Dto dto = getRequestDto(form, request);
+        return geDtoPageNullForward(dto, querySql, queryCountSql,
+                response, mapping);
+    }
+
+    /**
+     * 得到请求的dto. 
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @return dto
+     */
+    public Dto getRequestDto(ActionForm form, HttpServletRequest request) {
         Dto dto = ((BaseActionForm) form).getParamAsDto(request);
-        String jsonString = encodeList2PageJson(
-                appReader.queryForPage(querySql, dto),
-                (Integer) appReader.queryForObject(queryCountSql, dto), null);
-        write(jsonString, response);
-        return getNullForward(mapping);
+        return dto;
     }
 
     public void setAppReader(Reader appReader) {

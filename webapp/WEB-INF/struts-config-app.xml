@@ -9,6 +9,7 @@
 
 	<!-- Action映射 -->
 	<action-mappings type="org.g4studio.core.mvc.xstruts.action.ActionMapping">
+
 		<!-- 设备类型 -->
 		<action name="baseActionForm" path="/deviceType" scope="request"
 			parameter="reqCode"
@@ -21,7 +22,21 @@
 			type="com.sysware.tldlt.app.web.region.RegionAction">
 			<forward name="regionView" path="/region/regionview.jsp" />
 		</action>
+		
 
-	</action-mappings>
+		
+		<action name="baseActionForm" path="/deviceManufacture" scope="request"
+			parameter="reqCode"
+			type="com.sysware.tldlt.app.web.DeviceManufacture.DeviceManufactureAction">
+			<forward name="deviceManufactureView" path="/devicemanufacture/devicemanufactureview.jsp" />
+		</action>
+		
+		<action name="baseActionForm" path="/deviceModel" scope="request"
+			parameter="reqCode"
+			type="com.sysware.tldlt.app.web.DeviceModel.DeviceModelAction">
+			<forward name="deviceModelView" path="/devicemodel/devicemodelview.jsp" />
+		</action>
+
+   </action-mappings>
 
 </struts-config>

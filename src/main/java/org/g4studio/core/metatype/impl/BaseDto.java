@@ -21,13 +21,15 @@ import org.g4studio.core.xml.XmlHelper;
  * @see Dto
  * @see java.io.Serializable
  */
+@SuppressWarnings("rawtypes")
 public class BaseDto extends HashMap implements Dto, Serializable {
 
-    public BaseDto() {
-    }
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-    public BaseDto(String key, Object value) {
-        put(key, value);
+    public BaseDto() {
     }
 
     public BaseDto(Boolean success) {
@@ -37,6 +39,11 @@ public class BaseDto extends HashMap implements Dto, Serializable {
     public BaseDto(Boolean success, String msg) {
         setSuccess(success);
         setMsg(msg);
+    }
+
+    @SuppressWarnings("unchecked")
+    public BaseDto(String key, Object value) {
+        put(key, value);
     }
 
     /**
@@ -49,6 +56,20 @@ public class BaseDto extends HashMap implements Dto, Serializable {
         Object obj = TypeCaseHelper.convert(get(key), "BigDecimal", null);
         if (obj != null)
             return (BigDecimal) obj;
+        else
+            return null;
+    }
+
+    /**
+     * 以Boolean类型返回键值
+     * @param key
+     *            键名
+     * @return Timestamp 键值
+     */
+    public Boolean getAsBoolean(String key) {
+        Object obj = TypeCaseHelper.convert(get(key), "Boolean", null);
+        if (obj != null)
+            return (Boolean) obj;
         else
             return null;
     }
@@ -82,6 +103,16 @@ public class BaseDto extends HashMap implements Dto, Serializable {
     }
 
     /**
+     * 以List类型返回键值
+     * @param key
+     *            键名
+     * @return List 键值
+     */
+    public List getAsList(String key) {
+        return (List) get(key);
+    }
+
+    /**
      * 以Long类型返回键值
      * @param key
      *            键名
@@ -110,16 +141,6 @@ public class BaseDto extends HashMap implements Dto, Serializable {
     }
 
     /**
-     * 以List类型返回键值
-     * @param key
-     *            键名
-     * @return List 键值
-     */
-    public List getAsList(String key) {
-        return (List) get(key);
-    }
-
-    /**
      * 以Timestamp类型返回键值
      * @param key
      *            键名
@@ -132,40 +153,6 @@ public class BaseDto extends HashMap implements Dto, Serializable {
             return (Timestamp) obj;
         else
             return null;
-    }
-
-    /**
-     * 以Boolean类型返回键值
-     * @param key
-     *            键名
-     * @return Timestamp 键值
-     */
-    public Boolean getAsBoolean(String key) {
-        Object obj = TypeCaseHelper.convert(get(key), "Boolean", null);
-        if (obj != null)
-            return (Boolean) obj;
-        else
-            return null;
-    }
-
-    /**
-     * 给Dto压入第一个默认List对象<br>
-     * 为了方便存取(省去根据Key来存取和类型转换的过程)
-     * @param pList
-     *            压入Dto的List对象
-     */
-    public void setDefaultAList(List pList) {
-        put("defaultAList", pList);
-    }
-
-    /**
-     * 给Dto压入第二个默认List对象<br>
-     * 为了方便存取(省去根据Key来存取和类型转换的过程)
-     * @param pList
-     *            压入Dto的List对象
-     */
-    public void setDefaultBList(List pList) {
-        put("defaultBList", pList);
     }
 
     /**
@@ -189,14 +176,6 @@ public class BaseDto extends HashMap implements Dto, Serializable {
     }
 
     /**
-     * 给Dto压入一个默认的Json格式字符串
-     * @param jsonString
-     */
-    public void setDefaultJson(String jsonString) {
-        put("defaultJsonString", jsonString);
-    }
-
-    /**
      * 获取默认的Json格式字符串
      * @return
      */
@@ -205,32 +184,90 @@ public class BaseDto extends HashMap implements Dto, Serializable {
     }
 
     /**
-     * 将此Dto对象转换为XML格式字符串
-     * @param pStyle
-     *            XML生成方式(可选：节点属性值风格和节点元素值风格)
-     * @return string 返回XML格式字符串
+     * 获取交易提示信息
+     * @param pSuccess
      */
-    public String toXml(String pStyle) {
-        String strXml = null;
-        if (pStyle.equals(G4Constants.XML_Attribute))
-            // 节点属性值风格
-            strXml = XmlHelper.parseDto2Xml(this, "root", "row");
-        else if (pStyle.equals(G4Constants.XML_Node))
-            // 节点元素值风格
-            strXml = XmlHelper.parseDto2Xml(this, "root");
-        return strXml;
+    public String getMsg() {
+        return getAsString("msg");
     }
 
     /**
-     * 将此Dto对象转换为XML格式字符串<br>
-     * 默认为节点元素值风格
-     * @return string 返回XML格式字符串
+     * 获取交易状态
+     * @param pSuccess
      */
-    public String toXml() {
-        String strXml = null;
-        // 节点元素值风格
-        strXml = XmlHelper.parseDto2Xml(this, "root");
-        return strXml;
+    public Boolean getSuccess() {
+        return getAsBoolean("success");
+    }
+
+    /**
+     * 获取交易状态
+     * @param pSuccess
+     */
+    public boolean getSuccessFlag() {
+        Boolean ret = getSuccess();
+        return (null != ret) ? ret.booleanValue() : false;
+    }
+
+    /**
+     * 打印DTO对象
+     */
+    public void println() {
+        System.out.println(this);
+    }
+
+    /**
+     * 给Dto压入第一个默认List对象<br>
+     * 为了方便存取(省去根据Key来存取和类型转换的过程)
+     * @param pList
+     *            压入Dto的List对象
+     */
+    @SuppressWarnings({"unchecked"})
+    public void setDefaultAList(List pList) {
+        put("defaultAList", pList);
+    }
+
+    /**
+     * 给Dto压入第二个默认List对象<br>
+     * 为了方便存取(省去根据Key来存取和类型转换的过程)
+     * @param pList
+     *            压入Dto的List对象
+     */
+    @SuppressWarnings({"unchecked"})
+    public void setDefaultBList(List pList) {
+        put("defaultBList", pList);
+    }
+
+    /**
+     * 给Dto压入一个默认的Json格式字符串
+     * @param jsonString
+     */
+    @SuppressWarnings("unchecked")
+    public void setDefaultJson(String jsonString) {
+        put("defaultJsonString", jsonString);
+    }
+
+    /**
+     * 设置交易提示信息
+     * @param pSuccess
+     */
+    @SuppressWarnings("unchecked")
+    public void setMsg(String pMsg) {
+        put("msg", pMsg);
+    }
+
+    /**
+     * 设置交易状态
+     * @param pSuccess
+     */
+    @SuppressWarnings("unchecked")
+    public void setSuccess(Boolean pSuccess) {
+        put("success", pSuccess);
+        if (pSuccess) {
+            // put("bflag", "1");
+        } else {
+            // put("bflag", "0");
+        }
+
     }
 
     /**
@@ -254,56 +291,31 @@ public class BaseDto extends HashMap implements Dto, Serializable {
     }
 
     /**
-     * 设置交易状态
-     * @param pSuccess
+     * 将此Dto对象转换为XML格式字符串<br>
+     * 默认为节点元素值风格
+     * @return string 返回XML格式字符串
      */
-    public void setSuccess(Boolean pSuccess) {
-        put("success", pSuccess);
-        if (pSuccess) {
-            // put("bflag", "1");
-        } else {
-            // put("bflag", "0");
-        }
-
+    public String toXml() {
+        String strXml = null;
+        // 节点元素值风格
+        strXml = XmlHelper.parseDto2Xml(this, "root");
+        return strXml;
     }
 
     /**
-     * 获取交易状态
-     * @param pSuccess
+     * 将此Dto对象转换为XML格式字符串
+     * @param pStyle
+     *            XML生成方式(可选：节点属性值风格和节点元素值风格)
+     * @return string 返回XML格式字符串
      */
-    public Boolean getSuccess() {
-        return getAsBoolean("success");
-    }
-
-    /**
-     * 获取交易状态
-     * @param pSuccess
-     */
-    public boolean getSuccessFlag() {
-        Boolean ret = getSuccess();
-        return (null != ret) ? ret.booleanValue() : false;
-    }
-
-    /**
-     * 设置交易提示信息
-     * @param pSuccess
-     */
-    public void setMsg(String pMsg) {
-        put("msg", pMsg);
-    }
-
-    /**
-     * 获取交易提示信息
-     * @param pSuccess
-     */
-    public String getMsg() {
-        return getAsString("msg");
-    }
-
-    /**
-     * 打印DTO对象
-     */
-    public void println() {
-        System.out.println(this);
+    public String toXml(String pStyle) {
+        String strXml = null;
+        if (pStyle.equals(G4Constants.XML_Attribute))
+            // 节点属性值风格
+            strXml = XmlHelper.parseDto2Xml(this, "root", "row");
+        else if (pStyle.equals(G4Constants.XML_Node))
+            // 节点元素值风格
+            strXml = XmlHelper.parseDto2Xml(this, "root");
+        return strXml;
     }
 }

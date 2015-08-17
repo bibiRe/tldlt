@@ -50,7 +50,7 @@ public class G4Server {
 		 */
 	    if(forceLoad.equals(SystemConstants.FORCELOAD_Y)){
 		    log.info("********************************************");
-		    log.info("电力通系统管理平台->开始启动...");
+		    log.info("G4Studio行业应用二次快速开发平台->开始启动...");
 		    log.info("********************************************");
 		    log.info("系统正在初始化Spring...");
 		    SpringBeanLoader.getApplicationContext();
@@ -72,7 +72,7 @@ public class G4Server {
 		server.start();
 		String msg = "启动成功";
 		webContext = webContext.equals("/") ? "" : webContext;
-		msg = msg + " >> localhost:" + port + webContext +  " | 技术支持 >> www.syswareonline.com";
+		msg = msg + " >> localhost:" + port + webContext +  " | 技术支持 >> www.g4it.org";
 		System.out.println(msg);
 		server.join();
 	}

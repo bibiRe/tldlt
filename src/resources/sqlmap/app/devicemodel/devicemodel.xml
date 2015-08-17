@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="App.DeviceModel">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+ 
+    <select id="getDeviceModel" parameterClass="dto" resultClass="dto">
+
+		SELECT a.DeviceModel_Id as id, a.Name as realname,a.Remark as remark
+		
+		,b.DeviceType_Id as typeid,b.Name as typename,b.Remark as typeremark
+		
+		,c.DevcieManufacture_Id as manufid, c.NickName as manufnickname ,c.Name as manufrealname
+		,c.Address as manufaddress ,c.Tel as manufphonenumber ,c.Contact as manufcontactperson
+		,c.Remark as manufremark
+		
+		from devicemodel a,devicetype b , devicemanufacture c where 1 = 1
+		
+		and a.DeviceType_Id = b.DeviceType_Id 
+		and a.DevcieManufacture_Id = c.DevcieManufacture_Id
+
+        <dynamic>
+            <isNotEmpty prepend="AND" property="queryParam">
+                 a.Name like '%$queryParam$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    
+    <select id="getDeviceModelCount" parameterClass="dto" resultClass="java.lang.Integer">
+        
+        SELECT Count(*) FROM devicemodel a WHERE 1 = 1
+        
+        <dynamic>
+            <isNotEmpty prepend="AND" property="queryParam">
+                 a.Name like '%$queryParam$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    
+    
+     <select id="getDeviceType" parameterClass="dto" resultClass="dto">
+
+		SELECT b.DeviceType_Id as id,b.Name as value
+		
+		
+		from devicetype b where 1 = 1
+
+
+    </select>
+    
+    <select id="getDeviceTypeCount" parameterClass="dto" resultClass="java.lang.Integer">
+        
+        SELECT Count(*) FROM devicetype a WHERE 1 = 1
+        
+       
+    </select>
+    
+    
+    <select id="getDeviceManuf" parameterClass="dto" resultClass="dto">
+
+		SELECT b.DevcieManufacture_Id as id,b.Name as value
+		
+		
+		from devicemanufacture b where 1 = 1
+
+
+    </select>
+    
+    <select id="getDeviceManufCount" parameterClass="dto" resultClass="java.lang.Integer">
+        
+        SELECT Count(*) FROM devicemanufacture a WHERE 1 = 1
+        
+       
+    </select>
+    
+     <insert id="addInfo" parameterClass="dto">
+        INSERT INTO devicemodel
+        (
+       	  DeviceModel_Id,DeviceType_Id,DevcieManufacture_Id,Name,Remark
+        )
+        VALUES (#id#,#devtypeid#, #devmanufid#,#realname#,#remark#)
+    </insert>
+    
+
+    
+    <update id="updateInfo" parameterClass="dto">
+        UPDATE devicemodel SET
+        DeviceType_Id=#devtypeid#, DevcieManufacture_Id=#devmanufid#,Name=#realname#,Remark=#remark#
+        WHERE DeviceModel_Id = #id#
+    </update>
+    
+   <delete id="deleteInfo" parameterClass="string" >
+		DELETE FROM devicemodel
+		      WHERE DeviceModel_Id = #id#
+	</delete>
+    
+</sqlMap>

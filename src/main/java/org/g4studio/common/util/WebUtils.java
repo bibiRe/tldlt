@@ -112,8 +112,7 @@ public class WebUtils {
 		Iterator keyIterator = (Iterator) map.keySet().iterator();
 		while (keyIterator.hasNext()) {
 			String key = (String) keyIterator.next();
-			String[] d = ((String[]) (map.get(key)));
-			String value = d[0];
+			String value = ((String[]) (map.get(key)))[0];
 			dto.put(key, value);
 		}
 		return dto;

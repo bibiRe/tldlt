@@ -7,10 +7,8 @@ import org.junit.Test;
 
 import utils.HttpServletResponseSimulator;
 import utils.MockStrutsTestCase;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
 
-public class RegionActionTest  extends MockStrutsTestCase{
+public class RegionActionTest extends MockStrutsTestCase {
 
     @Before
     public void setUp() throws Exception {
@@ -20,7 +18,6 @@ public class RegionActionTest  extends MockStrutsTestCase{
         setRequestPathInfo("app", "/app/region");
     }
 
-
     @Test
     public void testInitSuccess() {
         addRequestParameter("reqCode", new String[] {"init"});
@@ -28,12 +25,24 @@ public class RegionActionTest  extends MockStrutsTestCase{
         verifyForward("regionView");
         verifyForwardPath("/app/region/regionview.jsp");
     }
-    
+
     @Test
     public void testRegionTreeInitSuccess() {
         addRequestParameter("reqCode", new String[] {"regionTreeInit"});
         actionPerform();
-        String actual = ((HttpServletResponseSimulator)this.getResponse()).getWriterBuffer().toString();
-        assertTrue(actual.contains("parentid")); 
+        String actual = ((HttpServletResponseSimulator) this.getResponse())
+                .getWriterBuffer().toString();
+        assertTrue(actual.contains("parentid"));
+    }
+    
+    @Test
+    public void testQueryRegionsForManageSuccess() {
+        addRequestParameter("reqCode", new String[] {"queryRegionsForManage"});
+        addRequestParameter("start", new String[]{"0"});
+        addRequestParameter("limit", new String[]{"50"});
+        actionPerform();
+        String actual = ((HttpServletResponseSimulator) this.getResponse())
+                .getWriterBuffer().toString();
+        assertTrue(actual.contains("parentid"));
     }    
 }

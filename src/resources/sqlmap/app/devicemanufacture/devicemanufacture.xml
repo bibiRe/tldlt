@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="App.DeviceManufacture">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+ 
+    <select id="getDeviceManufacture" parameterClass="dto" resultClass="dto">
+
+		SELECT DevcieManufacture_Id as id, NickName as nickname ,Name as realname,
+		Address as address ,Tel as phonenumber ,Contact as contactperson,
+		Remark as remark
+		
+		from devicemanufacture a where 1 = 1
+
+        <dynamic>
+            <isNotEmpty prepend="AND" property="queryParam">
+                 a.Name like '%$queryParam$%' OR
+                 a.Nickname like '%$queryParam$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    
+    <select id="getDeviceManufactureCount" parameterClass="dto" resultClass="java.lang.Integer">
+        
+        SELECT Count(*) FROM devicemanufacture a WHERE 1 = 1
+        
+        <dynamic>
+            <isNotEmpty prepend="AND" property="queryParam">
+                 a.Name like '%$queryParam$%' OR
+                 a.Nickname like '%$queryParam$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    
+     <insert id="addInfo" parameterClass="dto">
+        INSERT INTO devicemanufacture 
+        (
+       	  DevcieManufacture_Id,NickName,Name,Address,Tel,Contact,Remark
+        )
+        VALUES (#id#,#nickname#, #realname#,#address#,#phonenumber#,#contactperson#,#remark#)
+    </insert>
+    
+
+    
+    <update id="updateInfo" parameterClass="dto">
+        UPDATE devicemanufacture SET
+        NickName=#nickname#, Name=#realname#,Address=#address#,Tel=#phonenumber#,Contact=#contactperson#,Remark=#remark#
+        WHERE DevcieManufacture_Id = #id# 
+    </update>
+    
+   <delete id="deleteInfo" parameterClass="string" >
+		DELETE FROM devicemanufacture
+		      WHERE DevcieManufacture_Id = #id#
+	</delete>
+    
+</sqlMap>

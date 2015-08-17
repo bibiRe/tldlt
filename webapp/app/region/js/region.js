@@ -9,7 +9,7 @@ Ext.onReady(function() {
 		return new Ext.tree.AsyncTreeNode({
 			text: '区域树',
 			expanded: true,
-			id: 0
+			id: '0'
 		});
 	}
 	function createTreeLoader() {
@@ -113,7 +113,7 @@ Ext.onReady(function() {
 		width: 130
 	}, {
 		header: '类型',
-		dataIndex: 'type',
+		dataIndex: 'regiontype',
 		width: 50,
 	}, {
 		id: 'parentid',
@@ -159,7 +159,7 @@ Ext.onReady(function() {
 	// 翻页排序时带上查询条件
 	regionStore.on('beforeload', function() {
 		this.baseParams = {
-			queryParam: Ext.getCmp('regionName').getValue()
+			regionName: Ext.getCmp('regionName').getValue()
 		};
 	});
 	
@@ -470,7 +470,7 @@ Ext.onReady(function() {
 			params: {
 				start: 0,
 				limit: bbar.pageSize,
-				queryParam: Ext.getCmp('queryParam').getValue()
+				regionName: Ext.getCmp('regionName').getValue()
 			}
 		});
 	}
