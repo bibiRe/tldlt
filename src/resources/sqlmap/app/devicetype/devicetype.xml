@@ -37,19 +37,19 @@
         a.DeviceType_ID = '$id$'
     </select>
 
-    <!-- 插入一条用户表记录 -->
+    <!-- 插入一条记录 -->
     <insert id="addInfo" parameterClass="dto">
         INSERT INTO DEVICETYPE (
         DeviceType_ID, Name, Remark)
         VALUES (#id#, #name#, #remark#)
     </insert>
-    <!-- 更新一条用户表记录 -->
+    <!-- 更新一条记录 -->
     <update id="updateInfo" parameterClass="dto">
         UPDATE DEVICETYPE SET DeviceType_ID = #id#, Name = #name#, Remark = #remark#
         WHERE DeviceType_ID = #oid#
     </update>
 
-    <!-- 删除设备类型 -->
+    <!-- 删除记录 -->
     <delete id="deleteInfo" parameterClass="string">
         DELETE FROM
         DEVICETYPE

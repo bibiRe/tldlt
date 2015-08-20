@@ -2,63 +2,114 @@
 <!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 <!-- 演示与教程手工映射SQL语句 -->
 <sqlMap namespace="App.Region">
-	<typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
-	<select id="queryRegionItemsByDto" parameterClass="map"
-		resultClass="dto">
-		SELECT region_Id as id, DEPTID as departmentId, Parent_Region_Id
-		as
-		parentId, RegionType, Name as text, Remark FROM REGION WHERE 1 = 1
-		<dynamic>
-			<isNotEmpty prepend="AND" property="parentId">
-				<isNotEqual property="parentId" compareValue="0">
-					Parent_Region_Id = #parentId#
-				</isNotEqual>
-				<isEqual property="parentId" compareValue="0">
-					isnull(Parent_Region_Id)
-				</isEqual>
-			</isNotEmpty>
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+    <sql id="sqlQueryRegionInfo">
+        SELECT region_Id as id, DEPTID as departmentId,
+        Parent_Region_Id
+        as
+        parentId, RegionType, Name as text, Remark FROM
+        REGION WHERE 1 = 1
+    </sql>
+    <sql id="sqlQueryRegionItemsByDtoCondition">
+        <dynamic>
+            <isNotEmpty prepend="AND" property="parentId">
+                <isNotEqual property="parentId" compareValue="0">
+                    Parent_Region_Id = #parentId#
+                </isNotEqual>
+                <isEqual property="parentId" compareValue="0">
+                    isnull(Parent_Region_Id)
+                </isEqual>
+            </isNotEmpty>
 
-			<isNotEmpty prepend="AND" property="regionName">
-				Name like
-				'%$regionName$%'
-			</isNotEmpty>
-		</dynamic>
-	</select>
-	<sql id = "sqlQueryRegionsForManage">
-		SELECT region_Id as regionid, name as regionname, regiontype,
-		(SELECT name
-		FROM region
-		WHERE region_Id = a.parent_region_id) AS parentregionname,
-		parent_region_id as parentid, remark 
-	</sql>
-	<sql id = "sqlQueryRegionsForManageCount">
-		SELECT count(*) as count 
-	</sql>
-	<sql id = "sqlQueryRegionsForManageCondition">
-		FROM region a WHERE 1 = 1
-		<dynamic>
-			<isNotEmpty prepend="AND" property="regionName">
-				a.name like '%$regionName$%'
-			</isNotEmpty>
-			<isNotEmpty prepend="AND" property="regionid">
-			  <isEqual property="regionid" compareValue="0">
-			  	isnull(Parent_Region_Id)
-			  </isEqual>
-			  <isNotEqual property="regionid" compareValue="0">
-			  	(a.region_Id = #regionid# OR a.Parent_Region_Id = #regionid#)
-			  </isNotEqual>
-			</isNotEmpty>
-		</dynamic>	
-	</sql>
-	<select id="queryRegionsForManage" parameterClass="map"
-		resultClass="dto">
-		<include refid="sqlQueryRegionsForManage"/>
-		<include refid="sqlQueryRegionsForManageCondition"/>			
-	</select>
+            <isNotEmpty prepend="AND" property="regionName">
+                Name like
+                '%$regionName$%'
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+    
+    <select id="queryRegionItemsByDto" parameterClass="map"
+        resultClass="dto">
+        <include refid="sqlQueryRegionInfo" />
+        <include refid="sqlQueryRegionItemsByDtoCondition" />
+    </select>
+    <sql id="sqlQueryRegionInfoByIdCondition">
+         AND Region_Id = #regionid#
+    </sql>
+    <select id="queryRegionInfoById" parameterClass="int"
+        resultClass="dto">
+        <include refid="sqlQueryRegionInfo" />
+        <include refid="sqlQueryRegionInfoByIdCondition" />
+    </select>
+    <sql id="sqlQueryRegionsForManage">
+        SELECT region_Id as regionid, name as regionname,
+        regiontype,
+        (SELECT name
+        FROM region
+        WHERE region_Id =
+        a.parent_region_id) AS parentregionname,
+        Parent_Region_Id as parentid,
+        DEPTID as departmentId, (SELECT deptname
+        FROM eadept
+        WHERE deptid = a.deptid) AS departmentName, remark
+    </sql>
+    <sql id="sqlQueryRegionsForManageCount">
+        SELECT count(*) as count
+    </sql>
+    <sql id="sqlQueryRegionsForManageCondition">
+        FROM region a WHERE 1 = 1
+        <dynamic>
+            <isNotEmpty prepend="AND" property="regionName">
+                a.name like
+                '%$regionName$%'
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="regionid">
+                <isEqual property="regionid" compareValue="0">
+                    isnull(Parent_Region_Id)
+                </isEqual>
+                <isNotEqual property="regionid" compareValue="0">
+                    (a.region_Id = #regionid# OR a.Parent_Region_Id = #regionid#)
+                </isNotEqual>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+    <select id="queryRegionsForManage" parameterClass="map"
+        resultClass="dto">
+        <include refid="sqlQueryRegionsForManage" />
+        <include refid="sqlQueryRegionsForManageCondition" />
+    </select>
 
-	<select id="queryRegionsForManageForPageCount" parameterClass="map"
-		resultClass="java.lang.Integer">
-		<include refid="sqlQueryRegionsForManageCount"/>
-		<include refid="sqlQueryRegionsForManageCondition"/>		
-	</select>
+    <select id="queryRegionsForManageForPageCount" parameterClass="map"
+        resultClass="java.lang.Integer">
+        <include refid="sqlQueryRegionsForManageCount" />
+        <include refid="sqlQueryRegionsForManageCondition" />
+    </select>
+    
+        <!-- 插入一条记录 -->
+    <insert id="addInfo" parameterClass="dto">
+        INSERT INTO REGION (Name, PARENT_REGION_ID, DEPTID, REGIONTYPE, Remark)
+        VALUES (#regionname#, #parentid#, #departmentid#, #regiontype#, #remark#)
+        <selectKey resultClass="int"  keyProperty="regionid" >    
+             SELECT last_insert_id() as regionid;   
+        </selectKey>  
+    </insert>
+    <!-- 更新一条记录 -->
+    <update id="updateInfo" parameterClass="dto">
+        UPDATE REGION SET Name = #regionname#, PARENT_REGION_ID = #parentid#, DEPTID = #departmentid#, REGIONTYPE = #regiontype#, Remark = #remark#
+        WHERE REGION_ID = #regionid#
+    </update>
+
+    <!-- 删除记录 -->
+    <delete id="deleteInfo" parameterClass="int">
+        DELETE FROM REGION WHERE REGION_ID = #regionid#
+    </delete>
+    
+    <delete id="deleteChildInfo" parameterClass="int">
+        DELETE FROM REGION WHERE PARENT_REGION_ID = #regionid#
+    </delete>
+    
+    <select id="queryChildRegionIds" parameterClass="int"
+        resultClass="int">
+        SELECT REGION_ID FROM REGION WHERE PARENT_REGION_ID = #regionid#
+    </select>
 </sqlMap>

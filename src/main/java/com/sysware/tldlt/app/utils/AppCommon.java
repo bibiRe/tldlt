@@ -21,5 +21,13 @@ public class AppCommon {
      * 返回码-删除失败.
      */
     public static final int RET_CODE_DELETE_ERROR = -2;
+    /**
+     * 返回码-空值.
+     */
+    public static final int RET_CODE_NULL_VALUE = -3;
+    /**
+     * 返回码-无效值.
+     */
+    public static final int RET_CODE_INVALID_VALUE = -4;
 
 }

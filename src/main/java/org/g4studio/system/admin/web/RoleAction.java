@@ -57,7 +57,8 @@ public class RoleAction extends BaseAction{
 	 * @param
 	 * @return
 	 */
-	public ActionForward departmentTreeInit(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+	@SuppressWarnings("unchecked")
+    public ActionForward departmentTreeInit(ActionMapping mapping, ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		Dto dto = new BaseDto();
 		String nodeid = request.getParameter("node");
@@ -73,7 +74,8 @@ public class RoleAction extends BaseAction{
 	 * @param
 	 * @return
 	 */
-	public ActionForward queryRolesForManage(ActionMapping mapping, ActionForm form, HttpServletRequest request,
+	@SuppressWarnings({"unchecked", "rawtypes"})
+    public ActionForward queryRolesForManage(ActionMapping mapping, ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		BaseActionForm aForm = (BaseActionForm)form;
 		Dto dto = aForm.getParamAsDto(request);
@@ -94,7 +96,7 @@ public class RoleAction extends BaseAction{
 		if (WebUtils.getParamValue("DEFAULT_DEVELOP_ACCOUNT", request).equals(userInfoVo.getAccount())) {
 			dto.remove("roletype");
 		}
-		List roleList = g4Reader.queryForPage("Role.queryRolesForManage", dto);
+        List roleList = g4Reader.queryForPage("Role.queryRolesForManage", dto);
 		Integer pageCount = (Integer)g4Reader.queryForObject("Role.queryRolesForManageForPageCount", dto);
 		String jsonString = JsonHelper.encodeList2PageJson(roleList, pageCount, null);	
 		write(jsonString, response);

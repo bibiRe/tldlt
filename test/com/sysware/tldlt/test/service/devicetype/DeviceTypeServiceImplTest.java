@@ -90,15 +90,17 @@ public class DeviceTypeServiceImplTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testDeleteInfo_Success() {
-        String id = "3";
+    public void testDeleteInfo_Fail_Id_4_Exist_Id_5_NotExist() {
+        String id = "4";
         Dto inDto = new BaseDto();
-        inDto.put("ids", ImmutableList.of(id));
+        inDto.put("ids", ImmutableList.of(id, "5"));
         Mockito.when(appDao.delete("App.DeviceType.deleteInfo", id))
                 .thenReturn(1);
+        Mockito.when(appDao.delete("App.DeviceType.deleteInfo", "5"))
+                .thenReturn(0);
         BaseRetDto outDto = (BaseRetDto) deviceTypeServiceImpl
                 .deleteInfo(inDto);
-        assertThat(outDto.isRetSuccess(), is(true));
+        assertThat(outDto.isRetSuccess(), is(false));
     }
 
     @SuppressWarnings("unchecked")
@@ -116,31 +118,31 @@ public class DeviceTypeServiceImplTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testDeleteInfo_Fail_Id_4_Exist_Id_5_NotExist() {
-        String id = "4";
+    public void testDeleteInfo_Success() {
+        String id = "3";
         Dto inDto = new BaseDto();
-        inDto.put("ids", ImmutableList.of(id, "5"));
+        inDto.put("ids", ImmutableList.of(id));
         Mockito.when(appDao.delete("App.DeviceType.deleteInfo", id))
                 .thenReturn(1);
-        Mockito.when(appDao.delete("App.DeviceType.deleteInfo", "5"))
-                .thenReturn(0);
         BaseRetDto outDto = (BaseRetDto) deviceTypeServiceImpl
                 .deleteInfo(inDto);
-        assertThat(outDto.isRetSuccess(), is(false));
+        assertThat(outDto.isRetSuccess(), is(true));
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testUpdateInfo_Success_Id_3() {
+    public void testUpdateInfo_Fail_Id_3_Repeat() {
         String id = "3";
         Dto inDto = createInDto(id, "2");
-        inDto.put("oid", id);
-        Dto dto = createInDto(id, "3");
+        String id2 = "4";
+        inDto.put("oid", id2);
+        Dto dto2 = createInDto(id2, "3");
+        Mockito.when(
+                appDao.queryForObject("App.DeviceType.getDeviceTypeById", id2))
+                .thenReturn(dto2);
         Mockito.when(
                 appDao.queryForObject("App.DeviceType.getDeviceTypeById", id))
-                .thenReturn(dto);
-        Mockito.when(appDao.update("App.DeviceType.updateInfo", inDto))
-                .thenReturn(1);
+                .thenReturn(inDto);
         BaseDto outDto = (BaseDto) deviceTypeServiceImpl.updateInfo(inDto);
         assertThat(outDto.getSuccessFlag(), is(false));
     }
@@ -160,18 +162,16 @@ public class DeviceTypeServiceImplTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void testUpdateInfo_Fail_Id_3_Repeat() {
+    public void testUpdateInfo_Success_Id_3() {
         String id = "3";
         Dto inDto = createInDto(id, "2");
-        String id2 = "4";
-        inDto.put("oid", id2);
-        Dto dto2 = createInDto(id2, "3");
-        Mockito.when(
-                appDao.queryForObject("App.DeviceType.getDeviceTypeById", id2))
-                .thenReturn(dto2);
+        inDto.put("oid", id);
+        Dto dto = createInDto(id, "3");
         Mockito.when(
                 appDao.queryForObject("App.DeviceType.getDeviceTypeById", id))
-                .thenReturn(inDto);
+                .thenReturn(dto);
+        Mockito.when(appDao.update("App.DeviceType.updateInfo", inDto))
+                .thenReturn(1);
         BaseDto outDto = (BaseDto) deviceTypeServiceImpl.updateInfo(inDto);
         assertThat(outDto.getSuccessFlag(), is(false));
     }

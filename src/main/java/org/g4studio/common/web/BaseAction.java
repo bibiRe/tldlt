@@ -241,8 +241,7 @@ public class BaseAction extends DispatchAction {
 	 * 交易失败提示信息(特指：业务交易失败并不是请求失败)<br>
 	 * 和Form的submit中的failur回调对应,Ajax.request中的failur回调是指请求失败
 	 * 
-	 * @param pMsg
-	 *            提示信息
+	 * @param pMsg 提示信息
 	 * @param pResponse
 	 * @return
 	 * @throws IOException 

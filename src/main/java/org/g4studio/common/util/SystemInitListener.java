@@ -31,6 +31,7 @@ import org.springframework.context.ApplicationContext;
 public class SystemInitListener implements ServletContextListener {
 	private static Log log = LogFactory.getLog(SystemInitListener.class);
 	private boolean success = true;
+	
 	private ApplicationContext wac = null;
 
 	public void contextDestroyed(ServletContextEvent sce) {
@@ -39,6 +40,35 @@ public class SystemInitListener implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent sce) {
 		systemStartup(sce.getServletContext());
+	}
+
+	/**
+	 * 识别缺省的JDBC驱动类型(g4Dao)
+	 * 
+	 * @throws SQLException
+	 */
+	private void initDbType() throws SQLException {
+		Dao g4Dao = (Dao) SpringBeanLoader.getSpringBean("g4Dao");
+		Connection connection = g4Dao.getConnection();
+		String dbString = connection.getMetaData().getDatabaseProductName().toLowerCase();
+		try {
+			connection.close();
+		} catch (Exception e) {
+			log.error(G4Constants.Exception_Head + "未正常关闭数据库连接");
+			e.printStackTrace();
+		}
+		if (dbString.indexOf("ora") > -1) {
+			System.setProperty("g4Dao.db", "oracle");
+		} else if (dbString.indexOf("mysql") > -1) {
+			System.setProperty("g4Dao.db", "mysql");
+		}else if (dbString.indexOf("microsoft") > -1) {
+			System.setProperty("g4Dao.db", "sqlserver");
+		} else {
+			if (log.isErrorEnabled()) {
+				log.error(G4Constants.Exception_Head + "G4Studio平台目前还不支持你使用的数据库产品.如需获得支持,请和我们联系!");
+			}
+			System.exit(0);
+		}
 	}
 
 	/**
@@ -71,16 +101,8 @@ public class SystemInitListener implements ServletContextListener {
 		if (success) {
 			log.info("系统开始启动字典装载程序...");
 			log.info("开始加载字典...");
-			Reader g4Reader = (Reader) SpringBeanLoader.getSpringBean("g4Reader");
-			List codeList = null;
-			try {
-				codeList = g4Reader.queryForList("Resource.getCodeViewList");
-				log.info("字典加载成功!");
-			} catch (Exception e) {
-				success = false;
-				log.error("字典加载失败!");
-				e.printStackTrace();
-			}
+			List codeList = WebUtils.getDictCodeList();
+			success = (null != codeList);
 			servletContext.setAttribute("EACODELIST", codeList);
 		}
 		if (success) {
@@ -108,34 +130,5 @@ public class SystemInitListener implements ServletContextListener {
 			log.error("启动总耗时: " + timeSec / 60 + "分" + timeSec % 60 + "秒");
 		}
 		log.info("********************************************");
-	}
-
-	/**
-	 * 识别缺省的JDBC驱动类型(g4Dao)
-	 * 
-	 * @throws SQLException
-	 */
-	private void initDbType() throws SQLException {
-		Dao g4Dao = (Dao) SpringBeanLoader.getSpringBean("g4Dao");
-		Connection connection = g4Dao.getConnection();
-		String dbString = connection.getMetaData().getDatabaseProductName().toLowerCase();
-		try {
-			connection.close();
-		} catch (Exception e) {
-			log.error(G4Constants.Exception_Head + "未正常关闭数据库连接");
-			e.printStackTrace();
-		}
-		if (dbString.indexOf("ora") > -1) {
-			System.setProperty("g4Dao.db", "oracle");
-		} else if (dbString.indexOf("mysql") > -1) {
-			System.setProperty("g4Dao.db", "mysql");
-		}else if (dbString.indexOf("microsoft") > -1) {
-			System.setProperty("g4Dao.db", "sqlserver");
-		} else {
-			if (log.isErrorEnabled()) {
-				log.error(G4Constants.Exception_Head + "G4Studio平台目前还不支持你使用的数据库产品.如需获得支持,请和我们联系!");
-			}
-			System.exit(0);
-		}
 	}
 }

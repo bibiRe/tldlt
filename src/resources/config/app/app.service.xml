@@ -7,7 +7,7 @@
 	xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
-	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd" >
 	
 	<bean id="baseAppService" parent="baseTransactionProxyApp" >
 		<property name="target">
@@ -32,6 +32,7 @@
 			<bean class="com.sysware.tldlt.app.service.region.RegionServiceImpl">
 				<property name="g4Dao" ref="g4Dao" />
 				<property name="appDao" ref="appDao" />
+				<property name="organizationService" ref="organizationService"/>
 			</bean>
 		</property>
 	</bean>

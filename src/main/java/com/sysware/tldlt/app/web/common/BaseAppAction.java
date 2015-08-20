@@ -107,14 +107,18 @@ public class BaseAppAction extends BaseAction {
             throws IOException {
         BaseRetDto retDto = (BaseRetDto) outDto;
         if (retDto.isRetSuccess()) {
-            setOkTipMsg("删除成功", response);
+        	retDto.setSuccess(true);
+            retDto.setMsg("操作成功");
+            write(outDto.toJson(), response);
         } else {
             StringBuilder strB = new StringBuilder();
-            strB.append("删除失败，错误码:");
+            retDto.setSuccess(false);
+            strB.append("操作失败，错误码:");
             strB.append(retDto.getRetCode());
             strB.append("，错误信息:");
-            strB.append(outDto.getAsString("desc"));
-            setErrTipMsg(strB.toString(), response);
+            strB.append(outDto.getAsString("desc"));            
+            retDto.setMsg(strB.toString());
+            write(outDto.toJson(), response);
         }
     }
     

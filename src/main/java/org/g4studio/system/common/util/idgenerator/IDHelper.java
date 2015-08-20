@@ -173,9 +173,9 @@ public class IDHelper {
 	
 	static
 	{
-		IdGenerator idGenerator_devmodel= new IdGenerator();
-		idGenerator_devmodel.setFieldname("DEVICEMANUF");
-		defaultIDGenerator_idGenerator_devmanuf = idGenerator_devmodel.getDefaultIDGenerator();
+		IdGenerator idGenerator_devmanuf= new IdGenerator();
+		idGenerator_devmanuf.setFieldname("DEVICEMANUF");
+		defaultIDGenerator_idGenerator_devmanuf = idGenerator_devmanuf.getDefaultIDGenerator();
 	}
 	
 	static
