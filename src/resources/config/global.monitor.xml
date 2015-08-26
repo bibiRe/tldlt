@@ -6,7 +6,7 @@
     xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
-    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd ">
 
     <!-- 系统异常监控 -->
     <!-- 如果要对方法调用进行监控则使用下面的切面 <aop:around pointcut-ref="g4CallPointcut" method="interceptCall"/> -->

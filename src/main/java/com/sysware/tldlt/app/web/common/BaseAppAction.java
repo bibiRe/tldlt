@@ -1,7 +1,6 @@
 package com.sysware.tldlt.app.web.common;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -109,17 +108,16 @@ public class BaseAppAction extends BaseAction {
         if (retDto.isRetSuccess()) {
         	retDto.setSuccess(true);
             retDto.setMsg("操作成功");
-            write(outDto.toJson(), response);
         } else {
             StringBuilder strB = new StringBuilder();
             retDto.setSuccess(false);
             strB.append("操作失败，错误码:");
             strB.append(retDto.getRetCode());
             strB.append("，错误信息:");
-            strB.append(outDto.getAsString("desc"));            
+            strB.append(outDto.getMsg());            
             retDto.setMsg(strB.toString());
-            write(outDto.toJson(), response);
         }
+        write(outDto.toJson(), response);
     }
     
     public void setService(BaseService service) {

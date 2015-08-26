@@ -86,6 +86,8 @@ public class IDHelper {
 	
 	private static DefaultIDGenerator defaultIDGenerator_idGenerator_devmodel = null;
 	
+	private static DefaultIDGenerator defaultIDGenerator_idGenerator_usergroup = null;
+	
 	
 	static {
 		IdGenerator idGenerator_eventid = new IdGenerator();
@@ -183,6 +185,23 @@ public class IDHelper {
 		IdGenerator idGenerator_devmodel= new IdGenerator();
 		idGenerator_devmodel.setFieldname("DEVICEMODEL");
 		defaultIDGenerator_idGenerator_devmodel = idGenerator_devmodel.getDefaultIDGenerator();
+	}
+	
+	static
+	{
+		IdGenerator idGenerator_tmp= new IdGenerator();
+		idGenerator_tmp.setFieldname("USERGROUP");
+		defaultIDGenerator_idGenerator_usergroup = idGenerator_tmp.getDefaultIDGenerator();
+	}
+	
+	
+	public static String NewUserGroupID()
+	{
+		String id = defaultIDGenerator_idGenerator_usergroup.create();
+		
+		id = id.trim();
+		
+		return id;
 	}
 	
 	

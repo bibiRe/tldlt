@@ -14,8 +14,10 @@
 
         <dynamic>
             <isNotEmpty prepend="AND" property="queryParam">
+                ( 
                  a.Name like '%$queryParam$%' OR
                  a.Nickname like '%$queryParam$%'
+                 )
             </isNotEmpty>
         </dynamic>
     </select>
@@ -26,8 +28,10 @@
         
         <dynamic>
             <isNotEmpty prepend="AND" property="queryParam">
+                (
                  a.Name like '%$queryParam$%' OR
                  a.Nickname like '%$queryParam$%'
+                 )
             </isNotEmpty>
         </dynamic>
     </select>

@@ -27,6 +27,9 @@ import org.g4studio.system.common.dao.vo.UserInfoVo;
 import org.g4studio.system.common.util.SystemConstants;
 import org.g4studio.system.common.util.idgenerator.IDHelper;
 
+import com.sysware.tldlt.app.local.rpc.RPCUtils;
+import com.sysware.tldlt.app.local.rpc.UserManage;
+
 /**
  * 请求拦截过滤器
  * 
@@ -62,26 +65,98 @@ public class RequestFilter implements Filter {
 		}
 	}
 
+	private boolean filterRPCUrl(HttpServletRequest request, String uri) {
+		if (!uri.startsWith("/rpc")) {
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * 过滤处理
 	 */
-	public void doFilter(ServletRequest pRequest, ServletResponse pResponse, FilterChain fc) throws IOException,
-			ServletException {
+	public void doFilter(ServletRequest pRequest, ServletResponse pResponse, FilterChain fc)
+			throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) pRequest;
 		HttpServletResponse response = (HttpServletResponse) pResponse;
-		String ctxPath = request.getContextPath();
-		String requestUri = request.getRequestURI();
-		String uri = requestUri.substring(ctxPath.length());
-		UserInfoVo userInfo = WebUtils.getSessionContainer(request).getUserInfo();
-		BigDecimal costTime = null;
+		if (filterRequest(request, response)) {
+			return;
+		}
+		// if(){.... return;}
 		PropertiesHelper pHelper = PropertiesFactory.getPropertiesHelper(PropertiesFile.G4);
 		String eventMonitorEnabel = pHelper.getValue("requestMonitor", "1");
+		BigDecimal costTime = null;
+		long start = System.currentTimeMillis();
+		fc.doFilter(request, response);
+		if (eventMonitorEnabel.equalsIgnoreCase(SystemConstants.EVENTMONITOR_ENABLE_Y)) {
+			costTime = new BigDecimal(System.currentTimeMillis() - start);
+			saveEvent(request, costTime);
+		}
+	}
+
+	private boolean filterRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String requestUri = request.getRequestURI();
+		String ctxPath = request.getContextPath();
+		String uri = requestUri.substring(ctxPath.length());
+		if (filterRPCUrl(request, uri)) {
+//			if (filterRPCRequestKey(request, response, uri)) {
+//				return true;
+//			}
+			return false;
+		}
 		String isAjax = request.getHeader("x-requested-with");
+		UserInfoVo userInfo = WebUtils.getSessionContainer(request).getUserInfo();
+		if (filterRequestUserInfo(request, response, ctxPath, uri, isAjax, userInfo)) {
+			return true;
+		}
+		if (filterRequestAjaxUserInfo(request, response, uri, isAjax, userInfo)) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean filterRPCRequestKey(HttpServletRequest request, HttpServletResponse response, String uri)
+			throws IOException {
+		if (!uri.contains("loginAction.do") || !"login".equals(request.getParameter("reqCode"))) {
+			String key = request.getParameter("key");
+			if (G4Utils.isEmpty(key)) {
+				RPCUtils.writeErrorRPCInfo(response, "没有Key值");
+				return true;
+			}
+			if (!UserManage.checkUserKey(key)) {
+				RPCUtils.writeErrorRPCInfo(response, "Key值无效");
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean filterRequestAjaxUserInfo(HttpServletRequest request, HttpServletResponse response, String uri,
+			String isAjax, UserInfoVo userInfo) throws IOException {
+		if (G4Utils.isNotEmpty(isAjax)) {
+			if (!uri.equals("/login.do")) {
+				String loginuserid = request.getParameter("loginuserid");
+				if (G4Utils.isEmpty(loginuserid)) {
+					response.sendError(G4Constants.Ajax_Unknow);
+					log.error("请求非法,[loginuserid]参数缺失");
+					return true;
+				}
+				if (!loginuserid.equals(userInfo.getUserid())) {
+					response.sendError(G4Constants.Ajax_Session_Unavaliable);
+					log.error("当前会话和登录用户会话不一致,请求被重定向到了登录页面");
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean filterRequestUserInfo(HttpServletRequest request, HttpServletResponse response, String ctxPath,
+			String uri, String isAjax, UserInfoVo userInfo) throws IOException {
 		if (G4Utils.isEmpty(userInfo) && !uri.equals("/login.do") && enabled) {
 			if (G4Utils.isEmpty(isAjax)) {
-				response.getWriter().write(
-						"<script type=\"text/javascript\">parent.location.href='" + ctxPath
-								+ "/login.do?reqCode=init'</script>");
+				response.getWriter().write("<script type=\"text/javascript\">parent.location.href='" + ctxPath
+						+ "/login.do?reqCode=init'</script>");
 				response.getWriter().flush();
 				response.getWriter().close();
 			} else {
@@ -89,28 +164,9 @@ public class RequestFilter implements Filter {
 			}
 			log.warn("警告:非法的URL请求已被成功拦截,请求已被强制重定向到了登录页面.访问来源IP锁定:" + request.getRemoteAddr() + " 试图访问的URL:"
 					+ request.getRequestURL().toString() + "?reqCode=" + request.getParameter("reqCode"));
-			return;
+			return true;
 		}
-		if (G4Utils.isNotEmpty(isAjax) && !uri.equals("/login.do")) {
-			String loginuserid = request.getParameter("loginuserid");
-			if (G4Utils.isEmpty(loginuserid)) {
-				response.sendError(G4Constants.Ajax_Unknow);
-				log.error("请求非法,[loginuserid]参数缺失");
-				return;
-			}
-			if (!loginuserid.equals(userInfo.getUserid())) {
-				response.sendError(G4Constants.Ajax_Session_Unavaliable);
-				log.error("当前会话和登录用户会话不一致,请求被重定向到了登录页面");
-				return;
-			}
-		}
-		// if(){.... return;}
-		long start = System.currentTimeMillis();
-		fc.doFilter(request, response);
-		if (eventMonitorEnabel.equalsIgnoreCase(SystemConstants.EVENTMONITOR_ENABLE_Y)) {
-			costTime = new BigDecimal(System.currentTimeMillis() - start);
-			saveEvent(request, costTime);
-		}
+		return false;
 	}
 
 	/**
@@ -135,7 +191,8 @@ public class RequestFilter implements Filter {
 		dto.put("costtime", costTime);
 		if (G4Utils.isNotEmpty(menuid)) {
 			Dao g4Dao = (Dao) SpringBeanLoader.getSpringBean("g4Dao");
-			String menuname = ((BaseDto) g4Dao.queryForObject("Resource.queryEamenuByMenuID", menuid)).getAsString("menuname");
+			String menuname = ((BaseDto) g4Dao.queryForObject("Resource.queryEamenuByMenuID", menuid))
+					.getAsString("menuname");
 			String msg = userInfo.getUsername() + "[" + userInfo.getAccount() + "]打开了菜单[" + menuname + "]";
 			dto.put("description", msg);
 			log.info(msg);

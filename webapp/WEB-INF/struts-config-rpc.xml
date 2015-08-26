@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+<struts-config>
+	<!-- 配置ActionFormBean -->
+	<form-beans>
+		<!-- 公共Form -->
+		<form-bean name="baseActionForm" type="org.g4studio.common.web.BaseActionForm" />
+	</form-beans>
+
+	<!-- Action映射 -->
+	<action-mappings type="org.g4studio.core.mvc.xstruts.action.ActionMapping">
+
+		<!-- 登录 -->
+		<action name="baseActionForm" path="/loginAction" scope="request"
+			parameter="reqCode" type="com.sysware.tldlt.app.local.rpc.LoginAction">
+		</action>
+		
+		<!-- 菜单 -->
+		<action name="baseActionForm" path="/menuAction" scope="request"
+			parameter="reqCode" type="com.sysware.tldlt.app.local.rpc.MenuAction">
+		</action>
+
+		<!-- 测试-->
+		<action name="baseActionForm" path="/inspectPlanAction" scope="request"
+			parameter="reqCode" type="com.sysware.tldlt.app.local.rpc.InspectPlanAction">
+		</action>
+		<!-- 测试-->
+		<action name="baseActionForm" path="/deviceAction" scope="request"
+			parameter="reqCode" type="com.sysware.tldlt.app.local.rpc.DeviceAction">
+		</action>
+		<action name="baseActionForm" path="/inspectAction" scope="request"
+			parameter="reqCode" type="com.sysware.tldlt.app.local.rpc.InspectAction">
+		</action>
+		<action name="baseActionForm" path="/deviceTypeAction" scope="request"
+			parameter="reqCode" type="com.sysware.tldlt.app.local.rpc.DeviceTypeAction">
+		</action>
+		<action name="baseActionForm" path="/userAction" scope="request"
+			parameter="reqCode" type="com.sysware.tldlt.app.local.rpc.UserAction">
+		</action>
+
+	</action-mappings>
+
+</struts-config>

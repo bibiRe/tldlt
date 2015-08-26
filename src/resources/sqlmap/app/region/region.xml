@@ -5,9 +5,7 @@
     <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
     <sql id="sqlQueryRegionInfo">
         SELECT region_Id as id, DEPTID as departmentId,
-        Parent_Region_Id
-        as
-        parentId, RegionType, Name as text, Remark FROM
+        Parent_Region_Id as parentId, RegionType, Name as text, Remark FROM
         REGION WHERE 1 = 1
     </sql>
     <sql id="sqlQueryRegionItemsByDtoCondition">

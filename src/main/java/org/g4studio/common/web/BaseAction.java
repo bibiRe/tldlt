@@ -23,6 +23,8 @@ import org.g4studio.core.util.G4Constants;
 import org.g4studio.core.util.G4Utils;
 import org.g4studio.system.common.util.SystemConstants;
 
+import com.sysware.tldlt.app.utils.DtoUtils;
+
 /**
  * BizAction 商业Action组件基类
  * 
@@ -165,9 +167,7 @@ public class BaseAction extends DispatchAction {
 	 * @throws IOException
 	 */
 	protected void write(String str, HttpServletResponse response) throws IOException {
-		response.getWriter().write(str);
-		response.getWriter().flush();
-		response.getWriter().close();
+		DtoUtils.writeToResponse(str, response);
 	}
 
 	/**

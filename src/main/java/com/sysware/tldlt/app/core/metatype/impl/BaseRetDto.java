@@ -15,7 +15,7 @@ import com.sysware.tldlt.app.utils.AppTools;
 public class BaseRetDto extends BaseDto{
     
     /**
-     * 
+     * 编号.
      */
     private static final long serialVersionUID = 8265857852614658773L;
 
@@ -24,16 +24,7 @@ public class BaseRetDto extends BaseDto{
      * @return 描述
      */
     public String getDesc() {
-        return AppTools.convertNullStr(getAsString("desc"));
-    }
-
-    /**
-     * 设置描述.
-     * @param desc 描述
-     */
-    @SuppressWarnings("unchecked")
-    public void setDesc(String desc) {
-        put("desc", desc);
+        return AppTools.convertNullStr(this.getMsg());
     }
 
     /**
@@ -49,12 +40,29 @@ public class BaseRetDto extends BaseDto{
     }
 
     /**
+     * 返回值是否成功.
+     * @return 返回值是否成功.
+     */
+    public boolean isRetSuccess() {
+        return AppCommon.RET_CODE_SUCCESS == getRetCode();
+    }
+
+    /**
+     * 设置描述.
+     * @param desc 描述
+     */
+    public void setDesc(String desc) {
+        this.setMsg(desc);
+    }
+
+    /**
      * 设置返回值.
      * @param retCode
      */
     @SuppressWarnings("unchecked")
     public void setRetCode(int retCode) {
         put("retCode", Integer.valueOf(retCode));
+        this.setSuccess(isRetSuccess());
     }
 
     /**
@@ -62,13 +70,5 @@ public class BaseRetDto extends BaseDto{
      */
     public void setRetSuccess() {
         setRetCode(AppCommon.RET_CODE_SUCCESS);        
-    }
-
-    /**
-     * 返回值是否成功.
-     * @return 返回值是否成功.
-     */
-    public boolean isRetSuccess() {
-        return AppCommon.RET_CODE_SUCCESS == getRetCode();
     }
 }

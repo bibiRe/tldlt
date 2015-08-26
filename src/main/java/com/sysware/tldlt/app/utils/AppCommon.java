@@ -29,5 +29,23 @@ public class AppCommon {
      * 返回码-无效值.
      */
     public static final int RET_CODE_INVALID_VALUE = -4;
+    /**
+     * 返回码-重复值.
+     */
+    public static final int RET_CODE_REPEAT_VALUE = -5;
+    
+    /**
+     * GPS信息类型-设备.
+     */
+    public static final int GPS_INFO_TYPE_DEVICE = 2;
+    
+    /**
+     * GPS信息类型-巡检计划设备.
+     */
+    public static final int GPS_INFO_TYPE_INSPECTPLAN_DEVICE = 3;
 
+    /**
+     * 时间间隔.
+     */
+    public static final int TIME_INTERVAL = 1000;    
 }

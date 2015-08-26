@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 演示与教程手工映射SQL语句 -->
+<sqlMap namespace="App.Inspect">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+
+
+    <select id="queryImages" parameterClass="map"
+        resultClass="dto">
+        SELECT a.Image_Id as imageId, a.Type, UNIX_TIMESTAMP(a.Time) as time, a.address as imageurl, a.HashValue
+         FROM mediainfo a, releatemediainfo b
+          WHERE a.Image_Id = b.Image_Id 
+        <dynamic>
+            <isNotEmpty prepend="AND" property="inspectRecordInfoId">
+                b.ReleateRecordId = #inspectRecordInfoId# and b.Type= '1'
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="inspectRecordItemId">
+                b.ReleateRecordId = #inspectRecordItemId# and b.Type= '2'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+</sqlMap>

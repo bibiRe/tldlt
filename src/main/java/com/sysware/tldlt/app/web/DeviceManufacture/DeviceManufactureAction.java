@@ -1,4 +1,4 @@
-package com.sysware.tldlt.app.web.DeviceManufacture;
+package com.sysware.tldlt.app.web.devicemanufacture;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,15 +27,32 @@ import org.g4studio.system.common.util.idgenerator.IDHelper;
 import com.google.common.collect.Lists;
 import com.sysware.tldlt.app.service.devicetype.DeviceTypeService;
 import com.sysware.tldlt.app.web.common.BaseAppAction;
-import com.sysware.tldlt.app.web.DeviceManufacture.service.DeviceManufactureService;
+import com.sysware.tldlt.app.service.devicemanufacture.DeviceManufactureService;
 import org.g4studio.system.common.util.idgenerator.IDHelper;
 
+
+/**
+ * Type：DeviceManufactureAction
+ * Descript：设备厂家action.
+ * Create：yc
+ * Create Time：2015年8月17日 上午10:50:00
+ * Version：@version
+ */
 
 public class DeviceManufactureAction extends BaseAppAction
 {
     private DeviceManufactureService deviceManufactureService = (DeviceManufactureService) super.getService("deviceManufactureService");
 
 
+    /**
+     * 初始化.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
+     * @return struts跳转地址.
+     * @throws Exception 异常对象.
+     */
     public ActionForward init(ActionMapping mapping, ActionForm form,HttpServletRequest request, HttpServletResponse response) throws Exception 
     {
         String viewString = "deviceManufactureView";
@@ -44,6 +61,15 @@ public class DeviceManufactureAction extends BaseAppAction
     }
 
    
+    /**
+     * 查询设备厂家.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
+     * @return struts跳转地址.
+     * @throws Exception 异常对象.
+     */
     public ActionForward query(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception 
@@ -58,7 +84,15 @@ public class DeviceManufactureAction extends BaseAppAction
     }
 
 
-   
+    /**
+     * 增加一个设备厂家.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
+     * @return struts跳转地址.
+     * @throws Exception 异常对象.
+     */
     public ActionForward save(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception 
@@ -79,6 +113,16 @@ public class DeviceManufactureAction extends BaseAppAction
     }
     
     
+    /**
+     * 修改设备厂家.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
+     * @return struts跳转地址.
+     * @throws Exception 异常对象.
+     */
+    
     public ActionForward update(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception
@@ -94,7 +138,15 @@ public class DeviceManufactureAction extends BaseAppAction
     }
  
 
-
+    /**
+     * 删除设备厂家.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
+     * @return struts跳转地址.
+     * @throws Exception 异常对象.
+     */
     public ActionForward delete(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
                     throws Exception

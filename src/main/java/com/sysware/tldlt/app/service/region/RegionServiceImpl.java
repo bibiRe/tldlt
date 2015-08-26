@@ -116,6 +116,24 @@ public class RegionServiceImpl extends BaseAppServiceImpl implements
 	}
 	
 	/**
+	 * 检查更新输入信息.
+     * @param inDto 输入信息.
+     * @return 返回信息，当检查成功返回空
+	 */
+	private Dto checkUpdateInfo(Dto inDto) {
+		Integer regionId = inDto.getAsInteger("regionid");
+		if ((null == regionId) || (0 == regionId.intValue()) ) {
+			return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
+					"记录编号为空");
+		}
+		Dto outDto = checkInfo(inDto);
+        if (null != outDto) {
+            return outDto;
+        }
+        return null;
+	}
+	
+    /**
 	 * 删除编号.
 	 * @param id 编号.
 	 * @param outDto Dto对象
@@ -128,7 +146,7 @@ public class RegionServiceImpl extends BaseAppServiceImpl implements
 		}
 		appDao.delete("App.Region.deleteInfo", id);
 	}
-	
+
     @SuppressWarnings("unchecked")
 	@Override
     public Dto deleteInfo(Dto inDto) {
@@ -160,7 +178,7 @@ public class RegionServiceImpl extends BaseAppServiceImpl implements
         this.organizationService = organizationService;
     }
 
-    @Override
+	@Override
     public Dto updateInfo(Dto inDto) {
     	Dto outDto = checkUpdateInfo(inDto);        
     	if (null != outDto) {
@@ -169,23 +187,5 @@ public class RegionServiceImpl extends BaseAppServiceImpl implements
         appDao.update("App.Region.updateInfo", inDto);
         return DtoUtils.getSuccessRetDto("区域数据更新成功");
     }
-
-	/**
-	 * 检查更新输入信息.
-     * @param inDto 输入信息.
-     * @return 返回信息，当检查成功返回空
-	 */
-	private Dto checkUpdateInfo(Dto inDto) {
-		Integer regionId = inDto.getAsInteger("regionid");
-		if ((null == regionId) || (0 == regionId.intValue()) ) {
-			return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
-					"记录编号为空");
-		}
-		Dto outDto = checkInfo(inDto);
-        if (null != outDto) {
-            return outDto;
-        }
-        return null;
-	}
 
 }

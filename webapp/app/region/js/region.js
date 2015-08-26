@@ -355,7 +355,7 @@ Ext.onReady(function() {
 		expanded: true,
 		id: root_deptid
 	});
-	var addDepartmentTree = new Ext.tree.TreePanel({
+	var addDeptTree = new Ext.tree.TreePanel({
 		loader: new Ext.tree.TreeLoader({
 			baseAttrs: {},
 			dataUrl: webContext + '/role.do?reqCode=departmentTreeInit'
@@ -367,14 +367,14 @@ Ext.onReady(function() {
 		border: false
 	});
 	// 监听下拉树的节点单击事件
-	addDepartmentTree.on('click', function(node) {
+	addDeptTree.on('click', function(node) {
 		departmentComboxWithTree.setValue(node.text);
-		Ext.getCmp("addRegionFormPanel").findById('departmentid')
+		Ext.getCmp("addRoleFormPanel").findById('deptid')
 			.setValue(node.attributes.id);
 		departmentComboxWithTree.collapse();
 	});
 	var departmentComboxWithTree = new Ext.form.ComboBox({
-		id: 'departmentname',
+		id: 'deptname',
 		store: new Ext.data.SimpleStore({
 			fields: [],
 			data: [
@@ -391,16 +391,16 @@ Ext.onReady(function() {
 		triggerAction: 'all',
 		maxHeight: 390,
 		// 下拉框的显示模板,addDeptTreeDiv作为显示下拉树的容器
-		tpl: "<tpl for='.'><div style='height:390px'><div id='addDepartmentTreeDiv'></div></div></tpl>",
+		tpl: "<tpl for='.'><div style='height:390px'><div id='addDeptTreeDiv'></div></div></tpl>",
 		allowBlank: false,
 		onSelect: Ext.emptyFn
 	});
 	// 监听下拉框的下拉展开事件
 	departmentComboxWithTree.on('expand', function() {
 		// 将UI树挂到treeDiv容器
-		addDepartmentTree.render('addDepartmentTreeDiv');
-		// addDepartmentTree.root.expand(); //只是第一次下拉会加载数据
-		addDepartmentTree.root.reload(); // 每次下拉都会加载数据
+		addDeptTree.render('addDeptTreeDiv');
+		// addDeptTree.root.expand(); //只是第一次下拉会加载数据
+		addDeptTree.root.reload(); // 每次下拉都会加载数据
 
 	});
 
@@ -461,10 +461,6 @@ Ext.onReady(function() {
 				id: 'parentid_old',
 				name: 'parentid_old',
 				hidden: true
-			}, {
-				id : 'departmentid',
-				name : 'departmentid',
-				hidden : true
 			}
 		]
 	});
@@ -640,20 +636,18 @@ Ext.onReady(function() {
 		if (Ext.isEmpty(record)) {
 			Ext.MessageBox.alert('提示', '请先选择要修改的区域!');
 			return;
-		}		
-		addRegionFormPanel.getForm().loadRecord(record);
-		if (record.get('regionid') == '0') {
-			var a = Ext.getCmp('parentregionname');
-			a.emptyText = '已经是顶级区域';
 		}
+		record = regionInfoGrid.getSelectionModel().getSelected();
 		if (!record.get('leaf')) {
 			parentRegionComboxWithTree.setDisabled(true);
 		} else {
 			parentRegionComboxWithTree.setDisabled(false);
 		}
-		if (!record.get('parentid')) {
-			parentRegionComboxWithTree.setValue(regionTree.root.attributes.text);
-		}
+		if (record.get('regionid') == '0') {
+			var a = Ext.getCmp('parentregionname');
+			a.emptyText = '已经是顶级区域';
+		} 
+		addRegionFormPanel.getForm().loadRecord(record);
 		addRegionWindow.show();
 		addRegionWindow
 			.setTitle('<span style="font-weight:normal">修改区域</span>');
@@ -760,7 +754,7 @@ Ext.onReady(function() {
 										resultArray.msg);
 								},
 								params: {
-									ids : strChecked,
+									strChecked: strChecked,
 									type: pType,
 									regionid: pRegionid
 								}

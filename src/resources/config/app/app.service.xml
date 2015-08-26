@@ -39,7 +39,7 @@
 	
 	<bean id="deviceManufactureService" parent="baseTransactionProxyApp">
 		<property name="target">
-			<bean class="com.sysware.tldlt.app.web.DeviceManufacture.serviceImpl.DeviceManufactureServiceImpl">
+			<bean class="com.sysware.tldlt.app.service.devicemanufacture.DeviceManufactureServiceImpl">
 				<property name="g4Dao" ref="g4Dao" />
 				<property name="appDao" ref="appDao" />
 			</bean>
@@ -48,7 +48,35 @@
 	
 		<bean id="deviceModelService" parent="baseTransactionProxyApp">
 		<property name="target">
-			<bean class="com.sysware.tldlt.app.web.DeviceModel.serviceImpl.DeviceModelServiceImpl">
+			<bean class="com.sysware.tldlt.app.service.devicemodel.DeviceModelServiceImpl">
+				<property name="g4Dao" ref="g4Dao" />
+				<property name="appDao" ref="appDao" />
+			</bean>
+		</property>
+	</bean>
+	
+	
+	<bean id="UserGroupService" parent="baseTransactionProxyApp">
+		<property name="target">
+			<bean class="com.sysware.tldlt.app.service.usergroup.UserGroupServiceImpl">
+				<property name="g4Dao" ref="g4Dao" />
+				<property name="appDao" ref="appDao" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="appUserService" parent="baseTransactionProxyApp">
+		<property name="target">
+			<bean class="com.sysware.tldlt.app.service.user.UserServiceImpl">
+				<property name="g4Dao" ref="g4Dao" />
+				<property name="appDao" ref="appDao" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="deviceService" parent="baseTransactionProxyApp">
+		<property name="target">
+			<bean class="com.sysware.tldlt.app.service.device.DeviceServiceImpl">
 				<property name="g4Dao" ref="g4Dao" />
 				<property name="appDao" ref="appDao" />
 			</bean>

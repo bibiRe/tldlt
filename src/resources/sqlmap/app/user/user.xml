@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 演示与教程手工映射SQL语句 -->
+<sqlMap namespace="App.User">
+	<typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+
+
+	<select id="queryFocusDevices" parameterClass="string" resultClass="dto">
+		SELECT a.UserID, b.Device_ID as deviceID, b.parent_device_id as parentDeviceId,
+        b.Check_Cycle as period, b.Longtitude, b.Latitude, b.Height,
+        b.Region_Id as regionId,
+        (select Name  from region where region_id = b.region_id) as regionName,  b.Region_Id, b.Name as devicename,
+        x.DeviceType_Id as deviceTypeId, x.Name as devicetype, y.DeviceModel_Id as
+        deviceModelId, y.name as devicemodel
+        FROM Device b, devicetype x, devicemodel y, userattentiondevice a WHERE
+        x.DeviceType_Id = y.devicetype_Id AND
+        y.devicemodel_id = b.devicemodel_Id AND a.Device_ID = b.Device_ID
+        AND a.UserID = #userId#
+    </select>
+    
+    <select id="queryUserList" resultClass="dto">
+		SELECT a.UserID, a.USERNAME, a.ACCOUNT, a.PASSWORD FROM eauser a
+    </select>
+    <insert id="saveGPSInfo" parameterClass="dto">
+		INSERT INTO GPSInfo (Latitude, Longtitude, Height, Speed, Time)
+        VALUES (#latitude#, #longtitude#, #height#, #speed#, '$time$')
+        <selectKey resultClass="int"  keyProperty="gpsinfoid" >    
+             SELECT last_insert_id() as gpsinfoid;   
+        </selectKey>
+    </insert>
+    <insert id="saveReleateGPSInfo" parameterClass="dto">
+		INSERT INTO ReleateGPSInfo (GPSInfo_Id, ReleateRecordId, Type, Remark)
+        VALUES (#gpsinfoid#, #userid#, 1, #remark#)
+    </insert>
+</sqlMap>

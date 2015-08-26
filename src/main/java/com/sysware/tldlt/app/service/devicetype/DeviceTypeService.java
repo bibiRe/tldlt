@@ -1,6 +1,9 @@
 package com.sysware.tldlt.app.service.devicetype;
 
+import java.util.Collection;
+
 import org.g4studio.common.service.BaseService;
+import org.g4studio.core.metatype.Dto;
 
 import com.sysware.tldlt.app.common.service.AddInfoService;
 import com.sysware.tldlt.app.common.service.DeleteInfoService;
@@ -15,5 +18,11 @@ import com.sysware.tldlt.app.service.common.UpdateInfoService;
  */
 public interface DeviceTypeService extends BaseService, AddInfoService,
         UpdateInfoService, DeleteInfoService {
-
+    /**
+     * 查询设备类型列表.
+     * @param dto 区域对象
+     * @return 区域列表对象
+     */
+    @SuppressWarnings("rawtypes")
+    Collection queryDeviceTypeItems(Dto dto);
 }

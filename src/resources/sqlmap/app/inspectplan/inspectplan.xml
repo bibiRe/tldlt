@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 演示与教程手工映射SQL语句 -->
+<sqlMap namespace="App.InspectPlan">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+    <sql id="sqlQueryPlanBasic">
+        SELECT a.InspectPlan_Id as planID, a.Name as planname,
+        a.State, a.ExecuteUserId as executoruserid,
+        (SELECT username FROM eauser WHERE userid = a.ExecuteUserId) as executor,
+        UNIX_TIMESTAMP(a.ExecuteStartTime) as ExecuteStartTime,
+        UNIX_TIMESTAMP(a.ExecuteEndTime) as ExecuteEndTime
+        FROM InspectPlan a
+    </sql>
+    <sql id="sqlQueryExecuteUserPlanOutlineCondition">
+        <dynamic prepend="WHERE">
+            <isNotEmpty prepend="AND" property="userID">
+                a.ExecuteUserId = #userID#
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+    <select id="queryExecuteUserPlanOutline" parameterClass="map"
+        resultClass="dto">
+        <include refid="sqlQueryPlanBasic" />
+        <include refid="sqlQueryExecuteUserPlanOutlineCondition" />
+    </select>
+    <sql id="sqlQueryPlanByIdCondition">
+        WHERE a.InspectPlan_Id = #planID#
+    </sql>
+    <select id="queryPlanById" parameterClass="int" resultClass="dto">
+        <include refid="sqlQueryPlanBasic" />
+        <include refid="sqlQueryPlanByIdCondition" />
+    </select>
+    
+    <select id="queryPlanDeviceByDeviceId" parameterClass="map"
+        resultClass="dto">
+            SELECT a.InspectPlanDevice_Id as inpsectPlanDeviceID, a.Device_Id as deviceID, a.InspectPlan_Id as planID
+            FROM inspectplandevice a
+            WHERE a.InspectPlan_Id = #planID# AND a.Device_Id = #deviceID#
+    </select>
+    <select id="queryPlanDevices" parameterClass="string"
+        resultClass="dto">
+        SELECT b.Device_ID as deviceID, b.parent_device_id as
+        parentDeviceId, b.Check_Cycle as period, b.Longtitude, b.Latitude,
+        b.Height, b.Region_Id as regionId,
+        (SELECT Name FROM Region WHERE Region_Id = b.Region_Id) as regionName, 
+        b.Name as devicename, x.DeviceType_Id as deviceTypeId, 
+        x.Name as devicetype, y.DeviceModel_Id as deviceModelId, y.name as devicemodel
+        FROM inspectplandevice a, Device b, devicetype x, devicemodel y 
+        WHERE
+        a.Device_Id=b.Device_Id AND x.DeviceType_Id = y.devicetype_Id AND
+        y.devicemodel_id = b.devicemodel_Id AND a.InspectPlan_Id = #planID#
+    </select>
+
+</sqlMap>

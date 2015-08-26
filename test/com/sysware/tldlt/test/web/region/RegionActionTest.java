@@ -1,21 +1,36 @@
 package com.sysware.tldlt.test.web.region;
 
-import java.io.File;
-
 import org.junit.Before;
 import org.junit.Test;
 
+import utils.AppMockStrutsTestCase;
 import utils.HttpServletResponseSimulator;
-import utils.MockStrutsTestCase;
 
-public class RegionActionTest extends MockStrutsTestCase {
+/**
+ * Type：RegionActionTest
+ * Descript：RegionAction测试类.
+ * Create：SW-ITS-HHE
+ * Create Time：2015年8月24日 下午2:22:45
+ * Version：@version
+ */
+public class RegionActionTest extends AppMockStrutsTestCase {
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        setContextDirectory(new File("webapp"));
-        setConfigFile("app", "/WEB-INF/struts-config-app.xml");
         setRequestPathInfo("app", "/app/region");
+    }
+
+    /**
+     * 测试删除区域信息-成功-编号9.
+     */
+    @Test
+    public void testDeleteInfo_Success_id_9() {
+        addRequestParameter("reqCode", new String[] {"delete"});
+        addRequestParameter("ids", new String[] {"9"});
+        addRequestParameter("regionid", new String[] {""});
+        addRequestParameter("type", new String[] {"1"});
+        actionExecuteAndAssertRetInfo();
     }
 
     @Test
@@ -24,15 +39,6 @@ public class RegionActionTest extends MockStrutsTestCase {
         actionPerform();
         verifyForward("regionView");
         verifyForwardPath("/app/region/regionview.jsp");
-    }
-
-    @Test
-    public void testRegionTreeInitSuccess() {
-        addRequestParameter("reqCode", new String[] {"regionTreeInit"});
-        actionPerform();
-        String actual = ((HttpServletResponseSimulator) this.getResponse())
-                .getWriterBuffer().toString();
-        assertTrue(actual.contains("parentid"));
     }
 
     @Test
@@ -46,6 +52,15 @@ public class RegionActionTest extends MockStrutsTestCase {
         assertTrue(actual.contains("parentid"));
     }
 
+    @Test
+    public void testRegionTreeInitSuccess() {
+        addRequestParameter("reqCode", new String[] {"regionTreeInit"});
+        actionPerform();
+        String actual = ((HttpServletResponseSimulator) this.getResponse())
+                .getWriterBuffer().toString();
+        assertTrue(actual.contains("parentid"));
+    }
+    
     @Test
     public void testSaveAddInfoSuccess() {
         addRequestParameter("reqCode", new String[] {"saveAddInfo"});
@@ -67,21 +82,6 @@ public class RegionActionTest extends MockStrutsTestCase {
         addRequestParameter("departmentid", new String[] {"001"});
         addRequestParameter("regionid", new String[] {"7"});
         addRequestParameter("regiontype", new String[] {"1"});
-        actionPerform();
-        String actual = ((HttpServletResponseSimulator) this.getResponse())
-                .getWriterBuffer().toString();
-        assertTrue(actual.contains("\"retCode\":0"));
-    }
-    
-    @Test
-    public void testDeleteInfoSuccess() {
-        addRequestParameter("reqCode", new String[] {"delete"});
-        addRequestParameter("ids", new String[] {"9"});
-        addRequestParameter("regionid", new String[] {""});
-        addRequestParameter("type", new String[] {"1"});
-        actionPerform();
-        String actual = ((HttpServletResponseSimulator) this.getResponse())
-                .getWriterBuffer().toString();
-        assertTrue(actual.contains("\"retCode\":0"));
+        actionExecuteAndAssertRetInfo();
     }
 }

@@ -1,5 +1,9 @@
 package com.sysware.tldlt.app.utils;
 
+import java.util.Date;
+
+import org.g4studio.core.util.G4Utils;
+
 /**
  * Type：AppTools
  * Descript：工具类.
@@ -8,15 +12,6 @@ package com.sysware.tldlt.app.utils;
  * Version：@version
  */
 public class AppTools {
-
-    /**
-     * 判断字符串为空.
-     * @param value 字符串
-     * @return 是否为空
-     */
-    public static boolean isEmptyString(String value) {
-        return (null == value || value.equals(""));
-    }
 
     /**
      * 转换NULL字符串为空字符串.
@@ -31,4 +26,23 @@ public class AppTools {
         }
     }
 
+    /**
+     * 判断字符串为空.
+     * @param value 字符串
+     * @return 是否为空
+     */
+    public static boolean isEmptyString(String value) {
+        return (null == value || value.equals(""));
+    }
+
+    /**
+     * unix时间转换为时间字符串.
+     * @param unixTime unix时间.
+     * @return 时间字符串
+     */
+    public static String unixTime2DateStr(long unixTime) {
+        Date dt = new Date();
+        dt.setTime(unixTime * AppCommon.TIME_INTERVAL);
+        return G4Utils.Date2String(dt, "yyyy-MM-dd HH:mm:ss");
+    }
 }

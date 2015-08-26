@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="App.UserGroup">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+ 
+    <select id="getGroup" parameterClass="dto" resultClass="dto">
+
+		SELECT a.Group_Id as id, a.Name as text,a.Remark as remark
+		
+		from pgroup a where 1 = 1
+
+        <dynamic>
+            <isNotEmpty prepend="AND" property="queryParam">
+                 a.Name like '%$queryParam$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+
+     <select id="getUserByGroup" parameterClass="dto" resultClass="dto">
+
+		SELECT a.Group_Id as idx, a.Name as groupname,a.Remark as remark
+		
+		, b.USERID as userid,b.USERNAME as username,b.sex as usersex
+		
+		from pgroup a  ,eauser b ,group_users c where 1 = 1
+		
+		and a.Group_Id= c.Group_Id
+		
+		and b.USERID = c.USERID
+
+        <dynamic>
+		
+		     <isNotEmpty prepend="AND" property="groupid">
+                 a.Group_Id = #groupid#
+            </isNotEmpty>
+			
+            <isNotEmpty prepend="AND" property="queryParam">
+                (
+                 a.Name like '%$queryParam$%'
+                 or
+                 b.USERNAME like '%$queryParam$%'
+                 )
+            </isNotEmpty>
+            
+        </dynamic>
+        
+    </select>
+    
+    
+    <select id="getUserByGroupCount" parameterClass="dto" resultClass="java.lang.Integer">
+        
+        SELECT Count(*) from pgroup a  ,group_users c where 1 = 1
+		
+		and a.Group_Id= c.Group_Id
+
+        
+        <dynamic>
+		
+			 <isNotEmpty prepend="AND" property="groupid">
+                 a.Group_Id = #groupid#
+            </isNotEmpty>
+			
+            <isNotEmpty prepend="AND" property="queryParam">
+                 a.Name like '%$queryParam$%'
+            </isNotEmpty>
+            
+        </dynamic>
+        
+    </select>
+    
+    
+    
+    <insert id="AddUserGroup" parameterClass="dto">
+        INSERT INTO pgroup
+        (
+       	  Group_Id,Name,Remark
+        )
+        VALUES (#id#,#groupname#,#remark#)
+    </insert>
+    
+ 
+     <update id="UpdateUserGroup" parameterClass="dto">
+        UPDATE pgroup SET
+        Name=#groupname#,Remark=#remark#
+        WHERE Group_Id = #id#
+    </update>
+    
+    
+       <delete id="DeleteUserGroup" parameterClass="dto" >
+		 
+		 DELETE FROM pgroup WHERE 1 = 1
+		      
+		     <dynamic>
+		
+				 <isNotEmpty prepend="AND" property="id">
+	                Group_Id = #id#
+	            </isNotEmpty>
+            
+        	</dynamic>
+        	
+	</delete>
+    
+    
+    <delete id="deleteUserByGroup" parameterClass="dto" >
+		 
+		 DELETE FROM group_users WHERE 1 = 1
+		      
+		     <dynamic>
+		
+				 <isNotEmpty prepend="AND" property="id">
+	                Group_Id = #id#
+	            </isNotEmpty>
+	            
+	            <isNotEmpty prepend="AND" property="userid">
+	                USERID = #userid#
+	            </isNotEmpty>
+            
+        	</dynamic>
+        	
+	</delete>
+	
+	
+	 <insert id="AddUserForGroup" parameterClass="dto">
+        INSERT INTO group_users
+        (
+       	  Group_Id,USERID
+        )
+        VALUES (#id#,#userid#)
+    </insert>
+    
+    
+
+   <select id="getGroup2" parameterClass="dto" resultClass="dto">
+
+		SELECT a.Group_Id as id, a.Name as value,a.Remark as remark
+		
+		from pgroup a where 1 = 1
+
+        <dynamic>
+            <isNotEmpty prepend="AND" property="queryParam">
+                 a.Name like '%$queryParam$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    
+    <select id="getGroup2Count" parameterClass="dto" resultClass="java.lang.Integer">
+        
+        SELECT Count(*) FROM pgroup a WHERE 1 = 1
+        
+        <dynamic>
+            <isNotEmpty prepend="AND" property="queryParam">
+                 a.Name like '%$queryParam$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    
+    
+    
+    
+       <select id="getUser" parameterClass="dto" resultClass="dto">
+
+		SELECT a.USERID as id, a.USERNAME as value,a.Remark as remark
+		
+		from eauser a where 1 = 1 and a.USERTYPE != '3'
+		
+		and a.enabled = '1'
+
+        <dynamic>
+            <isNotEmpty prepend="AND" property="queryParam">
+                 a.USERNAME like '%$queryParam$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    
+    <select id="getUserCount" parameterClass="dto" resultClass="java.lang.Integer">
+        
+
+        
+        SELECT Count(*) from eauser a where 1 = 1 
+        
+        and a.USERTYPE != '3'
+		
+		and a.enabled = '1'
+        
+        <dynamic>
+            <isNotEmpty prepend="AND" property="queryParam">
+                 a.USERNAME like '%$queryParam$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    
+    
+     <select id="getUser2" parameterClass="dto" resultClass="dto">
+
+		SELECT a.USERID as userid, a.USERNAME as username,a.Remark as remark
+		
+		from eauser a where 1 = 1 and a.USERTYPE != '3'
+		
+		and a.enabled = '1'
+
+        <dynamic>
+            <isNotEmpty prepend="AND" property="queryParam">
+                 a.USERNAME like '%$queryParam$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    
+    <select id="getUser2Count" parameterClass="dto" resultClass="java.lang.Integer">
+        
+
+        
+        SELECT Count(*) from eauser a where 1 = 1 
+        
+        and a.USERTYPE != '3'
+		
+		and a.enabled = '1'
+        
+        <dynamic>
+            <isNotEmpty prepend="AND" property="queryParam">
+                 a.USERNAME like '%$queryParam$%'
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    
+    
+</sqlMap>

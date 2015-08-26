@@ -27,14 +27,21 @@
 		
 		<action name="baseActionForm" path="/deviceManufacture" scope="request"
 			parameter="reqCode"
-			type="com.sysware.tldlt.app.web.DeviceManufacture.DeviceManufactureAction">
+			type="com.sysware.tldlt.app.web.devicemanufacture.DeviceManufactureAction">
 			<forward name="deviceManufactureView" path="/devicemanufacture/devicemanufactureview.jsp" />
 		</action>
 		
 		<action name="baseActionForm" path="/deviceModel" scope="request"
 			parameter="reqCode"
-			type="com.sysware.tldlt.app.web.DeviceModel.DeviceModelAction">
+			type="com.sysware.tldlt.app.web.devicemodel.DeviceModelAction">
 			<forward name="deviceModelView" path="/devicemodel/devicemodelview.jsp" />
+		</action>
+		
+		
+		<action name="baseActionForm" path="/userGroup" scope="request"
+			parameter="reqCode"
+			type="com.sysware.tldlt.app.web.usergroup.UserGroupAction">
+			<forward name="UserGroupView" path="/usergroup/usergroupview.jsp" />
 		</action>
 
    </action-mappings>
