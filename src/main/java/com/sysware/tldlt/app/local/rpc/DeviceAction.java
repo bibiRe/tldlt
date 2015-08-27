@@ -52,7 +52,7 @@ public class DeviceAction extends BaseAppAction {
         if (AppTools.isEmptyString(deviceID)) {
             return RPCUtils.sendErrorRPCInfoActionForward(response, "设备编号不存在");
         }
-        RPCRetDto outDto = RPCRetDto.createDto(true, null);
+        RPCRetDto outDto = RPCUtils.createDto(true, null);
         List<Dto> list = appReader.queryForList(
                 "App.Device.queryInspectRecord", deviceID);
         for (Dto dm : list) {
@@ -127,6 +127,6 @@ public class DeviceAction extends BaseAppAction {
         Dto dto = getRequestDto(form, request);
         BaseRetDto outDto = (BaseRetDto) deviceService.saveGPSInfo(dto);
         return RPCUtils.sendRPCDtoActionForward(response,
-                RPCRetDto.createDto(outDto.isRetSuccess(), outDto.getDesc()));
+                RPCUtils.createDto(outDto.isRetSuccess(), outDto.getDesc()));
     }
 }

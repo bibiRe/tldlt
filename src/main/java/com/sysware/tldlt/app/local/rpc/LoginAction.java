@@ -16,7 +16,17 @@ import org.g4studio.system.common.dao.vo.UserInfoVo;
 import com.sysware.tldlt.app.utils.AppTools;
 import com.sysware.tldlt.app.web.common.BaseAppAction;
 
+/**
+ * Type：LoginAction
+ * Descript：登录Action类.
+ * Create：SW-ITS-HHE
+ * Create Time：2015年8月27日 上午11:01:56
+ * Version：@version
+ */
 public class LoginAction extends BaseAppAction {
+	/**
+	 * 组织机构服务接口.
+	 */
 	private OrganizationService organizationService;
 
 	public LoginAction() {
@@ -56,7 +66,7 @@ public class LoginAction extends BaseAppAction {
 		if (null == userInfo) {
 			return RPCUtils.sendErrorRPCInfoActionForward(response, "用户名或密码无效");
 		}
-		outDto = RPCRetDto.createDto(true, null);
+		outDto = RPCUtils.createDto(true, null);
 		Dto data = new BaseDto();
 		outDto.addData(data);
 		data.put("user_name", userInfo.getUsername());
@@ -89,7 +99,7 @@ public class LoginAction extends BaseAppAction {
 	public ActionForward logout(ActionMapping mapping, ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		UserManage.logout(request.getParameter("key"));
-		write(RPCRetDto.createDto(true, null).toJson(), response);
+		write(RPCUtils.createDto(true, null).toJson(), response);
 		return getNullForward(mapping);
 	}
 }

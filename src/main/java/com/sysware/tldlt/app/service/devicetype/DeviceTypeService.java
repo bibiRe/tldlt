@@ -5,8 +5,8 @@ import java.util.Collection;
 import org.g4studio.common.service.BaseService;
 import org.g4studio.core.metatype.Dto;
 
-import com.sysware.tldlt.app.common.service.AddInfoService;
-import com.sysware.tldlt.app.common.service.DeleteInfoService;
+import com.sysware.tldlt.app.service.common.AddInfoService;
+import com.sysware.tldlt.app.service.common.DeleteInfoService;
 import com.sysware.tldlt.app.service.common.UpdateInfoService;
 
 /**

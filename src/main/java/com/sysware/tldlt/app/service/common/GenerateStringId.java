@@ -1,4 +1,4 @@
-package com.sysware.tldlt.app.common.service;
+package com.sysware.tldlt.app.service.common;
 
 /**
  * Type：GenerateStringId

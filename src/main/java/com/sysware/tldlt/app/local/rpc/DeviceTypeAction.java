@@ -13,6 +13,13 @@ import org.g4studio.core.mvc.xstruts.action.ActionMapping;
 import com.sysware.tldlt.app.utils.AppTools;
 import com.sysware.tldlt.app.web.common.BaseAppAction;
 
+/**
+ * Type：DeviceTypeAction
+ * Descript：设备类型Action
+ * Create：SW-ITS-HHE
+ * Create Time：2015年8月27日 上午11:01:19
+ * Version：@version
+ */
 public class DeviceTypeAction extends BaseAppAction {
 	/**
 	 * 查询设备巡检记录列表.

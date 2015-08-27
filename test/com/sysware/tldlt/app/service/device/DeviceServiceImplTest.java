@@ -73,7 +73,7 @@ public class DeviceServiceImplTest extends BaseAppServiceImplTest {
     private void mockQueryInspectPlanDevice(Dto dto) {
         Dto inspectPlanDto = new BaseDto();
         inspectPlanDto.put("planID", dto.getAsInteger("planID"));
-        inspectPlanDto.put("inpsectPlanDeviceID", 1);
+        inspectPlanDto.put("inpsectplandeviceid", 1);
         Mockito.when(
                 appDao.queryForObject(
                         "App.InspectPlan.queryPlanDeviceByDeviceId", dto))

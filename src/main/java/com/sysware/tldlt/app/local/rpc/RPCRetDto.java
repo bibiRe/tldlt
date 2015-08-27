@@ -10,63 +10,79 @@ import org.g4studio.core.metatype.Dto;
 import com.google.common.collect.Maps;
 import com.sysware.tldlt.app.utils.AppTools;
 
+/**
+ * Type：RPCRetDto
+ * Descript：RPC返回Dto对象类.
+ * Create：SW-ITS-HHE
+ * Create Time：2015年8月27日 上午11:03:32
+ * Version：@version
+ */
 public class RPCRetDto {
-	@SuppressWarnings("rawtypes")
-	private Collection data = new ArrayList();
-	private String message;
-	private String success;
+    /**
+     * 数据列表.
+     */
+    @SuppressWarnings("rawtypes")
+    private Collection data = new ArrayList();
+    /**
+     * 信息.
+     */
+    String message;
+    /**
+     * 成功标志.
+     */
+    String success;
 
-	public static RPCRetDto createDto(boolean success, String msg) {
-		RPCRetDto result = new RPCRetDto();
-		result.success = success ? "1" : "0";
-		if (null != msg) {
-			result.message = msg;
-		} else {
-			result.message = "";
-		}
+    public String getMessage() {
+        return message;
+    }
 
-		return result;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-	public String getMessage() {
-		return message;
-	}
+    /**
+     * 将此Dto对象转换为Json格式字符串.
+     * @return string 返回Json格式字符串
+     */
+    public String toJson() {
+        return toJson(null);
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    /**
+     * 将此Dto对象转换为Json格式字符串.
+     * @param pFormat 时间格式
+     * @return string 返回Json格式字符串
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public String toJson(String pFormat) {
+        String strJson = null;
+        Map map = Maps.newHashMap();
+        map.put("success", success);
+        map.put("message", message);
+        map.put("data", data);
+        if (!AppTools.isEmptyString(pFormat)) {
+            strJson = JsonHelper.encodeObject2Json(map, pFormat);
+        } else {
+            strJson = JsonHelper.encodeObject2Json(map);
+        }
+        return strJson;
+    }
 
-	/**
-	 * 将此Dto对象转换为Json格式字符串<br>
-	 * 
-	 * @return string 返回Json格式字符串
-	 */
-	public String toJson() {
-		return toJson(null);
-	}
+    /**
+     * 增加数据.
+     * @param dto 数据
+     */
+    @SuppressWarnings("unchecked")
+    public void addData(Dto dto) {
+        this.data.add(dto);
+    }
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public String toJson(String pFormat) {
-		String strJson = null;
-		Map map = Maps.newHashMap();
-		map.put("success", success);
-		map.put("message", message);
-		map.put("data", data);
-		if (!AppTools.isEmptyString(pFormat)) {
-			strJson = JsonHelper.encodeObject2Json(map, pFormat);
-		} else {
-			strJson = JsonHelper.encodeObject2Json(map);
-		}
-		return strJson;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void addData(Dto dto) {
-		this.data.add(dto);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void addAllData(Collection list) {
-		this.data.addAll(list);
-	}
+    /**
+     * 增加列表数据.
+     * @param list 列表数据
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public void addAllData(Collection list) {
+        this.data.addAll(list);
+    }
 }

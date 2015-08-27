@@ -29,6 +29,7 @@ import org.g4studio.system.common.util.idgenerator.IDHelper;
 
 import com.sysware.tldlt.app.local.rpc.RPCUtils;
 import com.sysware.tldlt.app.local.rpc.UserManage;
+import com.sysware.tldlt.app.utils.DtoUtils;
 
 /**
  * 请求拦截过滤器
@@ -99,9 +100,9 @@ public class RequestFilter implements Filter {
 		String ctxPath = request.getContextPath();
 		String uri = requestUri.substring(ctxPath.length());
 		if (filterRPCUrl(request, uri)) {
-//			if (filterRPCRequestKey(request, response, uri)) {
-//				return true;
-//			}
+			if (filterRPCRequestKey(request, response, uri)) {
+				return true;
+			}
 			return false;
 		}
 		String isAjax = request.getHeader("x-requested-with");
@@ -155,10 +156,8 @@ public class RequestFilter implements Filter {
 			String uri, String isAjax, UserInfoVo userInfo) throws IOException {
 		if (G4Utils.isEmpty(userInfo) && !uri.equals("/login.do") && enabled) {
 			if (G4Utils.isEmpty(isAjax)) {
-				response.getWriter().write("<script type=\"text/javascript\">parent.location.href='" + ctxPath
-						+ "/login.do?reqCode=init'</script>");
-				response.getWriter().flush();
-				response.getWriter().close();
+			    DtoUtils.writeToResponse("<script type=\"text/javascript\">parent.location.href='" + ctxPath
+                        + "/login.do?reqCode=init'</script>", response);
 			} else {
 				response.sendError(G4Constants.Ajax_Timeout);
 			}

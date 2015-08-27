@@ -14,6 +14,13 @@ import org.g4studio.core.mvc.xstruts.action.ActionMapping;
 import com.google.common.collect.Lists;
 import com.sysware.tldlt.app.web.common.BaseAppAction;
 
+/**
+ * Type：MenuAction
+ * Descript：菜单Action类.
+ * Create：SW-ITS-HHE
+ * Create Time：2015年8月27日 上午11:02:36
+ * Version：@version
+ */
 public class MenuAction extends BaseAppAction {
 	/**
 	 * 删除信息.
@@ -33,7 +40,7 @@ public class MenuAction extends BaseAppAction {
 	@SuppressWarnings("unchecked")
 	public ActionForward queryMenus(ActionMapping mapping, ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		RPCRetDto outDto = RPCRetDto.createDto(true, null);
+		RPCRetDto outDto = RPCUtils.createDto(true, null);
 		Dto data = new BaseDto();
 		outDto.addData(data);
 		data.put("group_meun_name", "巡检");

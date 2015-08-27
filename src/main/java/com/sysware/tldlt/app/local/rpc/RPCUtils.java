@@ -9,6 +9,13 @@ import org.g4studio.core.mvc.xstruts.action.ActionForward;
 
 import com.sysware.tldlt.app.utils.DtoUtils;
 
+/**
+ * Type：RPCUtils
+ * Descript：RPC工具类.
+ * Create：SW-ITS-HHE
+ * Create Time：2015年8月27日 上午11:14:57
+ * Version：@version
+ */
 public class RPCUtils {
 
     /**
@@ -19,7 +26,7 @@ public class RPCUtils {
      */
     public static void writeErrorRPCInfo(HttpServletResponse response,
             String info) throws IOException {
-        RPCRetDto outDto = RPCRetDto.createDto(false, info);
+        RPCRetDto outDto = RPCUtils.createDto(false, info);
         DtoUtils.writeToResponse(outDto.toJson(), response);
     }
 
@@ -32,7 +39,7 @@ public class RPCUtils {
      */
     public static ActionForward sendErrorRPCInfoActionForward(
             HttpServletResponse response, String info) throws IOException {
-        RPCRetDto outDto = RPCRetDto.createDto(false, info);
+        RPCRetDto outDto = RPCUtils.createDto(false, info);
         DtoUtils.writeToResponse(outDto.toJson(), response);
         return null;
     }
@@ -58,8 +65,26 @@ public class RPCUtils {
     @SuppressWarnings("rawtypes")
     public static ActionForward sendRPCListDtoActionForward(
             HttpServletResponse response, Collection list) throws IOException {
-        RPCRetDto outDto = RPCRetDto.createDto(true, null);
+        RPCRetDto outDto = RPCUtils.createDto(true, null);
         outDto.addAllData(list);
         return RPCUtils.sendRPCDtoActionForward(response, outDto);
+    }
+
+    /**
+     * 创建dto对象.
+     * @param success 成功标志.
+     * @param msg 信息
+     * @return dto对象
+     */
+    public static RPCRetDto createDto(boolean success, String msg) {
+        RPCRetDto result = new RPCRetDto();
+        result.success = success ? "1" : "0";
+        if (null != msg) {
+            result.message = msg;
+        } else {
+            result.message = "";
+        }
+    
+        return result;
     }
 }

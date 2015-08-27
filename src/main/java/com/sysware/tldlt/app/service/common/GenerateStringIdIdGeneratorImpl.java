@@ -1,4 +1,4 @@
-package com.sysware.tldlt.app.common.service;
+package com.sysware.tldlt.app.service.common;
 
 import org.g4studio.core.id.IDGenerator;
 import org.g4studio.system.common.util.idgenerator.IdGenerator;

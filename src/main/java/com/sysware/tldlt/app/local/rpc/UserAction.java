@@ -23,6 +23,9 @@ import com.sysware.tldlt.app.web.common.BaseAppAction;
  * Version：@version
  */
 public class UserAction extends BaseAppAction {
+    /**
+     * 用户服务对象.
+     */
     private UserService userService;
 
     public UserAction() {
@@ -105,6 +108,6 @@ public class UserAction extends BaseAppAction {
         dto.put("userid", userDto.get("userId"));
         BaseRetDto outDto = (BaseRetDto) userService.saveGPSInfo(dto);
         return RPCUtils.sendRPCDtoActionForward(response,
-                RPCRetDto.createDto(outDto.isRetSuccess(), outDto.getDesc()));
+                RPCUtils.createDto(outDto.isRetSuccess(), outDto.getDesc()));
     }
 }

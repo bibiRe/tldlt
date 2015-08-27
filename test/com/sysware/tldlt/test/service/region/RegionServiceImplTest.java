@@ -22,10 +22,10 @@ import com.sysware.tldlt.app.service.region.RegionServiceImpl;
 import com.sysware.tldlt.app.utils.AppCommon;
 
 /**
- * Type：DeviceTypeServiceImplTest 
+ * Type：DeviceTypeServiceImplTest
  * Descript：RegionServiceImpl测试类.
- * Create：SW-ITS-HHE 
- * Create Time：2015年7月31日 上午11:02:33 
+ * Create：SW-ITS-HHE
+ * Create Time：2015年7月31日 上午11:02:33
  * Version：@version
  */
 public class RegionServiceImplTest extends BaseAppServiceImplTest {

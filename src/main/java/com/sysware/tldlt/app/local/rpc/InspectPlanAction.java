@@ -13,6 +13,13 @@ import org.g4studio.core.mvc.xstruts.action.ActionMapping;
 import com.sysware.tldlt.app.utils.AppTools;
 import com.sysware.tldlt.app.web.common.BaseAppAction;
 
+/**
+ * Type：InspectPlanAction
+ * Descript：巡检计划Action类.
+ * Create：SW-ITS-HHE
+ * Create Time：2015年8月27日 上午11:01:42
+ * Version：@version
+ */
 public class InspectPlanAction extends BaseAppAction {
 	/**
 	 * 删除巡检计划基本信息.
