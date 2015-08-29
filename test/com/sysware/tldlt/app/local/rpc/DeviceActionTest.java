@@ -28,7 +28,7 @@ public class DeviceActionTest extends AppMockStrutsTestCase {
     public void testQueryInspectRecordSuccess() {
         addRequestParameter("reqCode", new String[] {"queryInspectRecord"});
         addRequestParameter("deviceID", new String[] {"0000000001"});
-        String actual = actionExecuteAndAssertRPCRetInfo();
+        String actual = actionExecuteAndAssertRPCRetInfoSuccess();
         assertTrue(actual.contains("inspectplanid"));
     }
 
@@ -39,7 +39,7 @@ public class DeviceActionTest extends AppMockStrutsTestCase {
     public void testQueryDeviceInfoSuccess() {
         addRequestParameter("reqCode", new String[] {"queryDeviceInfo"});
         addRequestParameter("deviceID", new String[] {"0000000001"});
-        String actual = actionExecuteAndAssertRPCRetInfo();
+        String actual = actionExecuteAndAssertRPCRetInfoSuccess();
         assertTrue(actual.contains("parentdeviceid"));
     }
 
@@ -57,7 +57,7 @@ public class DeviceActionTest extends AppMockStrutsTestCase {
         addRequestParameter("speed", new String[] {"1"});
         addRequestParameter("datetime",
                 new String[] {Long.toString(TestUtils.getCurrentUnixTime())});
-        actionExecuteAndAssertRPCRetInfo();
+        actionExecuteAndAssertRPCRetInfoSuccess();
     }
 
     /**
@@ -72,8 +72,8 @@ public class DeviceActionTest extends AppMockStrutsTestCase {
         addRequestParameter("height", new String[] {"1"});
         addRequestParameter("speed", new String[] {"1"});
         addRequestParameter("datetime",
-                new String[] {Long.toString(TestUtils.getCurrentUnixTime())});
-        actionExecuteAndAssertRPCRetInfo();
+                new String[] {TestUtils.getCurrentUnixTimeStr()});
+        actionExecuteAndAssertRPCRetInfoSuccess();
     }
 
 }

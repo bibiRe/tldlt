@@ -1,5 +1,6 @@
 package com.sysware.tldlt.app.service.device;
 
+import org.g4studio.common.service.BaseService;
 import org.g4studio.core.metatype.Dto;
 
 /**
@@ -9,7 +10,7 @@ import org.g4studio.core.metatype.Dto;
  * Create Time：2015年8月26日 下午2:27:36
  * Version：@version
  */
-public interface DeviceService {
+public interface DeviceService extends BaseService {
 
     /**
      * 保存设备巡检计划对应GPS信息.

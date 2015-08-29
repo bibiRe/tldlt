@@ -17,7 +17,7 @@ public class InspectPlanActionTest extends AppMockStrutsTestCase {
 	public void testQueryPlanBasicInfoSuccess() {
 		addRequestParameter("reqCode", new String[] {"queryPlanBasicInfo"});
 		addRequestParameter("userID", new String[] {"10004894"});
-        String  actual = actionExecuteAndAssertRPCRetInfo();
+        String  actual = actionExecuteAndAssertRPCRetInfoSuccess();
         assertTrue(actual.contains("planid"));
 	}
 
@@ -25,7 +25,7 @@ public class InspectPlanActionTest extends AppMockStrutsTestCase {
 	public void testQueryPlanDeviceInfoSuccess() {
 		addRequestParameter("reqCode", new String[] {"queryPlanDeviceInfo"});
 		addRequestParameter("planID", new String[] {"1"});
-		String  actual = actionExecuteAndAssertRPCRetInfo();
+		String  actual = actionExecuteAndAssertRPCRetInfoSuccess();
 		assertTrue(actual.contains("deviceid"));
 	}
 

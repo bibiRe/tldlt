@@ -19,4 +19,33 @@
             </isNotEmpty>
         </dynamic>
     </select>
+    <select id="queryInspectRecordByPlanId" parameterClass="int" resultClass="int">
+    	SELECT a.InspectRecord_Id as inspectrecordid from InspectRecord a where a.InspectPlan_Id = #planID#
+    </select>
+    <select id="queryInspectRecordDeviceFinished" parameterClass="int" resultClass="int">
+    	select count(*) as inspectRecordCount from (
+    	SELECT  a.InspectPlanDevice_Id as aId, b.InspectPlanDevice_Id as bId
+		FROM InspectRecordInfo a RIGHT JOIN InspectPlanDevice b on a.InspectPlanDevice_Id = b.InspectPlanDevice_Id where b.InspectPlan_Id = #planID#) d where d.aId = 0
+    </select>
+    <select id="queryInspectRecordInfoByPlanDeviceId" parameterClass="int" resultClass="dto">
+    	SELECT  a.InspectRecordInfo_Id as inspectrecordinfoid, a.InspectRecord_Id as inspectrecordid, a.InspectPlanDevice_Id FROM InspectRecordInfo a
+    	WHERE a.InspectPlanDevice_Id = #inpsectplandeviceid#
+    </select>
+    <insert id="addInspectRecord" parameterClass="dto">
+		INSERT INTO InspectRecord (InspectPlan_Id, ExecuteStartTime)
+        VALUES (#planID#, '$time$')
+        <selectKey resultClass="int"  keyProperty="inspectrecordid" >    
+             SELECT last_insert_id() as inspectrecordid;   
+        </selectKey>
+    </insert>
+    <insert id="addInspectRecordInfo" parameterClass="dto">
+		INSERT INTO InspectRecordInfo (InspectRecord_Id, InspectPlanDevice_Id, State, Time, Remark)
+        VALUES (#inspectrecordid#, #inspectplandeviceid#, #state#, '$time$', #checkdesc#)
+        <selectKey resultClass="int"  keyProperty="inspectrecordinfoid" >    
+             SELECT last_insert_id() as inspectrecordinfoid;   
+        </selectKey>
+    </insert>
+    <update id="updateInspectRecordInfoFinished" parameterClass="dto">
+		UPDATE InspectRecord SET ExecuteEndTime = '$time$' WHERE InspectRecord_Id = #inspectrecordid#
+    </update>
 </sqlMap>

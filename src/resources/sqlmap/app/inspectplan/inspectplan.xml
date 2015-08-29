@@ -6,7 +6,8 @@
     <sql id="sqlQueryPlanBasic">
         SELECT a.InspectPlan_Id as planID, a.Name as planname,
         a.State, a.ExecuteUserId as executoruserid,
-        (SELECT username FROM eauser WHERE userid = a.ExecuteUserId) as executor,
+        (SELECT username FROM
+        eauser WHERE userid = a.ExecuteUserId) as executor,
         UNIX_TIMESTAMP(a.ExecuteStartTime) as ExecuteStartTime,
         UNIX_TIMESTAMP(a.ExecuteEndTime) as ExecuteEndTime
         FROM InspectPlan a
@@ -14,7 +15,8 @@
     <sql id="sqlQueryExecuteUserPlanOutlineCondition">
         <dynamic prepend="WHERE">
             <isNotEmpty prepend="AND" property="userID">
-                a.ExecuteUserId = #userID#
+                a.ExecuteUserId =
+                #userID#
             </isNotEmpty>
         </dynamic>
     </sql>
@@ -30,25 +32,64 @@
         <include refid="sqlQueryPlanBasic" />
         <include refid="sqlQueryPlanByIdCondition" />
     </select>
-    
-    <select id="queryPlanDeviceByDeviceId" parameterClass="map"
+    <sql id="sqlQueryPlanDeviceSelectInfo">
+        SELECT a.InspectPlanDevice_Id as inpsectPlanDeviceID,
+        a.Device_Id as
+        deviceID, a.InspectPlan_Id as planID
+    </sql>
+    <sql id="sqlQueryPlanDevice">
+        <include refid="sqlQueryPlanDeviceSelectInfo" />
+        FROM inspectplandevice a WHERE 1=1
+    </sql>
+    <sql id="sqlQueryPlanDeviceByPlanIdAndDeviceIdCondition">
+        <dynamic>
+            <isNotEmpty prepend="AND" property="planID">
+                a.InspectPlan_Id =
+                #planID#
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="deviceID">
+                a.Device_Id =
+                #deviceID#
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+    <select id="queryPlanDeviceByPlanIdAndDeviceId" parameterClass="map"
         resultClass="dto">
-            SELECT a.InspectPlanDevice_Id as inpsectPlanDeviceID, a.Device_Id as deviceID, a.InspectPlan_Id as planID
-            FROM inspectplandevice a
-            WHERE a.InspectPlan_Id = #planID# AND a.Device_Id = #deviceID#
+        <include refid="sqlQueryPlanDevice" />
+        <include refid="sqlQueryPlanDeviceByPlanIdAndDeviceIdCondition" />
     </select>
+    <select id="queryPlanDeviceByDeviceIdAndStateCanInspectAndExecuteTimeFit"
+        parameterClass="map" resultClass="dto">
+        <include refid="sqlQueryPlanDeviceSelectInfo" />
+        FROM inspectplandevice a, InspectPlan b
+        WHERE a.InspectPlan_Id =
+        b.InspectPlan_Id AND a.Device_Id = #deviceID#
+        AND (b.State = 4 OR
+        b.State = 5) AND ('$time$' >= b.ExecuteStartTime) AND
+        <![CDATA[('$time$' <= b.ExecuteEndTime)]]>
+    </select>
+
     <select id="queryPlanDevices" parameterClass="string"
         resultClass="dto">
         SELECT b.Device_ID as deviceID, b.parent_device_id as
         parentDeviceId, b.Check_Cycle as period, b.Longtitude, b.Latitude,
         b.Height, b.Region_Id as regionId,
-        (SELECT Name FROM Region WHERE Region_Id = b.Region_Id) as regionName, 
-        b.Name as devicename, x.DeviceType_Id as deviceTypeId, 
-        x.Name as devicetype, y.DeviceModel_Id as deviceModelId, y.name as devicemodel
-        FROM inspectplandevice a, Device b, devicetype x, devicemodel y 
+        (SELECT Name FROM Region WHERE
+        Region_Id = b.Region_Id) as regionName,
+        b.Name as devicename,
+        x.DeviceType_Id as deviceTypeId,
+        x.Name as devicetype, y.DeviceModel_Id
+        as deviceModelId, y.name as
+        devicemodel
+        FROM inspectplandevice a, Device
+        b, devicetype x, devicemodel y
         WHERE
-        a.Device_Id=b.Device_Id AND x.DeviceType_Id = y.devicetype_Id AND
-        y.devicemodel_id = b.devicemodel_Id AND a.InspectPlan_Id = #planID#
+        a.Device_Id=b.Device_Id AND
+        x.DeviceType_Id = y.devicetype_Id AND
+        y.devicemodel_id =
+        b.devicemodel_Id AND a.InspectPlan_Id = #planID#
     </select>
-
+	<update id="updateInspectPlanFinished" parameterClass="dto">
+		UPDATE InspectPlan SET State = #state# WHERE InspectPlan_Id = #planID#
+    </update>
 </sqlMap>

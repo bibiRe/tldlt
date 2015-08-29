@@ -75,6 +75,44 @@ public class RegionActionTest extends AppMockStrutsTestCase {
     }
     
     @Test
+    public void testSaveAddInfoSuccess_parentid_null() {
+        addRequestParameter("reqCode", new String[] {"saveAddInfo"});
+        addRequestParameter("regionname", new String[] {"test"});
+        addRequestParameter("departmentid", new String[] {"001"});
+        addRequestParameter("regiontype", new String[] {"2"});
+        actionPerform();
+        String actual = ((HttpServletResponseSimulator) this.getResponse())
+                .getWriterBuffer().toString();
+        assertTrue(actual.contains("\"retCode\":0"));
+    }
+    
+    @Test
+    public void testSaveAddInfoSuccess_parentid_empty() {
+        addRequestParameter("reqCode", new String[] {"saveAddInfo"});
+        addRequestParameter("parentid", new String[] {""});
+        addRequestParameter("regionname", new String[] {"test"});
+        addRequestParameter("departmentid", new String[] {"001"});
+        addRequestParameter("regiontype", new String[] {"2"});
+        actionPerform();
+        String actual = ((HttpServletResponseSimulator) this.getResponse())
+                .getWriterBuffer().toString();
+        assertTrue(actual.contains("\"retCode\":0"));
+    }
+    
+    @Test
+    public void testSaveAddInfoSuccess_parentid_0() {
+        addRequestParameter("reqCode", new String[] {"saveAddInfo"});
+        addRequestParameter("parentid", new String[] {"0"});
+        addRequestParameter("regionname", new String[] {"test"});
+        addRequestParameter("departmentid", new String[] {"001"});
+        addRequestParameter("regiontype", new String[] {"2"});
+        actionPerform();
+        String actual = ((HttpServletResponseSimulator) this.getResponse())
+                .getWriterBuffer().toString();
+        assertTrue(actual.contains("\"retCode\":0"));
+    }
+    
+    @Test
     public void testSaveUpdateInfoSuccess() {
         addRequestParameter("reqCode", new String[] {"saveUpdateInfo"});
         addRequestParameter("regionname", new String[] {"test1"});

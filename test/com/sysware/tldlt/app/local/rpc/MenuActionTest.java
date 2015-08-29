@@ -16,7 +16,7 @@ public class MenuActionTest extends AppMockStrutsTestCase {
 	@Test
 	public void testQueryMenusSuccess() {
 		addRequestParameter("reqCode", new String[] {"queryMenus"});
-        String  actual = actionExecuteAndAssertRPCRetInfo();
+        String  actual = actionExecuteAndAssertRPCRetInfoSuccess();
         assertTrue(actual.contains("menu_id"));
 	}
 

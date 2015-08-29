@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.g4studio.common.dao.Dao;
 import org.g4studio.common.util.WebUtils;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
@@ -43,15 +44,61 @@ public class DtoUtils {
     }
 
     /**
-     * 得到错误Dto对象.
-     * @param info
-     *            错误信息.
-     * @return Dto对象
+     * 检查Dto 设备编号.
+     * @param info dto对象
+     * @param timeKey 时间key值
+     * @return 是否有效
      */
-    public static Dto getErrorDto(String info) {
-        Dto result = new BaseDto();
-        setDtoInfo(result, info, false);
-        return result;
+    @SuppressWarnings("unchecked")
+    public static Dto checkDtoCheckTime(Dto info, String timeKey) {
+        Long time = info.getAsLong(timeKey);
+        if (null == time) {
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
+                    "检查时间为空");
+        }
+        info.put("time", AppTools.unixTime2DateStr(time.longValue()));
+        return null;
+    }
+
+    /**
+     * 检查Dto 设备编号.
+     * @param dao DAO对象
+     * @param info dto对象
+     * @return 是否有效
+     */
+    public static Dto checkDtoDeviceId(Dao dao, Dto info) {
+        String deviceId = info.getAsString("deviceID");
+        if (AppTools.isEmptyString(deviceId)) {
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
+                    "设备编号为空");
+        }
+        Dto deviceDto = (BaseDto) dao.queryForObject(
+                "App.Device.queryDeviceInfo", deviceId);
+        if (null == deviceDto) {
+            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_INVALID_VALUE,
+                    "设备编号无效");
+        }
+        return null;
+    }
+
+    /**
+     * 检查Dto 用户编号.
+     * @param dao DAO 对象
+     * @param info dto对象
+     * @return 是否有效
+     */
+    public static Dto checkDtoUserId(Dao dao, Dto info) {
+        if (AppTools.isEmptyString(info.getAsString("userid"))) {
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
+                    "用户编号为空");
+        }
+        Dto userDto = (BaseDto) dao.queryForObject("User.getUserInfoByKey",
+                info);
+        if (null == userDto) {
+            return getErrorRetDto(AppCommon.RET_CODE_INVALID_VALUE,
+                    "用户编号无效");
+        }
+        return null;
     }
 
     /**
@@ -73,6 +120,18 @@ public class DtoUtils {
                     "纬度为空");
         }
         return null;
+    }
+
+    /**
+     * 得到错误Dto对象.
+     * @param info
+     *            错误信息.
+     * @return Dto对象
+     */
+    public static Dto getErrorDto(String info) {
+        Dto result = new BaseDto();
+        setDtoInfo(result, info, false);
+        return result;
     }
 
     /**
@@ -130,6 +189,7 @@ public class DtoUtils {
      * 设置返回信息.
      * @param response response对象
      * @param outDto dto对象
+     * @return Struts Actionforward 对象
      * @throws IOException IO异常
      */
     public static ActionForward sendRetDtoActionForward(
@@ -156,11 +216,9 @@ public class DtoUtils {
 
     /**
      * 设置返回dto信息.
-     * @param dto
-     *            dto对象
-     * @param info
-     *            错误信息
-     * @return dto对象
+     * @param dto  dto对象
+     * @param retCode 返回值
+     * @param info 信息.
      */
     @SuppressWarnings("unchecked")
     private static void setRetDtoInfo(BaseRetDto dto, int retCode, String info) {

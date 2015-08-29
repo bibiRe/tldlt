@@ -1,5 +1,6 @@
 package com.sysware.tldlt.app.service.user;
 
+import org.g4studio.common.service.BaseService;
 import org.g4studio.core.metatype.Dto;
 
 /**
@@ -9,7 +10,7 @@ import org.g4studio.core.metatype.Dto;
  * Create Time：2015年8月26日 上午9:44:15
  * Version：@version
  */
-public interface UserService {
+public interface UserService extends BaseService {
 
     /**
      * 保存GPS信息.

@@ -15,16 +15,6 @@ import utils.TestUtils;
  */
 public class UserActionTest extends AppMockStrutsTestCase {
 
-    /**
-     * 登录用户编号.
-     * @return 用户编号
-     */
-    private String loginUser() {
-        String key = "key-10004893";
-        UserManage.loginUser("10004893", key);
-        return key;
-    }
-
     @Before
     protected void setUp() throws Exception {
         super.setUp();
@@ -36,10 +26,10 @@ public class UserActionTest extends AppMockStrutsTestCase {
      */
     @Test
     public void testQueryFocusDevicesSuccess() {
-        String key = loginUser();
+        String key = TestUtils.loginUser();
         addRequestParameter("reqCode", new String[] {"queryFocusDevices"});
         addRequestParameter("key", new String[] {key});
-        String actual = actionExecuteAndAssertRPCRetInfo();
+        String actual = actionExecuteAndAssertRPCRetInfoSuccess();
         assertTrue(actual.contains("deviceid"));
     }
 
@@ -49,7 +39,7 @@ public class UserActionTest extends AppMockStrutsTestCase {
     @Test
     public void testQueryUserListSuccess() {
         addRequestParameter("reqCode", new String[] {"queryUserList"});
-        String actual = actionExecuteAndAssertRPCRetInfo();
+        String actual = actionExecuteAndAssertRPCRetInfoSuccess();
         assertTrue(actual.contains("userid"));
     }
 
@@ -58,7 +48,7 @@ public class UserActionTest extends AppMockStrutsTestCase {
      */
     @Test
     public void testSaveGPSInfoSuccess() {
-        String key = loginUser();
+        String key = TestUtils.loginUser();
         addRequestParameter("reqCode", new String[] {"saveGPSInfo"});
         addRequestParameter("key", new String[] {key});
         addRequestParameter("longtitude", new String[] {"118.850"});
@@ -66,7 +56,7 @@ public class UserActionTest extends AppMockStrutsTestCase {
         addRequestParameter("height", new String[] {"1"});
         addRequestParameter("speed", new String[] {"1"});
         addRequestParameter("datetime",
-                new String[] {Long.toString(TestUtils.getCurrentUnixTime())});
-        actionExecuteAndAssertRPCRetInfo();
+                new String[] {TestUtils.getCurrentUnixTimeStr()});
+        actionExecuteAndAssertRPCRetInfoSuccess();
     }
 }

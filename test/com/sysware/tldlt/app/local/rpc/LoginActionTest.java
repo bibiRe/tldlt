@@ -18,7 +18,7 @@ public class LoginActionTest  extends AppMockStrutsTestCase {
 		addRequestParameter("reqCode", new String[] {"login"});
 		addRequestParameter("account", new String[] {"wqiang"});
 		addRequestParameter("password", new String[] {"111111"});
-        actionExecuteAndAssertRPCRetInfo();
+        actionExecuteAndAssertRPCRetInfoSuccess();
 	}
 
 	@Test
@@ -26,7 +26,7 @@ public class LoginActionTest  extends AppMockStrutsTestCase {
 		UserManage.loginUser("111", "key-sfsd");
 		setRequestParameter("reqCode", new String[] {"logout"});
 		addRequestParameter("key", new String[] {"key-sdsf"});
-		actionExecuteAndAssertRPCRetInfo();
+		actionExecuteAndAssertRPCRetInfoSuccess();
 		
 	}
 

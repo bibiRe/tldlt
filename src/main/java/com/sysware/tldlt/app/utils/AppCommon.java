@@ -33,12 +33,17 @@ public class AppCommon {
      * 返回码-重复值.
      */
     public static final int RET_CODE_REPEAT_VALUE = -5;
+
+    /**
+     * 返回码-越界.
+     */
+    public static final int RET_CODE_OVER_STEP = -6;
     
     /**
      * GPS信息类型-设备.
      */
     public static final int GPS_INFO_TYPE_DEVICE = 2;
-    
+
     /**
      * GPS信息类型-巡检计划设备.
      */
@@ -47,5 +52,15 @@ public class AppCommon {
     /**
      * 时间间隔.
      */
-    public static final int TIME_INTERVAL = 1000;    
+    public static final int TIME_INTERVAL = 1000;
+    
+    /**
+     * 巡检状态-完成. 
+     */
+    public static final int INSPECT_STATE_FINISHED = 6;
+    /**
+     * 巡检状态-进行中.
+     */
+    public static final int INSPECT_STATE_RUNNING = 5;
+
 }

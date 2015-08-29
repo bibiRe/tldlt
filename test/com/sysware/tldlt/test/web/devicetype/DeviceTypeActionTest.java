@@ -94,6 +94,18 @@ public class DeviceTypeActionTest extends AppMockStrutsTestCase {
         addRequestParameter("parentid", new String[] {""});
         actionExecuteAndAssertRetInfo();
     }
+
+    /**
+     * 测试新增成功-编号112.
+     */
+    @Test
+    public void testSaveAddInfo_Success_Id112_parentid_0() {
+        addRequestParameter("reqCode", new String[] {"saveAddInfo"});
+        addRequestParameter("devicetypeid", new String[] {"112"});
+        addRequestParameter("devicetypename", new String[] {"test"});
+        addRequestParameter("parentid", new String[] {"0"});
+        actionExecuteAndAssertRetInfo();
+    }
     
     /**
      * 测试更新成功-编号111.
@@ -107,6 +119,7 @@ public class DeviceTypeActionTest extends AppMockStrutsTestCase {
         actionExecuteAndAssertRetInfo();
     }
     
+   
     /**
      * 测试删除成功-编号111.
      */

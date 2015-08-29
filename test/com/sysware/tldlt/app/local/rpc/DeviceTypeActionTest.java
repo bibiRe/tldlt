@@ -17,7 +17,7 @@ public class DeviceTypeActionTest extends AppMockStrutsTestCase {
 	public void testQueryCheckItemsSuccess() {
 		addRequestParameter("reqCode", new String[] {"queryCheckItems"});
 		addRequestParameter("typeID", new String[] {"Transformer"});
-        String  actual = actionExecuteAndAssertRPCRetInfo();
+        String  actual = actionExecuteAndAssertRPCRetInfoSuccess();
         assertTrue(actual.contains("checkid"));
 	}
 

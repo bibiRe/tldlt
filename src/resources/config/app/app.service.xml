@@ -82,6 +82,15 @@
 			</bean>
 		</property>
 	</bean>
+
+	<bean id="inspectService" parent="baseTransactionProxyApp">
+		<property name="target">
+			<bean class="com.sysware.tldlt.app.service.inspect.InspectServiceImpl">
+				<property name="g4Dao" ref="g4Dao" />
+				<property name="appDao" ref="appDao" />
+			</bean>
+		</property>
+	</bean>
 	
 	<!-- 业务系统服务组件配置示例  
 	<bean id="***Service" parent="baseTransactionProxyG4">

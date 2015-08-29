@@ -9,6 +9,7 @@ import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.mvc.xstruts.action.ActionForm;
 import org.g4studio.core.mvc.xstruts.action.ActionForward;
 import org.g4studio.core.mvc.xstruts.action.ActionMapping;
+import org.g4studio.system.common.util.SystemConstants;
 
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 import com.sysware.tldlt.app.service.device.DeviceService;
@@ -58,9 +59,9 @@ public class DeviceAction extends BaseAppAction {
         for (Dto dm : list) {
             Integer state = dm.getAsInteger("State");
             if ((null != state) && 1 == state.intValue()) {
-                dm.put("isOk", "1");
+                dm.put("isOk", SystemConstants.ENABLED_Y);
             } else {
-                dm.put("isOk", "0");
+                dm.put("isOk", SystemConstants.ENABLED_N);
             }
             String recordInfoId = dm.getAsString("inspectRecordInfoId");
             if (!AppTools.isEmptyString(recordInfoId)) {

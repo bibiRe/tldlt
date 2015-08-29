@@ -77,7 +77,7 @@ public class DeviceTypeServiceImpl extends BaseAppServiceImpl implements
         }
 
         String pid = inDto.getAsString("parentid");
-        if (!AppTools.isEmptyString(pid)) {
+        if (!AppTools.isEmptyString(pid) && (!"0".equals(pid))) {
             if (!checkDeviceTypeIdExist(pid)) {
                 return DtoUtils.getErrorRetDto(
                         AppCommon.RET_CODE_INVALID_VALUE, "上级设备类型无效");

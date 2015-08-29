@@ -26,11 +26,20 @@ public class RPCRetDto {
     /**
      * 信息.
      */
-    String message;
+    private String message;
+
+    public String getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(String success) {
+        this.success = success;
+    }
+
     /**
      * 成功标志.
      */
-    String success;
+    private String success;
 
     public String getMessage() {
         return message;

@@ -51,21 +51,6 @@ public class DeviceServiceImplTest extends BaseAppServiceImplTest {
     }
 
     /**
-     * mock查询设备信息.
-     * @param deviceId 设备编号
-     */
-    @SuppressWarnings("unchecked")
-    private void mockQueryDeviceInfo(String deviceId) {
-        Dto deviceDto = new BaseDto();
-        deviceDto.put("deviceID", deviceId);
-        deviceDto.put("parentDeviceId", null);
-        deviceDto.put("devicename", "测试设备");
-        Mockito.when(
-                appDao.queryForObject("App.Device.queryDeviceInfo", deviceId))
-                .thenReturn(deviceDto);
-    }
-
-    /**
      * mock查询巡检计划信息.
      * @param dto 巡检计划
      */
@@ -76,7 +61,7 @@ public class DeviceServiceImplTest extends BaseAppServiceImplTest {
         inspectPlanDto.put("inpsectplandeviceid", 1);
         Mockito.when(
                 appDao.queryForObject(
-                        "App.InspectPlan.queryPlanDeviceByDeviceId", dto))
+                        "App.InspectPlan.queryPlanDeviceByPlanIdAndDeviceId", dto))
                 .thenReturn(inspectPlanDto);
     }
 
@@ -86,7 +71,7 @@ public class DeviceServiceImplTest extends BaseAppServiceImplTest {
     @Test
     public void testSaveDeviceGPSInfo_Success_PlanID_0000000001() {
         Dto dto = createDeviceGPSDto();
-        mockQueryDeviceInfo(dto.getAsString("deviceID"));
+        TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
         mockQueryInspectPlanDevice(dto);
         Mockito.doNothing().when(appDao).insert("App.User.saveGPSInfo", dto);
         Mockito.doNothing().when(appDao)
@@ -103,7 +88,7 @@ public class DeviceServiceImplTest extends BaseAppServiceImplTest {
     public void testSaveDeviceGPSInfo_Success_PlanID_Null() {
         Dto dto = createDeviceGPSDto();
         dto.put("planID", null);
-        mockQueryDeviceInfo(dto.getAsString("deviceID"));
+        TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
         mockQueryInspectPlanDevice(dto);
         Mockito.doNothing().when(appDao).insert("App.User.saveGPSInfo", dto);
         Mockito.doNothing().when(appDao)
@@ -120,10 +105,10 @@ public class DeviceServiceImplTest extends BaseAppServiceImplTest {
     public void testSaveDeviceGPSInfo_Fail_PlanID_1_DeviceID_000001_NotExist() {
         Dto dto = createDeviceGPSDto();
         dto.put("planID", 1);
-        mockQueryDeviceInfo(dto.getAsString("deviceID"));
+        TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
         Mockito.when(
                 appDao.queryForObject(
-                        "App.InspectPlan.queryPlanDeviceByDeviceId", dto))
+                        "App.InspectPlan.queryPlanDeviceByPlanIdAndDeviceId", dto))
                 .thenReturn(null);
         BaseRetDto outDto = (BaseRetDto) deviceServiceImpl.saveGPSInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_INVALID_VALUE));
