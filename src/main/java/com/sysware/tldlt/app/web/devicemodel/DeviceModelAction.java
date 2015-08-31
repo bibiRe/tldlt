@@ -1,8 +1,16 @@
 package com.sysware.tldlt.app.web.devicemodel;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.g4studio.common.util.SessionListener;
+import org.g4studio.common.util.WebUtils;
+import org.g4studio.common.web.BaseAction;
 import org.g4studio.common.web.BaseActionForm;
 import org.g4studio.core.json.JsonHelper;
 import org.g4studio.core.metatype.Dto;
@@ -10,12 +18,21 @@ import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.mvc.xstruts.action.ActionForm;
 import org.g4studio.core.mvc.xstruts.action.ActionForward;
 import org.g4studio.core.mvc.xstruts.action.ActionMapping;
+import org.g4studio.core.util.CodeUtil;
+import org.g4studio.core.util.G4Constants;
+import org.g4studio.core.util.G4Utils;
+import org.g4studio.system.admin.service.MonitorService;
+import org.g4studio.system.admin.service.OrganizationService;
+import org.g4studio.system.common.dao.vo.UserInfoVo;
 import org.g4studio.system.common.util.idgenerator.IDHelper;
 
 import com.google.common.collect.Lists;
-import com.sysware.tldlt.app.service.devicemodel.DeviceModelService;
-import com.sysware.tldlt.app.utils.DtoUtils;
+import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
+import com.sysware.tldlt.app.service.devicetype.DeviceTypeService;
+import com.sysware.tldlt.app.utils.AppCommon;
 import com.sysware.tldlt.app.web.common.BaseAppAction;
+import com.sysware.tldlt.app.service.devicemodel.DeviceModelService;
+import org.g4studio.system.common.util.idgenerator.IDHelper;
 
 
 
@@ -130,7 +147,7 @@ public class DeviceModelAction extends BaseAppAction
      * @return struts跳转地址.
      * @throws Exception 异常对象.
      */
-    @SuppressWarnings("unchecked")
+    
     public ActionForward save(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception 
@@ -184,7 +201,6 @@ public class DeviceModelAction extends BaseAppAction
      * @return struts跳转地址.
      * @throws Exception 异常对象.
      */
-    @SuppressWarnings("unchecked")
     public ActionForward delete(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
                     throws Exception
@@ -194,7 +210,8 @@ public class DeviceModelAction extends BaseAppAction
         String[] arrChecked = delkeys.split(",");
         inDto.put("ids", Lists.newArrayList(arrChecked));
         Dto outDto = deviceModelService.deleteInfo(inDto);
-        return DtoUtils.sendRetDtoActionForward(response, outDto);
+        setRetDtoTipMsg(response, outDto);
+        return mapping.findForward(null);
     }
 
 }

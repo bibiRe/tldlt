@@ -158,7 +158,7 @@ var root = new Ext.tree.AsyncTreeNode( {
 	addGroupWindow = new Ext.Window({
 		layout : 'fit',
 		width : 300,
-		height : 203,
+		height : 173,
 		resizable : false,
 		draggable : true,
 		closeAction : 'hide',
@@ -265,7 +265,7 @@ var root = new Ext.tree.AsyncTreeNode( {
 	editGroupWindow = new Ext.Window({
 				layout : 'fit',
 				width : 300,
-				height : 273,
+				height : 173,
 				resizable : false,
 				draggable : true,
 				closeAction : 'hide',
@@ -591,7 +591,7 @@ var rightMenu = new Ext.menu.Menu(
               //  icon: 'images/write.gif', //图标文件
 			    iconCls : 'page_addIcon',
                 handler: fnMenuAdd,
-                text: '新增一行'
+                text: '用户管理'
             },
             {
                 id: 'Del',
@@ -664,7 +664,7 @@ editable : false,
 triggerAction : 'all', 
 store :storeGroup , 
 forceSelection : true, 
-mode : 'local', //remote ,don't invoke load 
+mode : 'remote', //remote ,don't invoke load 
 selectOnFocus : true ,
 editable : false,
 labelStyle : micolor,
@@ -717,7 +717,7 @@ editable : false,
 triggerAction : 'all', 
 store :storeUser , 
 forceSelection : true, 
-mode : 'local', //remote ,don't invoke load 
+mode : 'remote', //remote ,don't invoke load 
 selectOnFocus : true ,
 editable : false,
 labelStyle : micolor,

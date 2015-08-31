@@ -23,7 +23,7 @@ public class LoginActionTest  extends AppMockStrutsTestCase {
 
 	@Test
 	public void testLoginoutSuccess() {
-		UserManage.loginUser("111", "key-sfsd");
+		RPCUserManage.loginUser("111", "key-sfsd");
 		setRequestParameter("reqCode", new String[] {"logout"});
 		addRequestParameter("key", new String[] {"key-sdsf"});
 		actionExecuteAndAssertRPCRetInfoSuccess();

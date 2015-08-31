@@ -45,7 +45,7 @@
              SELECT last_insert_id() as inspectrecordinfoid;   
         </selectKey>
     </insert>
-    <update id="updateInspectRecordInfoFinished" parameterClass="dto">
+    <update id="updateInspectRecordFinished" parameterClass="dto">
 		UPDATE InspectRecord SET ExecuteEndTime = '$time$' WHERE InspectRecord_Id = #inspectrecordid#
     </update>
 </sqlMap>

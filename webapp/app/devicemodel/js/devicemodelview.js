@@ -11,28 +11,34 @@ Ext.onReady(function() {
 				header : '型号名称',
 				dataIndex : 'realname'
 			},  {
-				header : '类型名称',
-				dataIndex : 'typename',
+				 header : '类型名称',
+				 dataIndex : 'typename',
 				 width : 130
+			   
 			}, {
-				header : '型号备注',
-				dataIndex : 'typeremark',
-				id : 'typeremark'
+				 header : '类型备注',
+				 dataIndex : 'typeremark',
+				 id : 'typeremark',
+				 hidden : true
+				
 			}, 	 {
 				header : '厂商全称',
 				dataIndex : 'manufrealname'
 			}, {
-				header : '厂商地址',
-				dataIndex : 'manufaddress',
-				 width : 130
+				 header : '厂商地址',
+				 dataIndex : 'manufaddress',
+				 width : 130,
+				 hidden : true
 			}, {
 				header : '厂商联系电话',
-				dataIndex : 'manufphonenumber'
+				dataIndex : 'manufphonenumber',
+				hidden : true
 			}, {
 				header : '厂商联系人',
-				dataIndex : 'manufcontactperson'
+				dataIndex : 'manufcontactperson',
+				hidden : true
 			},{
-				header : '型号备注',
+				header : '备注',
 				dataIndex : 'remark',
 				id : 'remark'
 			},{
@@ -312,7 +318,7 @@ editable : false,
 triggerAction : 'all', 
 store :storeDevType , 
 forceSelection : true, 
-mode : 'local', //remote ,don't invoke load 
+mode : 'remote', //remote ,don't invoke load 
 selectOnFocus : true ,
 editable : false,
 labelStyle : micolor,
@@ -325,7 +331,9 @@ storeDevType.load();
 
 		comboDevType.on('expand', function() {
 			
+			
 				storeDevType.reload();
+				
 
 			});
 
@@ -363,7 +371,7 @@ editable : false,
 triggerAction : 'all', 
 store :storeDevManuf , 
 forceSelection : true, 
-mode : 'local', 
+mode : 'remote', 
 selectOnFocus : true ,
 editable : false,
 labelStyle : micolor,
@@ -502,7 +510,7 @@ editable : false,
 triggerAction : 'all', 
 store :storeEditDevType , 
 forceSelection : true, 
-mode : 'local', //remote ,don't invoke load 
+mode : 'remote', //remote ,don't invoke load 
 selectOnFocus : true ,
 editable : false,
 labelStyle : micolor,
@@ -553,7 +561,7 @@ editable : false,
 triggerAction : 'all', 
 store :storeEditDevManuf , 
 forceSelection : true, 
-mode : 'local', 
+mode : 'remote', 
 selectOnFocus : true ,
 editable : false,
 labelStyle : micolor,

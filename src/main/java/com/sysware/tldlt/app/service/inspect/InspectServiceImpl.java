@@ -30,41 +30,6 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
     }
 
     /**
-     * 保存巡检记录得到返回对象.
-     * @param inDto dto对象
-     * @return 返回对象
-     */
-    @SuppressWarnings("unchecked")
-    private BaseRetDto getAddInspectRecordRetInfo(Dto inDto) {
-        addInspectRecord(inDto);
-        addInspectRecordInfo(inDto);
-        int counta = ((Integer) appDao.queryForObject(
-                "App.Inspect.queryInspectRecordDeviceFinished", inDto
-                        .getAsInteger("planID").intValue())).intValue();
-        if (counta < 1) {
-            appDao.update("App.Inspect.updateInspectRecordInfoFinished", inDto);
-            inDto.put("state", AppCommon.INSPECT_STATE_FINISHED);            
-        } else {
-            inDto.put("state", AppCommon.INSPECT_STATE_RUNNING);
-        }
-        appDao.update("App.InspectPlan.updateInspectPlanFinished", inDto);
-        BaseRetDto outDto = (BaseRetDto) DtoUtils.getSuccessRetDto("");
-        outDto.put("inspectrecordid", inDto.getAsInteger("inspectrecordid")
-                .intValue());
-        outDto.put("inspectrecordinfoid",
-                inDto.getAsInteger("inspectrecordinfoid").intValue());
-        return outDto;
-    }
-
-    /**
-     * 增加巡检记录信息.
-     * @param inDto dto对象
-     */
-    private void addInspectRecordInfo(Dto inDto) {
-        appDao.insert("App.Inspect.addInspectRecordInfo", inDto);
-    }
-
-    /**
      * 增加巡检记录.
      * @param inDto 巡检记录
      */
@@ -84,6 +49,14 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
         } else {
             inDto.put("inspectrecordid", inspectRecordId);
         }
+    }
+
+    /**
+     * 增加巡检记录信息.
+     * @param inDto dto对象
+     */
+    private void addInspectRecordInfo(Dto inDto) {
+        appDao.insert("App.Inspect.addInspectRecordInfo", inDto);
     }
 
     /**
@@ -208,6 +181,33 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
         }
         inDto.put("inpsectplandeviceid", inspectPlanDeviceId);
         return null;
+    }
+
+    /**
+     * 保存巡检记录得到返回对象.
+     * @param inDto dto对象
+     * @return 返回对象
+     */
+    @SuppressWarnings("unchecked")
+    private BaseRetDto getAddInspectRecordRetInfo(Dto inDto) {
+        addInspectRecord(inDto);
+        addInspectRecordInfo(inDto);
+        int counta = ((Integer) appDao.queryForObject(
+                "App.Inspect.queryInspectRecordDeviceFinished", inDto
+                        .getAsInteger("planID").intValue())).intValue();
+        if (counta < 1) {
+            appDao.update("App.Inspect.updateInspectRecordFinished", inDto);
+            inDto.put("state", AppCommon.INSPECT_STATE_FINISHED);            
+        } else {
+            inDto.put("state", AppCommon.INSPECT_STATE_RUNNING);
+        }
+        appDao.update("App.InspectPlan.updateInspectPlanFinished", inDto);
+        BaseRetDto outDto = (BaseRetDto) DtoUtils.getSuccessRetDto("");
+        outDto.put("inspectrecordid", inDto.getAsInteger("inspectrecordid")
+                .intValue());
+        outDto.put("inspectrecordinfoid",
+                inDto.getAsInteger("inspectrecordinfoid").intValue());
+        return outDto;
     }
 
 }

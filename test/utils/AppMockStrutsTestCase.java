@@ -41,6 +41,7 @@ public class AppMockStrutsTestCase extends MockStrutsTestCase {
         TestUtils.assertRPCRetInfoSuccess(actual);
         return actual;
     }
+
     /**
      * 得到Action执行Response返回字符串.
      * @return 字符串

@@ -7,7 +7,7 @@
 	xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
-	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd" >
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 	
 	<bean id="baseAppService" parent="baseTransactionProxyApp" >
 		<property name="target">
@@ -64,6 +64,7 @@
 			</bean>
 		</property>
 	</bean>
+	
 
 	<bean id="appUserService" parent="baseTransactionProxyApp">
 		<property name="target">
@@ -83,6 +84,27 @@
 		</property>
 	</bean>
 
+
+
+	
+	<bean id="DevMgrService" parent="baseTransactionProxyApp">
+		<property name="target">
+			<bean class="com.sysware.tldlt.app.service.devmgr.DevMgrServiceImpl">
+				<property name="g4Dao" ref="g4Dao" />
+				<property name="appDao" ref="appDao" />
+			</bean>
+		</property>
+	</bean>
+	
+		<bean id="InspectionPlanService" parent="baseTransactionProxyApp">
+		<property name="target">
+			<bean class="com.sysware.tldlt.app.service.inspectionplan.InspectionPlanServiceImpl">
+				<property name="g4Dao" ref="g4Dao" />
+				<property name="appDao" ref="appDao" />
+			</bean>
+		</property>
+	</bean>
+	
 	<bean id="inspectService" parent="baseTransactionProxyApp">
 		<property name="target">
 			<bean class="com.sysware.tldlt.app.service.inspect.InspectServiceImpl">

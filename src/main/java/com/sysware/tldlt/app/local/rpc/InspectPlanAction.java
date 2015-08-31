@@ -66,7 +66,7 @@ public class InspectPlanAction extends BaseAppAction {
 		if (AppTools.isEmptyString(planID)) {
 			return RPCUtils.sendErrorRPCInfoActionForward(response, "巡检计划编号不存在");
 		}
-		List<Dto> list = appReader.queryForList("App.InspectPlan.queryPlanDevices", planID);
+		List<Dto> list = appReader.queryForList("App.InspectPlan.queryPlanDevicesByPlanId", planID);
 		return RPCUtils.sendRPCListDtoActionForward(response, list);
 	}
 }

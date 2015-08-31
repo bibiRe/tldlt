@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="App.DevMgr">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+ 
+    <select id="queryDeptinfoByDeptid" parameterClass="dto" resultClass="dto">
+
+	 SELECT deptid,deptname FROM eadept WHERE deptid = #deptid#
+	
+    </select>
+
+
+	<select id="queryDeptItemsByDto" parameterClass="dto" resultClass="dto">
+		SELECT deptid as id, deptname as text, parentid,leaf,sortno,REMARK as remark
+		   
+		FROM EADEPT WHERE enabled='1'
+		
+		<dynamic>
+			<isNotEmpty prepend="AND" property="deptid"> 
+				deptid = #deptid#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="parentid"> 
+				parentid = #parentid#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="deptname"> 
+				deptname like '%$deptname$%'
+			</isNotEmpty>
+		</dynamic>
+		order by sortno
+	</select>
+    
+    
+    <select id="getDeviceInfo" parameterClass="dto" resultClass="dto">
+        
+      
+		select  c.Name as devname, b.Name as regionname , d.Name as devmodelname ,
+		
+		e.Name as parentdevname ,e.Device_Id as parentdevid,
+		
+		c.Longtitude as longtitude, c.Latitude as latitude ,
+		
+		c.Height as height , c.RF_Id as rfid, c.Check_Cycle as checkcycleid,
+		
+		a.DEPTID as deptid, c.Device_Id as devid, b.Region_Id as regionid, 
+		
+		d.DeviceModel_Id as devmodelid ,c.Remark as remark
+		
+		from eadept a, region b  ,devicemodel d ,(device c left join device e on c.Parent_Device_Id = e.Device_Id)
+		
+		where a.DEPTID = b.DEPTID and b.Region_Id = c.Region_Id and c.DeviceModel_Id = d.DeviceModel_Id
+
+
+        
+        <dynamic>
+		
+			 <isNotEmpty prepend="AND" property="deptid">
+                 a.DEPTID like '$deptid$%'
+            </isNotEmpty>
+			
+            <isNotEmpty prepend="AND" property="queryParam">
+                (
+                 
+                  b.Name like '%$queryParam$%'  or 
+                 
+                  c.Name like '%$queryParam$%' or
+                  
+                  d.Name like '%$queryParam$%'
+                 
+                 )
+            </isNotEmpty>
+            
+        </dynamic>
+        
+    </select>
+    
+    
+    
+        <select id="getDeviceInfoCount" parameterClass="dto" resultClass="java.lang.Integer">
+        
+      
+			select  count(*)
+			
+			from eadept a, region b  ,devicemodel d ,(device c left join device e on c.Parent_Device_Id = e.Device_Id)
+			
+			where a.DEPTID = b.DEPTID and b.Region_Id = c.Region_Id and c.DeviceModel_Id = d.DeviceModel_Id
+
+
+        
+        <dynamic>
+		
+			 <isNotEmpty prepend="AND" property="deptid">
+                  a.DEPTID like '$deptid$%'
+            </isNotEmpty>
+			
+            <isNotEmpty prepend="AND" property="queryParam">
+                (
+                 
+                  a.deptname like '%$queryParam$%'  or 
+                 
+                  c.Name like '%$queryParam$%' or
+                  
+                  d.Name like '%$queryParam$%'
+                 
+                 )
+            </isNotEmpty>
+            
+        </dynamic>
+        
+    </select>
+    
+    
+    
+     <select id="getDeviceModel" parameterClass="dto" resultClass="dto">
+
+		SELECT b.DeviceModel_Id as id,b.Name as value
+		
+		
+		from devicemodel b where 1 = 1
+		
+
+
+    </select>
+    
+    
+      <select id="getDeviceModelCount" parameterClass="dto" resultClass="java.lang.Integer">
+        
+        SELECT Count(*) FROM devicemodel a WHERE 1 = 1
+        
+       
+    </select>
+    
+    
+     <select id="getParentDevice" parameterClass="dto" resultClass="dto">
+
+		SELECT b.Device_Id as id,b.Name as value
+		
+		
+		from device b where 1 = 1
+		
+		
+		<dynamic>
+		
+			 <isNotEmpty prepend="AND" property="devid">
+                  b.Device_Id  != #devid#
+            </isNotEmpty>
+            
+        </dynamic>
+
+
+    </select>
+    
+    
+    <select id="getParentDeviceCount" parameterClass="dto" resultClass="java.lang.Integer">
+
+		SELECT Count(*)
+		
+		
+		from device b where 1 = 1
+		
+		<dynamic>
+		
+			 <isNotEmpty prepend="AND" property="devid">
+                  b.Device_Id  != #devid#
+            </isNotEmpty>
+            
+        </dynamic>
+
+
+    </select>
+    
+    
+    
+    <select id="getRegion" parameterClass="dto" resultClass="dto">
+
+		SELECT b.Region_Id as id,b.Name as value
+		
+		
+		from region b where 1 = 1
+		
+		
+	    <dynamic>
+		
+			 <isNotEmpty prepend="AND" property="deptid">
+                 b.DEPTID like '$deptid$%'
+            </isNotEmpty>
+			
+            
+        </dynamic>
+
+
+    </select>
+    
+    
+    <select id="getRegionCount" parameterClass="dto" resultClass="java.lang.Integer">
+
+		SELECT Count(*)
+		
+		
+		from region b where 1 = 1
+		
+	    <dynamic>
+		
+			 <isNotEmpty prepend="AND" property="deptid">
+                 b.DEPTID like '$deptid$%'
+            </isNotEmpty>
+			
+            
+        </dynamic>
+
+
+    </select>
+    
+    
+    <insert id="AddDevice" parameterClass="dto">
+    
+        INSERT INTO device
+        (
+       	  Device_Id,Region_Id,DeviceModel_Id,Parent_Device_Id,Name,Longtitude,Latitude,Height,RF_Id,Check_Cycle,Remark
+        )
+        VALUES (#id#,#regionid#,#devmodelid#,#parentdevid#,#devname#,#longtitude#,#latitude#,#height#,#rfid#,#checkcycleid#,#remark#)
+        
+    </insert>
+    
+    
+     <update id="updateDevice" parameterClass="dto">
+        UPDATE device SET
+        
+        Region_Id=#regionid#, 
+        
+        DeviceModel_Id=#devmodelid#,
+        
+        Parent_Device_Id=#parentdevid#,
+        
+        Name=#devname#,
+         
+        Longtitude=#longtitude#,
+          
+        Latitude=#latitude#,
+           
+        Height=#height#,
+            
+        RF_Id=#rfid#,
+        
+        Check_Cycle=#checkcycleid#,
+        
+        Remark=#remark#
+        
+        WHERE Device_Id = #id#
+    </update>
+    
+    
+       <delete id="DeleteDevice" parameterClass="dto" >
+		DELETE FROM device
+		      WHERE Device_Id = #id#
+	</delete>
+    
+    
+</sqlMap>

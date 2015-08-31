@@ -9,7 +9,7 @@ import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
 import org.mockito.Mockito;
 
-import com.sysware.tldlt.app.local.rpc.UserManage;
+import com.sysware.tldlt.app.local.rpc.RPCUserManage;
 
 /**
  * Type：TestUtils
@@ -58,7 +58,7 @@ public class TestUtils {
      */
     public static String loginUser() {
         String key = "key-10004893";
-        UserManage.loginUser("10004893", key);
+        RPCUserManage.loginUser("10004893", key);
         return key;
     }
 

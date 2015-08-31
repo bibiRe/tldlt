@@ -53,7 +53,7 @@ public class InspectAction extends BaseAppAction {
         if (AppTools.isEmptyString(key)) {
             return RPCUtils.sendErrorRPCInfoActionForward(response, "key值为空");
         }
-        Dto userDto = UserManage.findUserDtoByKey(request.getParameter("key"));
+        Dto userDto = RPCUserManage.findUserDtoByKey(request.getParameter("key"));
         if (null == userDto) {
             return RPCUtils.sendErrorRPCInfoActionForward(response, "key值无效");
         }

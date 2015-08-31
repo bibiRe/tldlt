@@ -30,6 +30,10 @@ import com.sysware.tldlt.app.utils.AppCommon;
  */
 public class InspectServiceImplTest extends BaseAppServiceImplTest {
     /**
+     * 一天秒数.
+     */
+    private static int DAY_SEC = 86400;
+    /**
      * 巡检计划设备信息编号.
      */
     private static int INSPECT_PLAN_DEVICE_ID = 1;
@@ -37,19 +41,15 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
      * 巡检计划信息编号.
      */
     private static int INSPECT_PLAN_ID = 2;
+
     /**
      * 巡检记录编号.
      */
     private static int INSPECT_RECORD_ID = 1;
-
     /**
      * 巡检记录信息编号.
      */
     private static int INSPECT_RECORD_INFO_ID = 1;
-    /**
-     * 一天秒数.
-     */
-    private static int DAY_SEC = 86400;
     /**
      * 巡检服务对象.
      */
@@ -83,6 +83,20 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
     protected BaseAppServiceImpl createService() {
         inspectServiceImpl = new InspectServiceImpl();
         return inspectServiceImpl;
+    }
+
+    /**
+     * mock 巡检记录通过巡检计划编号.
+     * @return dto对象
+     */
+    @SuppressWarnings("unchecked")
+    private Dto mockInspectRecordByPlanId() {
+        Dto inspectRecordDto = new BaseDto();
+        inspectRecordDto.put("inspectrecordid", INSPECT_RECORD_ID);
+        Mockito.when(
+                appDao.queryForObject("App.Inspect.queryInspectRecordByPlanId",
+                        INSPECT_PLAN_ID)).thenReturn(inspectRecordDto);
+        return inspectRecordDto;
     }
 
     /**
@@ -151,21 +165,6 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
     }
 
     /**
-     * 测试增加信息失败-巡检时间为空.
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testAddInfo_Fail_PlanID_1_CheckTime_OverStep() {
-        Dto dto = createDto();
-        dto.put("checktime", TestUtils.getCurrentUnixTime() - DAY_SEC * 100);
-        TestUtils.mockQueryUserByUserId(g4Dao, dto, dto.getAsString("userid"));
-        TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
-        mockQueryInspectPlanInfo(dto.getAsInteger("planID").intValue());
-        BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
-        assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_OVER_STEP));
-    }
-
-    /**
      * 测试增加信息失败-用户编号0000001_巡检记录信息已存在.
      */
     @Test
@@ -204,6 +203,21 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
         TestUtils.mockQueryUserByUserId(g4Dao, dto, dto.getAsString("userid"));
         BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_NULL_VALUE));
+    }
+
+    /**
+     * 测试增加信息失败-巡检时间为空.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testAddInfo_Fail_PlanID_1_CheckTime_OverStep() {
+        Dto dto = createDto();
+        dto.put("checktime", TestUtils.getCurrentUnixTime() - DAY_SEC * 100);
+        TestUtils.mockQueryUserByUserId(g4Dao, dto, dto.getAsString("userid"));
+        TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
+        mockQueryInspectPlanInfo(dto.getAsInteger("planID").intValue());
+        BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
+        assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_OVER_STEP));
     }
 
     /**
@@ -324,49 +338,6 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
      * 测试增加信息成功-用户编号0000001.
      */
     @Test
-    public void testAddInfo_Success_DeviceID_00000001_InspectRecord_NotExist() {
-        Dto dto = createDto();
-        TestUtils.mockQueryUserByUserId(g4Dao, dto, dto.getAsString("userid"));
-        TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
-        mockQueryInspectPlanInfo(dto.getAsInteger("planID").intValue());
-        mockQueryInspectPlanDeviceInfo(dto);
-        Mockito.when(
-                appDao.queryForObject(
-                        "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
-                        INSPECT_PLAN_DEVICE_ID)).thenReturn(null);
-        Mockito.when(
-                appDao.queryForObject("App.Inspect.queryInspectRecordByPlanId",
-                        INSPECT_PLAN_ID)).thenReturn(null);
-        Mockito.doAnswer(new Answer<Object>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
-                dto.put("inspectrecordid", INSPECT_RECORD_ID);
-                return null;
-            }
-        }).when(appDao).insert("App.Inspect.addInspectRecord", dto);
-        Mockito.doAnswer(new Answer<Object>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
-                dto.put("inspectrecordinfoid", INSPECT_RECORD_INFO_ID);
-                return null;
-            }
-        }).when(appDao).insert("App.Inspect.addInspectRecordInfo", dto);
-        Mockito.when(
-                appDao.queryForObject(
-                        "App.Inspect.queryInspectRecordDeviceFinished",
-                        INSPECT_PLAN_ID)).thenReturn(1);
-        BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
-        assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
-    }
-
-    /**
-     * 测试增加信息成功-用户编号0000001.
-     */
-    @Test
     public void testAddInfo_Success_DeviceID_00000001_InspectRecord_1_Exist() {
         Dto dto = createDto();
         TestUtils.mockQueryUserByUserId(g4Dao, dto, dto.getAsString("userid"));
@@ -400,16 +371,52 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                 appDao.queryForObject(
                         "App.Inspect.queryInspectRecordDeviceFinished",
                         INSPECT_PLAN_ID)).thenReturn(1);
+        Mockito.when(appDao.update("App.InspectPlan.updateInspectPlanFinished", dto)).thenReturn(1);
         BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }
 
-    private void mockInspectRecordByPlanId() {
-        Dto inspectRecordDto = new BaseDto();
-        inspectRecordDto.put("inspectrecordid", INSPECT_RECORD_ID);
+    /**
+     * 测试增加信息成功-用户编号0000001.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testAddInfo_Success_DeviceID_00000001_InspectRecord_NotExist() {
+        Dto dto = createDto();
+        TestUtils.mockQueryUserByUserId(g4Dao, dto, dto.getAsString("userid"));
+        TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
+        mockQueryInspectPlanInfo(dto.getAsInteger("planID").intValue());
+        mockQueryInspectPlanDeviceInfo(dto);
+        Mockito.when(
+                appDao.queryForObject(
+                        "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
+                        INSPECT_PLAN_DEVICE_ID)).thenReturn(null);
         Mockito.when(
                 appDao.queryForObject("App.Inspect.queryInspectRecordByPlanId",
-                        INSPECT_PLAN_ID)).thenReturn(inspectRecordDto);
+                        INSPECT_PLAN_ID)).thenReturn(null);
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
+                dto.put("inspectrecordid", INSPECT_RECORD_ID);
+                return null;
+            }
+        }).when(appDao).insert("App.Inspect.addInspectRecord", dto);
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
+                dto.put("inspectrecordinfoid", INSPECT_RECORD_INFO_ID);
+                return null;
+            }
+        }).when(appDao).insert("App.Inspect.addInspectRecordInfo", dto);
+        Mockito.when(
+                appDao.queryForObject(
+                        "App.Inspect.queryInspectRecordDeviceFinished",
+                        INSPECT_PLAN_ID)).thenReturn(1);
+        Mockito.when(appDao.update("App.InspectPlan.updateInspectPlanFinished", dto)).thenReturn(1);
+        BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
+        assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }
 
     /**
@@ -451,55 +458,8 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                 appDao.queryForObject(
                         "App.Inspect.queryInspectRecordDeviceFinished",
                         INSPECT_PLAN_ID)).thenReturn(0);
-        BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
-        assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
-    }
-
-    /**
-     * 测试增加信息失败-巡检编号为空_用户编号0000001_巡检记录信息已存在.
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Test
-    public
-            void
-            testAddInfo_Success_PlanID_Null_DeviceID_0000001_InspectRecord_NotExist() {
-        Dto dto = createDto();
-        dto.put("planID", null);
-        TestUtils.mockQueryUserByUserId(g4Dao, dto, dto.getAsString("userid"));
-        TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
-        List list = Lists.newArrayList(createDtoInspectPlanDeviceDto(dto,
-                INSPECT_PLAN_ID));
-        Mockito.when(
-                appDao.queryForList(
-                        "App.InspectPlan.queryPlanDeviceByDeviceIdAndStateCanInspectAndExecuteTimeFit",
-                        dto)).thenReturn(list);
-        Mockito.when(
-                appDao.queryForObject(
-                        "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
-                        INSPECT_PLAN_DEVICE_ID)).thenReturn(null);
-        Mockito.when(
-                appDao.queryForObject("App.Inspect.queryInspectRecordByPlanId",
-                        INSPECT_PLAN_ID)).thenReturn(null);
-        Mockito.doAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
-                dto.put("inspectrecordid", INSPECT_RECORD_ID);
-                return null;
-            }
-        }).when(appDao).insert("App.Inspect.addInspectRecord", dto);
-        Mockito.doAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
-                dto.put("inspectrecordinfoid", INSPECT_RECORD_INFO_ID);
-                return null;
-            }
-        }).when(appDao).insert("App.Inspect.addInspectRecordInfo", dto);
-        Mockito.when(
-                appDao.queryForObject(
-                        "App.Inspect.queryInspectRecordDeviceFinished",
-                        INSPECT_PLAN_ID)).thenReturn(1);
+        Mockito.when(appDao.update("App.Inspect.updateInspectRecordFinished", dto)).thenReturn(1);
+        Mockito.when(appDao.update("App.InspectPlan.updateInspectPlanFinished", dto)).thenReturn(1);
         BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }
@@ -547,6 +507,105 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                 appDao.queryForObject(
                         "App.Inspect.queryInspectRecordDeviceFinished",
                         INSPECT_PLAN_ID)).thenReturn(1);
+        Mockito.when(appDao.update("App.InspectPlan.updateInspectPlanFinished", dto)).thenReturn(1);
+        BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
+        assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
+    }
+
+    /**
+     * 测试增加信息失败-巡检编号为空_用户编号0000001_巡检记录信息已存在.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Test
+    public
+            void
+            testAddInfo_Success_PlanID_Null_DeviceID_0000001_InspectRecord_Finished() {
+        Dto dto = createDto();
+        dto.put("planID", null);
+        TestUtils.mockQueryUserByUserId(g4Dao, dto, dto.getAsString("userid"));
+        TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
+        List list = Lists.newArrayList(createDtoInspectPlanDeviceDto(dto,
+                INSPECT_PLAN_ID));
+        Mockito.when(
+                appDao.queryForList(
+                        "App.InspectPlan.queryPlanDeviceByDeviceIdAndStateCanInspectAndExecuteTimeFit",
+                        dto)).thenReturn(list);
+        Mockito.when(
+                appDao.queryForObject(
+                        "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
+                        INSPECT_PLAN_DEVICE_ID)).thenReturn(null);
+        mockInspectRecordByPlanId();
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
+                dto.put("inspectrecordid", INSPECT_RECORD_ID);
+                return null;
+            }
+        }).when(appDao).insert("App.Inspect.addInspectRecord", dto);
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
+                dto.put("inspectrecordinfoid", INSPECT_RECORD_INFO_ID);
+                return null;
+            }
+        }).when(appDao).insert("App.Inspect.addInspectRecordInfo", dto);
+        Mockito.when(
+                appDao.queryForObject(
+                        "App.Inspect.queryInspectRecordDeviceFinished",
+                        INSPECT_PLAN_ID)).thenReturn(0);
+        Mockito.when(appDao.update("App.Inspect.updateInspectRecordFinished", dto)).thenReturn(1);
+        Mockito.when(appDao.update("App.InspectPlan.updateInspectPlanFinished", dto)).thenReturn(1);
+        BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
+        assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
+    }
+    /**
+     * 测试增加信息失败-巡检编号为空_用户编号0000001_巡检记录信息已存在.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Test
+    public
+            void
+            testAddInfo_Success_PlanID_Null_DeviceID_0000001_InspectRecord_NotExist() {
+        Dto dto = createDto();
+        dto.put("planID", null);
+        TestUtils.mockQueryUserByUserId(g4Dao, dto, dto.getAsString("userid"));
+        TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
+        List list = Lists.newArrayList(createDtoInspectPlanDeviceDto(dto,
+                INSPECT_PLAN_ID));
+        Mockito.when(
+                appDao.queryForList(
+                        "App.InspectPlan.queryPlanDeviceByDeviceIdAndStateCanInspectAndExecuteTimeFit",
+                        dto)).thenReturn(list);
+        Mockito.when(
+                appDao.queryForObject(
+                        "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
+                        INSPECT_PLAN_DEVICE_ID)).thenReturn(null);
+        Mockito.when(
+                appDao.queryForObject("App.Inspect.queryInspectRecordByPlanId",
+                        INSPECT_PLAN_ID)).thenReturn(null);
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
+                dto.put("inspectrecordid", INSPECT_RECORD_ID);
+                return null;
+            }
+        }).when(appDao).insert("App.Inspect.addInspectRecord", dto);
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
+                dto.put("inspectrecordinfoid", INSPECT_RECORD_INFO_ID);
+                return null;
+            }
+        }).when(appDao).insert("App.Inspect.addInspectRecordInfo", dto);
+        Mockito.when(
+                appDao.queryForObject(
+                        "App.Inspect.queryInspectRecordDeviceFinished",
+                        INSPECT_PLAN_ID)).thenReturn(1);
+        Mockito.when(appDao.update("App.InspectPlan.updateInspectPlanFinished", dto)).thenReturn(1);
         BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }

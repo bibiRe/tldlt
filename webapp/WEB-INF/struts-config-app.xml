@@ -43,6 +43,20 @@
 			type="com.sysware.tldlt.app.web.usergroup.UserGroupAction">
 			<forward name="UserGroupView" path="/usergroup/usergroupview.jsp" />
 		</action>
+		
+		
+		<action name="baseActionForm" path="/devMgr" scope="request"
+			parameter="reqCode"
+			type="com.sysware.tldlt.app.web.devmgr.DevMgrAction">
+			<forward name="DevMgrView" path="/devmgr/devmgrview.jsp" />
+		</action>
+		
+		
+	    <action name="baseActionForm" path="/inspectionPlan" scope="request"
+			parameter="reqCode"
+			type="com.sysware.tldlt.app.web.inspectionplan.InspectionPlanAction">
+			<forward name="InspectionPlanView" path="/inspectionplan/inspectionplanview.jsp" />
+		</action>
 
    </action-mappings>
 

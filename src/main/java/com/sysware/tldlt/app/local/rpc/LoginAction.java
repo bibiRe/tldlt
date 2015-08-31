@@ -72,7 +72,7 @@ public class LoginAction extends BaseAppAction {
 		data.put("user_name", userInfo.getUsername());
 		data.put("userid", userInfo.getUserid());
 		String key = "key-" + userInfo.getUserid();
-		UserManage.loginUser(userInfo.getUserid(), key);
+		RPCUserManage.loginUser(userInfo.getUserid(), key);
 		data.put("key", key);
 		data.put("deptid", userInfo.getDeptid());
 		data.put("deptname", userInfo.getDeptname());
@@ -98,7 +98,7 @@ public class LoginAction extends BaseAppAction {
 	 */
 	public ActionForward logout(ActionMapping mapping, ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		UserManage.logout(request.getParameter("key"));
+		RPCUserManage.logout(request.getParameter("key"));
 		write(RPCUtils.createDto(true, null).toJson(), response);
 		return getNullForward(mapping);
 	}

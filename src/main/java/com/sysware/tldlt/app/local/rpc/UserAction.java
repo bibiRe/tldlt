@@ -51,7 +51,7 @@ public class UserAction extends BaseAppAction {
     public ActionForward queryFocusDevices(ActionMapping mapping,
             ActionForm form, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        Dto dto = UserManage.findUserDtoByKey(request.getParameter("key"));
+        Dto dto = RPCUserManage.findUserDtoByKey(request.getParameter("key"));
         if (null == dto) {
             return RPCUtils.sendErrorRPCInfoActionForward(response, "key值无效");
         }
@@ -101,7 +101,7 @@ public class UserAction extends BaseAppAction {
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         Dto dto = getRequestDto(form, request);
-        Dto userDto = UserManage.findUserDtoByKey(request.getParameter("key"));
+        Dto userDto = RPCUserManage.findUserDtoByKey(request.getParameter("key"));
         if (null == userDto) {
             return RPCUtils.sendErrorRPCInfoActionForward(response, "key值无效");
         }

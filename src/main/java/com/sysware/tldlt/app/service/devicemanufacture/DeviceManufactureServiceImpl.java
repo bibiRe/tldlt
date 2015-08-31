@@ -39,10 +39,10 @@ public class DeviceManufactureServiceImpl extends BaseAppServiceImpl implements 
 		try
 		{
 			Integer count = (Integer)appDao.queryForObject("App.DeviceManufacture.getDeviceManufactureCount", pDto);
-			List devmanufs = appDao.queryForPage("App.DeviceManufacture.getDeviceManufacture", pDto);
+			List    items = appDao.queryForPage("App.DeviceManufacture.getDeviceManufacture", pDto);
 			
 			
-			str = JsonHelper.encodeList2PageJson(devmanufs,count,null);
+			str = JsonHelper.encodeList2PageJson(items,count,null);
 
 		}
 		catch(Exception e)

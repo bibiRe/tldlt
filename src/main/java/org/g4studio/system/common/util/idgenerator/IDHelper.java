@@ -88,6 +88,17 @@ public class IDHelper {
 	
 	private static DefaultIDGenerator defaultIDGenerator_idGenerator_usergroup = null;
 	
+	private static DefaultIDGenerator defaultIDGenerator_idGenerator_devmgr = null;
+	
+	private static DefaultIDGenerator defaultIDGenerator_idGenerator_inspecplan = null;
+	
+	private static DefaultIDGenerator defaultIDGenerator_idGenerator_inspecplandeviceid = null;
+	
+	static {
+		IdGenerator idGenerator_eventid = new IdGenerator();
+		idGenerator_eventid.setFieldname("DEVICE");
+		defaultIDGenerator_idGenerator_devmgr = idGenerator_eventid.getDefaultIDGenerator();
+	}
 	
 	static {
 		IdGenerator idGenerator_eventid = new IdGenerator();
@@ -175,9 +186,9 @@ public class IDHelper {
 	
 	static
 	{
-		IdGenerator idGenerator_devmanuf= new IdGenerator();
-		idGenerator_devmanuf.setFieldname("DEVICEMANUF");
-		defaultIDGenerator_idGenerator_devmanuf = idGenerator_devmanuf.getDefaultIDGenerator();
+		IdGenerator idGenerator_devmodel= new IdGenerator();
+		idGenerator_devmodel.setFieldname("DEVICEMANUF");
+		defaultIDGenerator_idGenerator_devmanuf = idGenerator_devmodel.getDefaultIDGenerator();
 	}
 	
 	static
@@ -194,6 +205,49 @@ public class IDHelper {
 		defaultIDGenerator_idGenerator_usergroup = idGenerator_tmp.getDefaultIDGenerator();
 	}
 	
+	static
+	{
+		IdGenerator idGenerator_tmp= new IdGenerator();
+		idGenerator_tmp.setFieldname("INSPECTPLAN");
+		defaultIDGenerator_idGenerator_inspecplan = idGenerator_tmp.getDefaultIDGenerator();
+	}
+	
+	
+	static
+	{
+		IdGenerator idGenerator_tmp= new IdGenerator();
+		idGenerator_tmp.setFieldname("INSPECTPLANDEVICEID");
+		defaultIDGenerator_idGenerator_inspecplandeviceid = idGenerator_tmp.getDefaultIDGenerator();
+	}
+	
+	
+	public static String NewInspectPlanDeviceID()
+	{
+		String id = defaultIDGenerator_idGenerator_inspecplandeviceid.create();
+		
+		id = id.trim();
+		
+		return id;
+	}
+	
+	
+	public static String NewInspectPlanID()
+	{
+		String id = defaultIDGenerator_idGenerator_inspecplan.create();
+		
+		id = id.trim();
+		
+		return id;
+	}
+	
+	public static String NewDeviceID()
+	{
+		String id = defaultIDGenerator_idGenerator_devmgr.create();
+		
+		id = id.trim();
+		
+		return id;
+	}
 	
 	public static String NewUserGroupID()
 	{

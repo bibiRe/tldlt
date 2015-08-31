@@ -27,8 +27,8 @@ import org.g4studio.system.common.dao.vo.UserInfoVo;
 import org.g4studio.system.common.util.SystemConstants;
 import org.g4studio.system.common.util.idgenerator.IDHelper;
 
+import com.sysware.tldlt.app.local.rpc.RPCUserManage;
 import com.sysware.tldlt.app.local.rpc.RPCUtils;
-import com.sysware.tldlt.app.local.rpc.UserManage;
 import com.sysware.tldlt.app.utils.DtoUtils;
 
 /**
@@ -124,7 +124,7 @@ public class RequestFilter implements Filter {
 				RPCUtils.writeErrorRPCInfo(response, "没有Key值");
 				return true;
 			}
-			if (!UserManage.checkUserKey(key)) {
+			if (!RPCUserManage.checkUserKey(key)) {
 				RPCUtils.writeErrorRPCInfo(response, "Key值无效");
 				return true;
 			}

@@ -11,6 +11,6 @@
 	<sqlMap resource="sqlmap/app/device/device.xml" />
 	<sqlMap resource="sqlmap/app/inspect/inspect.xml" />
 	<sqlMap resource="sqlmap/app/usergroup/usergroup.xml" />
-
+	<sqlMap resource="sqlmap/app/devmgr/devmgr.xml" />
 	<sqlMap resource="sqlmap/app/user/user.xml" />
 </sqlMapConfig>
