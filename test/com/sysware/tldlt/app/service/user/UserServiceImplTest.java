@@ -43,8 +43,21 @@ public class UserServiceImplTest extends BaseAppServiceImplTest {
     private Dto createUserGPSDto(String userid) {
         Dto dto = new BaseDto();
         dto.put("userid", userid);
-        dto.put("longtitude", 118.850);
         TestUtils.setGPSDto(dto);
+        return dto;
+    }
+    /**
+     * 创建用户GPS Dto对象.
+     * @param userid 用户编号
+     * @return Dto对象
+     */
+    @SuppressWarnings("unchecked")
+    private Dto createDeviceStatusDto(String userid) {
+        Dto dto = new BaseDto();
+        dto.put("userid", userid);
+        dto.put("deviceID", "0000000002");
+        dto.put("devicedesc", "测试");
+        dto.put("datetime", TestUtils.getCurrentUnixTime());
         return dto;
     }
 
@@ -61,11 +74,54 @@ public class UserServiceImplTest extends BaseAppServiceImplTest {
         BaseRetDto outDto = (BaseRetDto) userServiceImpl.saveGPSInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_INVALID_VALUE));
     }
+    
+    /**
+     * 测试上报设备状态失败-用户编号1000334无效.
+     */
+    @Test
+    public void testReportDeviceStatus_Fail_UserId_10003334_Invalid() {
+        String userid = "10003334";
+        Dto dto = createDeviceStatusDto(userid);
+        Mockito.when(g4Dao.queryForObject("User.getUserInfoByKey", dto))
+        .thenReturn(null);
+        BaseRetDto outDto = (BaseRetDto) userServiceImpl.reportDeviceStatus(dto);
+        assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_INVALID_VALUE));
+    }
+
+    /**
+     * 测试上报设备状态失败-设备编号0001无效.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testReportDeviceStatus_Fail_DeviceId_0001_Invalid() {
+        String userid = "10003334";
+        Dto dto = createDeviceStatusDto(userid);
+        String deviceId = "0001";
+        dto.put("deviceID", deviceId);
+        TestUtils.mockQueryUserByUserId(g4Dao, dto, userid);
+        Mockito.when(appDao.queryForObject("App.Device.queryDeviceInfo", deviceId))
+        .thenReturn(null);
+        BaseRetDto outDto = (BaseRetDto) userServiceImpl.reportDeviceStatus(dto);
+        assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_INVALID_VALUE));
+    }
+
+    /**
+     * 测试上报设备状态失败-设备编号0001无效.
+     */
+    @Test
+    public void testReportDeviceStatus_Success() {
+        String userid = "10003334";
+        Dto dto = createDeviceStatusDto(userid);
+        TestUtils.mockQueryUserByUserId(g4Dao, dto, userid);
+        TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
+        Mockito.doNothing().when(appDao).insert("App.User.reportDeviceStatus", dto);
+        BaseRetDto outDto = (BaseRetDto) userServiceImpl.reportDeviceStatus(dto);
+        assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
+    }
 
     /**
      * 测试保存用户GPS信息成功.
      */
-    @SuppressWarnings("unchecked")
     @Test
     public void testSaveGPSInfoSuccess() {
         String userid = "10004894";

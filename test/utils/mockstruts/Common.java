@@ -1,4 +1,4 @@
-package utils;
+package utils.mockstruts;
 
 import java.util.Arrays;
 import java.util.Iterator;

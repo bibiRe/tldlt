@@ -1,4 +1,4 @@
-package utils;
+package utils.mockstruts;
 
 import java.io.File;
 import java.io.FileInputStream;

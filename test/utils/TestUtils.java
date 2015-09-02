@@ -73,8 +73,7 @@ public class TestUtils {
         deviceDto.put("deviceID", deviceId);
         deviceDto.put("parentDeviceId", null);
         deviceDto.put("devicename", "测试设备");
-        Mockito.when(
-                dao.queryForObject("App.Device.queryDeviceInfo", deviceId))
+        Mockito.when(dao.queryForObject("App.Device.queryDeviceInfo", deviceId))
                 .thenReturn(deviceDto);
         return deviceDto;
     }

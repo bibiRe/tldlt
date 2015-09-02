@@ -1,12 +1,22 @@
 package com.sysware.tldlt.app.service.inspect;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Formatter;
 import java.util.List;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.g4studio.core.metatype.Dto;
+import org.g4studio.system.common.util.SystemConstants;
 
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 import com.sysware.tldlt.app.service.common.BaseAppServiceImpl;
 import com.sysware.tldlt.app.utils.AppCommon;
+import com.sysware.tldlt.app.utils.AppTools;
 import com.sysware.tldlt.app.utils.DtoUtils;
 
 /**
@@ -18,6 +28,10 @@ import com.sysware.tldlt.app.utils.DtoUtils;
  */
 public class InspectServiceImpl extends BaseAppServiceImpl implements
         InspectService {
+    /**
+     * 日志对象.
+     */
+    private static final Log log = LogFactory.getLog(InspectServiceImpl.class);
 
     @Override
     public Dto addInfo(Dto inDto) {
@@ -35,13 +49,12 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
      */
     @SuppressWarnings("unchecked")
     private void addInspectRecord(Dto inDto) {
-        Dto inspectRecordDto = (Dto) appDao.queryForObject(
+        Integer inspectRecordDto = (Integer) appDao.queryForObject(
                 "App.Inspect.queryInspectRecordByPlanId",
                 inDto.getAsInteger("planID").intValue());
         int inspectRecordId = 0;
         if (null != inspectRecordDto) {
-            inspectRecordId = inspectRecordDto.getAsInteger("inspectrecordid")
-                    .intValue();
+            inspectRecordId = inspectRecordDto.intValue();
         }
         if (inspectRecordId < 1) {
             appDao.insert("App.Inspect.addInspectRecord", inDto);
@@ -82,18 +95,69 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
         if (null != result) {
             return result;
         }
+        result = checkDtoIsOK(inDto);
+        if (null != result) {
+            return result;
+        }
         result = checkPlanIdAndDeviceId(inDto);
         return result;
+    }
+
+    /**
+     * 检查isOK标志.
+     * @param inDto dto对象
+     * @return 是否有效
+     */
+    private Dto checkDtoIsOK(Dto inDto) {
+        String isOK = inDto.getAsString("isOK");
+        if (AppTools.isEmptyString(isOK)) {
+            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
+                    "isOK标志为空");
+        }
+        if (!SystemConstants.ENABLED_Y.equals(isOK)) {
+            if (AppTools.isEmptyString(inDto.getAsString("checkdesc"))) {
+                return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
+                        "故障没有描述信息");
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 检查巡检记录信息编号.
+     * @param dto dto对象.
+     * @return dto
+     */
+    private Dto checkInspectRecordInfoId(Dto dto) {
+        Integer inspectRecordInfoIdObj = dto
+                .getAsInteger("inspectrecordinfoid");
+        if (null == inspectRecordInfoIdObj) {
+            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
+                    "没有巡检记录信息编号");
+        }
+        Dto inspectRecordInfoDto = (Dto) appDao.queryForObject(
+                "App.Inspect.queryInspectRecordInfoById",
+                inspectRecordInfoIdObj.intValue());
+        if (null == inspectRecordInfoDto) {
+            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_INVALID_VALUE,
+                    "没有对应的巡检记录信息");
+        }
+        return null;
+    }
+
+    /**
+     * 检查巡检记录媒体信息.
+     * @param dto dto对象
+     * @return dto
+     */
+    private Dto checkInspectRecordMedia(Dto dto) {
+        return checkInspectRecordInfoId(dto);
     }
 
     /**
      * 检查巡检计划编号和设备编号.
      * @param inDto dto对象
      * @return 是否有效.
-     */
-    /**
-     * @param inDto
-     * @return
      */
     private Dto checkPlanIdAndDeviceId(Dto inDto) {
         Dto result = null;
@@ -134,7 +198,7 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
                     "巡检计划没有此设备");
         }
         int inspectPlanDeviceId = planDeviceDto.getAsInteger(
-                "inpsectplandeviceid").intValue();
+                "inspectplandeviceid").intValue();
         Dto inspectRecordInfoDto = (Dto) appDao.queryForObject(
                 "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
                 inspectPlanDeviceId);
@@ -142,7 +206,7 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
             return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_REPEAT_VALUE,
                     "巡检记录已有此设备记录");
         }
-        inDto.put("inpsectplandeviceid", inspectPlanDeviceId);
+        inDto.put("inspectplandeviceid", inspectPlanDeviceId);
         return null;
     }
 
@@ -165,7 +229,7 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
         int inspectPlanDeviceId = 0;
         for (Dto planDeviceDto : list) {
             inspectPlanDeviceId = planDeviceDto.getAsInteger(
-                    "inpsectplandeviceid").intValue();
+                    "inspectplandeviceid").intValue();
             inspectRecordInfoDto = (Dto) appDao.queryForObject(
                     "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
                     inspectPlanDeviceId);
@@ -179,7 +243,7 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
             return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_REPEAT_VALUE,
                     "巡检记录已有此设备记录");
         }
-        inDto.put("inpsectplandeviceid", inspectPlanDeviceId);
+        inDto.put("inspectplandeviceid", inspectPlanDeviceId);
         return null;
     }
 
@@ -197,17 +261,111 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
                         .getAsInteger("planID").intValue())).intValue();
         if (counta < 1) {
             appDao.update("App.Inspect.updateInspectRecordFinished", inDto);
-            inDto.put("state", AppCommon.INSPECT_STATE_FINISHED);            
+            inDto.put("state", AppCommon.INSPECT_STATE_FINISHED);
         } else {
             inDto.put("state", AppCommon.INSPECT_STATE_RUNNING);
         }
         appDao.update("App.InspectPlan.updateInspectPlanFinished", inDto);
+        if (!SystemConstants.ENABLED_Y.equals(inDto.getAsString("isOK"))) {
+            appDao.insert("App.DeviceFault.addInfo", inDto);
+        }
         BaseRetDto outDto = (BaseRetDto) DtoUtils.getSuccessRetDto("");
         outDto.put("inspectrecordid", inDto.getAsInteger("inspectrecordid")
                 .intValue());
         outDto.put("inspectrecordinfoid",
                 inDto.getAsInteger("inspectrecordinfoid").intValue());
+
         return outDto;
+    }
+
+    /**
+     * 保存文件列表.
+     * @param savePath 保存路径
+     * @param file 文件
+     * @return dto对象.
+     * @throws IOException IO异常
+     * @throws NoSuchAlgorithmException 没有
+     */
+    @SuppressWarnings("unchecked")
+    private Dto saveMediaFile(String savePath, Dto fileDto) throws IOException,
+            NoSuchAlgorithmException {
+        FileItem fileItem = (FileItem) fileDto.get("file");
+        if (null == fileItem) {
+            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
+                    "文件为空");
+        }
+        String fileName = fileItem.getName();
+        fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);// 解析文件名
+        String realFileName = savePath + "/" + fileName;
+        log.info(fileItem.isInMemory());
+        FileUtils.copyInputStreamToFile(fileItem.getInputStream(), new File(
+                realFileName));
+        fileDto.put("type", AppCommon.MEDIA_TYPE_IMAGE);
+        fileDto.put("address", fileName);
+        fileDto.put("hash", AppTools.getFileMD5CheckSum(realFileName));
+        appDao.insert("App.Inspect.addMediaInfo", fileDto);
+        if (null == fileDto.getAsInteger("mediainfoid")) {
+            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_ADD_FAIL,
+                    "媒体表新增失败");
+        }
+        appDao.insert("App.Inspect.addReleateMediaInfo", fileDto);        
+        if (null == fileDto.getAsInteger("releatemediaid")) {
+            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_ADD_FAIL,
+                    "媒体关联表新增失败");
+        }
+        return null;
+    }
+
+    /**
+     * 保存媒体文件列表.
+     * @param dto dto对象
+     * @return 返回对象.
+     * @throws IOException IO异常.
+     * @throws NoSuchAlgorithmException 没有此算法异常
+     */
+    @SuppressWarnings("unchecked")
+    private Dto saveMediaFiles(Dto dto) throws IOException,
+            NoSuchAlgorithmException {
+        Dto result = null;
+        String savePath = AppTools.getAppPropertyValue("mediaFilePath", "");
+        List<Dto> fileList = (List<Dto>) dto.getAsList("medias");
+        if (null == fileList) {
+            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
+                    "没有文件列表");
+        }
+        if (fileList.size() < 1) {
+            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
+                    "文件列表为空");
+        }
+
+        for (Dto fileDto : fileList) {
+            result = saveMediaFile(savePath, fileDto);
+            if (null != result) {
+                return result;
+            }
+
+        }
+        return null;
+    }
+
+    @Override
+    public Dto saveUploadInspectRecordMedia(Dto dto) {
+        Dto result = checkInspectRecordMedia(dto);
+        if (null != result) {
+            return result;
+        }
+        try {
+            result = saveMediaFiles(dto);
+        } catch (Exception e) {
+            log.info(e);
+            result = DtoUtils.getErrorRetDto(AppCommon.RET_CODE_ADD_FAIL,
+                    new Formatter().format("保存媒体列表失败: %s", e.getMessage())
+                            .toString());
+        }
+        if (null != result) {
+            return result;
+        }
+        return DtoUtils.getSuccessRetDto("");
     }
 
 }

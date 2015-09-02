@@ -69,10 +69,14 @@ public class DeviceAction extends BaseAppAction {
                 List<Dto> imglist = appReader.queryForList(
                         "App.Inspect.queryImages", dto);
                 dm.put("images", imglist);
+                String mediaFileUrl = AppTools.getAppPropertyValue("mediaFileUrl", "");
+                if ((mediaFileUrl.length() < 1) || (mediaFileUrl.charAt(mediaFileUrl.length()) != '/')) {
+                    mediaFileUrl += "/";
+                }
                 for (Dto iDto : imglist) {
-                    String url = iDto.getAsString("imageurl");
-                    url = "ftp://127.0.0.1" + url;
-                    iDto.put("imageurl", url);
+                    String url = iDto.getAsString("mediaurl");
+                    url = mediaFileUrl + url;
+                    iDto.put("mediaurl", url);
                 }
             }
         }

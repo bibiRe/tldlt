@@ -39,7 +39,15 @@
         <url-pattern>/rpc/httpinvoker/*</url-pattern>
     </servlet-mapping>
     -->
-
+    <servlet>
+        <servlet-name>uploadMediaServlet</servlet-name>
+        <servlet-class>com.sysware.tldlt.app.local.rpc.UploadMediaServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>uploadMediaServlet</servlet-name>
+        <url-pattern>/rpc/uploadMediaServlet/*</url-pattern>
+    </servlet-mapping>
     <!-- 演示使用客户端Applet[RunAsApplet.java]调用服务器端Servlet -->
     <servlet>
         <servlet-name>myServlet</servlet-name>

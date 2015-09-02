@@ -4,6 +4,9 @@ import java.io.File;
 
 import org.junit.Before;
 
+import utils.mockstruts.HttpServletResponseSimulator;
+import utils.mockstruts.MockStrutsTestCase;
+
 /**
  * Type：AppMockStrutsTestCase
  * Descript：应用 MockStrutsTestCase类.

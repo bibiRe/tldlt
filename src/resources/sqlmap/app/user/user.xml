@@ -32,4 +32,11 @@
 		INSERT INTO ReleateGPSInfo (GPSInfo_Id, ReleateRecordId, Type, Remark)
         VALUES (#gpsinfoid#, #userid#, 1, #remark#)
     </insert>
+    <insert id="reportDeviceStatus" parameterClass="dto">
+		INSERT INTO DeviceSuggestInfo (USERID, Device_Id, Content, Time)
+        VALUES (#userid#, #deviceID#, #devicedesc#, '$time$')
+        <selectKey resultClass="int"  keyProperty="devicesuggestinfoid" >    
+             SELECT last_insert_id() as devicesuggestinfoid;   
+        </selectKey>
+    </insert>
 </sqlMap>

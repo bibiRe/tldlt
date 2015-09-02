@@ -15,8 +15,15 @@ public interface UserService extends BaseService {
     /**
      * 保存GPS信息.
      * @param info 信息
-     * @return dto对象
+     * @return dto返回信息
      */
     Dto saveGPSInfo(Dto info);
+
+    /**
+     * 上报设备状态信息.
+     * @param info dto对象
+     * @return dto返回信息
+     */
+    Dto reportDeviceStatus(Dto info);
 
 }

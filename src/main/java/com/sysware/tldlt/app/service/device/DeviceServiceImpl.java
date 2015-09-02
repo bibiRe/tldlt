@@ -37,7 +37,7 @@ public class DeviceServiceImpl extends BaseAppServiceImpl implements
             }
             dto.put("type", AppCommon.GPS_INFO_TYPE_INSPECTPLAN_DEVICE);
             dto.put("releaterecordid",
-                    inspectDto.getAsInteger("inpsectplandeviceid").intValue());
+                    inspectDto.getAsInteger("inspectplandeviceid").intValue());
         } else {
             dto.put("planID", null);
             dto.put("type", AppCommon.GPS_INFO_TYPE_DEVICE);

@@ -1,4 +1,4 @@
-package utils;
+package utils.mockstruts;
 
 import java.io.File;
 import java.io.InputStream;
@@ -18,6 +18,10 @@ import org.apache.commons.logging.LogFactory;
 import org.g4studio.core.mvc.xstruts.Globals;
 import org.g4studio.core.mvc.xstruts.action.ActionForm;
 import org.g4studio.core.mvc.xstruts.action.ActionServlet;
+
+
+
+
 
 //StrutsTestCase - a JUnit extension for testing Struts actions
 import junit.framework.AssertionFailedError;

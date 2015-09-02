@@ -1,4 +1,4 @@
-package utils;
+package utils.mockstruts;
 
 import java.util.Enumeration;
 import java.util.Hashtable;

@@ -42,6 +42,7 @@
 		<property name="transactionAttributes">
 			<props>
 				<prop key="save*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="add*">PROPAGATION_REQUIRED,-Exception</prop>
 				<prop key="do*">PROPAGATION_REQUIRED,-Exception</prop>
 				<prop key="insert*">PROPAGATION_REQUIRED,-Exception</prop>
 				<prop key="del*">PROPAGATION_REQUIRED,-Exception</prop>

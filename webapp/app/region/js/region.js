@@ -438,12 +438,16 @@ Ext.onReady(function() {
 				id: 'regionname',
 				allowBlank: false,
 				labelStyle: micolor,
+				maxLength: 500,
+				maxLengthText: '名称不能超过500个字符',
 				anchor: '99%'
 			},
 			parentRegionComboxWithTree, regiontypeCombo, departmentComboxWithTree, {
 				fieldLabel: '备注',
 				name: 'remark',
 				allowBlank: true,
+				maxLength: 1000,
+				maxLengthText: '备注不能超过1000个字符',
 				anchor: '99%'
 			}, {
 				id: 'parentid',

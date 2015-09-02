@@ -13,4 +13,5 @@
 	<sqlMap resource="sqlmap/app/usergroup/usergroup.xml" />
 	<sqlMap resource="sqlmap/app/devmgr/devmgr.xml" />
 	<sqlMap resource="sqlmap/app/user/user.xml" />
+	<sqlMap resource="sqlmap/app/devicefault/devicefault.xml" />
 </sqlMapConfig>

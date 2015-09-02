@@ -335,7 +335,7 @@
         <include refid="sqlQueryPlanByIdCondition" />
     </select>
     <sql id="sqlQueryPlanDeviceSelectInfo">
-        SELECT a.InspectPlanDevice_Id as inpsectPlanDeviceID,
+        SELECT a.InspectPlanDevice_Id as inspectPlanDeviceID,
         a.Device_Id as
         deviceID, a.InspectPlan_Id as planID
     </sql>

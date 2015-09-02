@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import utils.AppMockStrutsTestCase;
+import utils.TestCommon;
 import utils.TestUtils;
 
 /**
@@ -62,8 +63,24 @@ public class InspectActionTest extends AppMockStrutsTestCase {
         addRequestParameter("key", new String[] {key});
         addRequestParameter("deviceID", new String[] {"0000000001"});
         addRequestParameter("isOK", new String[] {SystemConstants.ENABLED_Y});
+        long checktime = TestUtils.getCurrentUnixTime() - 10
+                * TestCommon.DAY_SEC;
         addRequestParameter("checktime",
-                new String[] {TestUtils.getCurrentUnixTimeStr()});
+                new String[] {Long.toString(checktime)});
         actionExecuteAndAssertRPCRetInfoSuccess();
     }
+
+    /**
+     * 测试保存巡检记录成功.
+     */
+    @Test
+    public void testUploadInspectRecordMediaSuccess() {
+        String key = TestUtils.loginUser();
+        addRequestParameter("reqCode", new String[] {"uploadInspectRecordMedia"});
+        addRequestParameter("key", new String[] {key});
+        addRequestParameter("inspectrecordinfoid", new String[] {"1"});
+        actionExecuteAndAssertRPCRetInfoSuccess();
+    }
+    
+    
 }

@@ -59,4 +59,19 @@ public class UserActionTest extends AppMockStrutsTestCase {
                 new String[] {TestUtils.getCurrentUnixTimeStr()});
         actionExecuteAndAssertRPCRetInfoSuccess();
     }
+    
+    /**
+     * 测试查询用户列表成功.
+     */
+    @Test
+    public void testReportDeviceStatusSuccess() {
+        String key = TestUtils.loginUser();
+        addRequestParameter("reqCode", new String[] {"reportDeviceStatus"});
+        addRequestParameter("key", new String[] {key});
+        addRequestParameter("deviceID", new String[] {"0000000001"});
+        addRequestParameter("devicedesc", new String[] {"需要重点观察"});
+        addRequestParameter("datetime",
+                new String[] {TestUtils.getCurrentUnixTimeStr()});
+        actionExecuteAndAssertRPCRetInfoSuccess();
+    }
 }

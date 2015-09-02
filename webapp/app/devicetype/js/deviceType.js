@@ -348,6 +348,8 @@ Ext.onReady(function() {
 				id: 'devicetypeid',
 				allowBlank: false,
 				labelStyle: micolor,
+				maxLength: 100,
+				maxLengthText: '编号不能超过100个字符',
 				anchor: '99%'
 		    },{
 				fieldLabel: '名称',
@@ -355,12 +357,16 @@ Ext.onReady(function() {
 				id: 'devicetypename',
 				allowBlank: false,
 				labelStyle: micolor,
+				maxLength: 200,
+				maxLengthText: '名称不能超过200个字符',
 				anchor: '99%'
 			},
 			parentDeviceTypeComboxWithTree, {
 				fieldLabel: '备注',
 				name: 'remark',
 				allowBlank: true,
+				maxLength: 1000,
+				maxLengthText: '备注不能超过1000个字符',
 				anchor: '99%'
 			}, {
 				id: 'parentid',

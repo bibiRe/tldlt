@@ -35,17 +35,12 @@ public class UserAction extends BaseAppAction {
 
     /**
      * 查询设备巡检记录列表.
-     * @param mapping
-     *            struts mapping对象.
-     * @param form
-     *            struts数据form对象.
-     * @param request
-     *            http request对象.
-     * @param response
-     *            http response对象.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
      * @return struts跳转地址.
-     * @throws Exception
-     *             异常对象.
+     * @throws Exception 异常对象.
      */
     @SuppressWarnings("unchecked")
     public ActionForward queryFocusDevices(ActionMapping mapping,
@@ -84,29 +79,50 @@ public class UserAction extends BaseAppAction {
 
     /**
      * 保存GPS信息.
-     * @param mapping
-     *            struts mapping对象.
-     * @param form
-     *            struts数据form对象.
-     * @param request
-     *            http request对象.
-     * @param response
-     *            http response对象.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
      * @return struts跳转地址.
-     * @throws Exception
-     *             异常对象.
+     * @throws Exception 异常对象.
      */
     @SuppressWarnings("unchecked")
     public ActionForward saveGPSInfo(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         Dto dto = getRequestDto(form, request);
-        Dto userDto = RPCUserManage.findUserDtoByKey(request.getParameter("key"));
+        Dto userDto = RPCUserManage.findUserDtoByKey(request
+                .getParameter("key"));
         if (null == userDto) {
             return RPCUtils.sendErrorRPCInfoActionForward(response, "key值无效");
         }
         dto.put("userid", userDto.get("userId"));
         BaseRetDto outDto = (BaseRetDto) userService.saveGPSInfo(dto);
+        return RPCUtils.sendRPCDtoActionForward(response,
+                RPCUtils.createDto(outDto.isRetSuccess(), outDto.getDesc()));
+    }
+
+    /**
+     * 上报设备信息.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
+     * @return struts跳转地址.
+     * @throws Exception 异常对象.
+     */
+    @SuppressWarnings("unchecked")
+    public ActionForward reportDeviceStatus(ActionMapping mapping,
+            ActionForm form, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        Dto dto = getRequestDto(form, request);
+        Dto userDto = RPCUserManage.findUserDtoByKey(request
+                .getParameter("key"));
+        if (null == userDto) {
+            return RPCUtils.sendErrorRPCInfoActionForward(response, "key值无效");
+        }
+        dto.put("userid", userDto.get("userId"));
+        BaseRetDto outDto = (BaseRetDto) userService.reportDeviceStatus(dto);
         return RPCUtils.sendRPCDtoActionForward(response,
                 RPCUtils.createDto(outDto.isRetSuccess(), outDto.getDesc()));
     }

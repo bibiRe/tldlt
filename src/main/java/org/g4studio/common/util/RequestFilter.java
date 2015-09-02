@@ -100,9 +100,9 @@ public class RequestFilter implements Filter {
 		String ctxPath = request.getContextPath();
 		String uri = requestUri.substring(ctxPath.length());
 		if (filterRPCUrl(request, uri)) {
-			if (filterRPCRequestKey(request, response, uri)) {
-				return true;
-			}
+//			if (filterRPCRequestKey(request, response, uri)) {
+//				return true;
+//			}
 			return false;
 		}
 		String isAjax = request.getHeader("x-requested-with");

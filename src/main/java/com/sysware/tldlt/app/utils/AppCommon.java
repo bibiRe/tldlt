@@ -1,10 +1,18 @@
 package com.sysware.tldlt.app.utils;
 
+
 /**
  * Type：AppCommon
  * Descript：常量类.
  * Create：SW-ITS-HHE
  * Create Time：2015年7月22日 上午9:00:15
+ * Version：@version
+ */
+/**
+ * Type：AppCommon
+ * Descript：
+ * Create：SW-ITS-HHE
+ * Create Time：2015年9月2日 下午2:15:51
  * Version：@version
  */
 public class AppCommon {
@@ -38,7 +46,10 @@ public class AppCommon {
      * 返回码-越界.
      */
     public static final int RET_CODE_OVER_STEP = -6;
-    
+    /**
+     * 新增保存失败.
+     */
+    public static final int RET_CODE_ADD_FAIL = -7;
     /**
      * GPS信息类型-设备.
      */
@@ -53,14 +64,19 @@ public class AppCommon {
      * 时间间隔.
      */
     public static final int TIME_INTERVAL = 1000;
-    
+
     /**
-     * 巡检状态-完成. 
+     * 巡检状态-完成.
      */
     public static final int INSPECT_STATE_FINISHED = 6;
     /**
      * 巡检状态-进行中.
      */
     public static final int INSPECT_STATE_RUNNING = 5;
+
+    /**
+     * 媒体类型-图片.
+     */
+    public static final int MEDIA_TYPE_IMAGE = 0;
 
 }

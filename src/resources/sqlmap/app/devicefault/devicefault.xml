@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 演示与教程手工映射SQL语句 -->
+<sqlMap namespace="App.DeviceFault">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />	
+	<insert id="addInfo" parameterClass="dto">
+		INSERT INTO devicefaultinfo (Reporter, Time, FaultInfo, State)
+        VALUES (#userid#, '$time$', #checkdesc#, 0)
+        <selectKey resultClass="int"  keyProperty="devicefaultinfoid" >    
+             SELECT last_insert_id() as devicefaultinfoid;   
+        </selectKey>
+    </insert>    
+</sqlMap>

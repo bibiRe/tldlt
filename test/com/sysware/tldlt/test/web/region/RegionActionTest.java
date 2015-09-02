@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import utils.AppMockStrutsTestCase;
-import utils.HttpServletResponseSimulator;
+import utils.mockstruts.HttpServletResponseSimulator;
 
 /**
  * Type：RegionActionTest
