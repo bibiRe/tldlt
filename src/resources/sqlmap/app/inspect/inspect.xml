@@ -66,8 +66,8 @@
 	</update>
 
 	<insert id="addMediaInfo" parameterClass="dto">
-		INSERT INTO mediainfo (Type, Time, Address, HashValue, Remark)
-		VALUES (#type#, getdate(), #address#, #hash#, #remark#)
+		INSERT INTO mediainfo (Type, Time, Address, HashValue)
+		VALUES (#type#, '$time$', #address#, #hash#)
 		<selectKey resultClass="int" keyProperty="mediainfoid">
 			SELECT last_insert_id() as mediainfoid;
 		</selectKey>

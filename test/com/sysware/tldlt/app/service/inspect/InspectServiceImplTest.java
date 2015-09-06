@@ -10,14 +10,12 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.codehaus.plexus.util.FileUtils;
-import org.eclipse.jetty.util.log.Log;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
+import org.g4studio.core.mvc.xstruts.upload.FormFile;
 import org.g4studio.system.common.util.SystemConstants;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -25,6 +23,7 @@ import org.mockito.stubbing.Answer;
 
 import utils.BaseAppServiceImplTest;
 import utils.TestCommon;
+import utils.TestFormFile;
 import utils.TestUtils;
 
 import com.google.common.collect.Lists;
@@ -757,6 +756,27 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
     private Dto createFileDto(DiskFileItemFactory factory, String fieldName,
             String fileName, String realFileName) throws FileNotFoundException,
             IOException {
+        FileItem fileItem = createFileItem(factory, fieldName, fileName,
+                realFileName);
+        FormFile formFile = new TestFormFile(fileItem);
+        Dto fileDto = new BaseDto();
+        fileDto.put("file", formFile);
+        return fileDto;
+    }
+
+    /**
+     * 创建文件条目对象.
+     * @param factory 文件条目工厂.
+     * @param fieldName 字段名
+     * @param fileName 文件名
+     * @param realFileName 实际文件名.
+     * @return 文件条目对象
+     * @throws FileNotFoundException 文件未找到异常.
+     * @throws IOException IO异常.
+     */
+    private FileItem createFileItem(DiskFileItemFactory factory,
+            String fieldName, String fileName, String realFileName)
+            throws FileNotFoundException, IOException {
         FileItem fileItem = factory.createItem(fieldName, "UTF-8", false,
                 fileName);
         FileInputStream inStream = new FileInputStream(realFileName);
@@ -765,8 +785,6 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
         fileItem.getOutputStream().write(inOutb); // 写出流,保存在文件newFace.gif中
         inStream.close();
         fileItem.getOutputStream().close();
-        Dto fileDto = new BaseDto();
-        fileDto.put("file", fileItem);
-        return fileDto;
+        return fileItem;
     }
 }

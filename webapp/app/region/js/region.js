@@ -369,12 +369,12 @@ Ext.onReady(function() {
 	// 监听下拉树的节点单击事件
 	addDeptTree.on('click', function(node) {
 		departmentComboxWithTree.setValue(node.text);
-		Ext.getCmp("addRoleFormPanel").findById('deptid')
+		Ext.getCmp("addRegionFormPanel").findById('departmentid')
 			.setValue(node.attributes.id);
 		departmentComboxWithTree.collapse();
 	});
 	var departmentComboxWithTree = new Ext.form.ComboBox({
-		id: 'deptname',
+		id: 'departmentname',
 		store: new Ext.data.SimpleStore({
 			fields: [],
 			data: [
@@ -452,6 +452,10 @@ Ext.onReady(function() {
 			}, {
 				id: 'parentid',
 				name: 'parentid',
+				hidden: true
+			}, {
+				id: 'departmentid',
+				name: 'departmentid',
 				hidden: true
 			}, {
 				id: 'windowmode',
@@ -577,8 +581,10 @@ Ext.onReady(function() {
 		}
 		var selectModel = regionTree.getSelectionModel();
 		var selectNode = selectModel.getSelectedNode();
-		Ext.getCmp('parentregionname').setValue(selectNode.attributes.text);
-		Ext.getCmp('parentid').setValue(selectNode.attributes.id);
+		if (null != selectNode) {
+			Ext.getCmp('parentregionname').setValue(selectNode.attributes.text);
+			Ext.getCmp('parentid').setValue(selectNode.attributes.id);
+		}
 		addRegionWindow.show();
 		addRegionWindow
 			.setTitle('<span class="commoncss">新增区域</span>');
@@ -641,22 +647,27 @@ Ext.onReady(function() {
 			Ext.MessageBox.alert('提示', '请先选择要修改的区域!');
 			return;
 		}
-		record = regionInfoGrid.getSelectionModel().getSelected();
+		addRegionFormPanel.getForm().loadRecord(record);		
+		// record = regionInfoGrid.getSelectionModel().getSelected();
+		if (record.get('regionid') == '0') {
+			var a = Ext.getCmp('parentregionname');
+			a.emptyText = '已经是顶级区域';
+		}
 		if (!record.get('leaf')) {
 			parentRegionComboxWithTree.setDisabled(true);
 		} else {
 			parentRegionComboxWithTree.setDisabled(false);
 		}
-		if (record.get('regionid') == '0') {
-			var a = Ext.getCmp('parentregionname');
-			a.emptyText = '已经是顶级区域';
-		} 
-		addRegionFormPanel.getForm().loadRecord(record);
+
+		if (!record.get('parentid')) {
+			parentRegionComboxWithTree.setValue(regionTree.root.attributes.text);
+		}		
 		addRegionWindow.show();
 		addRegionWindow
 			.setTitle('<span style="font-weight:normal">修改区域</span>');
 		Ext.getCmp('windowmode').setValue('edit');
 		Ext.getCmp('parentid_old').setValue(record.get('parentid'));
+		Ext.getCmp('departmentid').setValue(record.get('departmentid'));
 		Ext.getCmp('btnReset').hide();
 	}
 
@@ -702,11 +713,27 @@ Ext.onReady(function() {
 	 * 删除区域
 	 */
 	function deleteItems(pType, pRegionid) {
+		var selectModel = regionTree.getSelectionModel();
+		var selectNode = selectModel.getSelectedNode();
+		var pRegionid = 0;
+		var pRegionPath = null;
+		if (null != selectNode) {
+			pRegionid = selectNode.attributes.id;
+			pRegionPath = selectNode.getPath('id');
+		}
 		var rows = regionInfoGrid.getSelectionModel().getSelections();
 		var fields = '';
 		for (var i = 0; i < rows.length; i++) {
 			if (rows[i].get('regionid') == '0') {
 				fields = fields + rows[i].get('regionname') + '<br>';
+			}
+			if (rows[i].get('regionid') == pRegionid) {
+				if (null != selectNode) {
+					if (null != selectNode.parentNode) {
+						pRegionid = selectNode.parentNode.attributes.id;
+						pRegionPath = selectNode.parentNode.getPath('id');
+					}
+				}
 			}
 		}
 		if (fields != '') {
@@ -743,10 +770,15 @@ Ext.onReady(function() {
 									var resultArray = Ext.util.JSON
 										.decode(response.responseText);
 									regionStore.reload();
-									if (pType == '1') {
+									if (!pRegionPath) {
 										regionTree.root.reload();
 									} else {
-										regionTree.root.reload();
+										regionTree.getLoader().load(regionTree.getRootNode(),
+											function(treeNode) {
+											regionTree.expandPath(pRegionPath, 'id', function(bSucess, oLastNode) {
+												regionTree.getSelectionModel().select(oLastNode);
+												});
+											}, this);
 									}
 									Ext.Msg.alert('提示',
 										resultArray.msg);
@@ -758,7 +790,7 @@ Ext.onReady(function() {
 										resultArray.msg);
 								},
 								params: {
-									strChecked: strChecked,
+									ids: strChecked,
 									type: pType,
 									regionid: pRegionid
 								}

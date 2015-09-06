@@ -6,11 +6,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
 import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.g4studio.core.metatype.Dto;
+import org.g4studio.core.mvc.xstruts.upload.FormFile;
+import org.g4studio.core.util.G4Utils;
 import org.g4studio.system.common.util.SystemConstants;
 
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
@@ -151,7 +152,15 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
      * @return dto
      */
     private Dto checkInspectRecordMedia(Dto dto) {
-        return checkInspectRecordInfoId(dto);
+        Dto result =  checkInspectRecordInfoId(dto);
+        if (null != result) {
+            return result;
+        }
+        result = DtoUtils.checkDtoCheckTime(dto, "datetime");
+        if (null != result) {
+            return result;
+        }
+        return null;
     }
 
     /**
@@ -281,27 +290,26 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
     /**
      * 保存文件列表.
      * @param savePath 保存路径
+     * @param addressPart 部分地址保存路径
      * @param file 文件
      * @return dto对象.
      * @throws IOException IO异常
      * @throws NoSuchAlgorithmException 没有
      */
     @SuppressWarnings("unchecked")
-    private Dto saveMediaFile(String savePath, Dto fileDto) throws IOException,
+    private Dto saveMediaFile(String savePath, String addressPart, Dto fileDto) throws IOException,
             NoSuchAlgorithmException {
-        FileItem fileItem = (FileItem) fileDto.get("file");
+        FormFile fileItem = (FormFile) fileDto.get("file");
         if (null == fileItem) {
             return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
                     "文件为空");
         }
-        String fileName = fileItem.getName();
-        fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);// 解析文件名
-        String realFileName = savePath + "/" + fileName;
-        log.info(fileItem.isInMemory());
+        String fileName = fileItem.getFileName();
+        String realFileName = AppTools.addPathEndSeprator(savePath) + fileName;
         FileUtils.copyInputStreamToFile(fileItem.getInputStream(), new File(
                 realFileName));
         fileDto.put("type", AppCommon.MEDIA_TYPE_IMAGE);
-        fileDto.put("address", fileName);
+        fileDto.put("address", AppTools.addPathEndSeprator(addressPart) + fileName);
         fileDto.put("hash", AppTools.getFileMD5CheckSum(realFileName));
         appDao.insert("App.Inspect.addMediaInfo", fileDto);
         if (null == fileDto.getAsInteger("mediainfoid")) {
@@ -328,6 +336,21 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
             NoSuchAlgorithmException {
         Dto result = null;
         String savePath = AppTools.getAppPropertyValue("mediaFilePath", "");
+        if (AppTools.isBlankString(savePath)) {
+            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
+                    "保存路径没定义");
+        }
+        // 检查路径是否存在,如果不存在则创建之
+        File file = new File(savePath);
+        if (!file.exists()) {
+            file.mkdir();
+        }
+        String savePartPath = G4Utils.getCurDate();
+        savePath = AppTools.addPathEndSeprator(savePath) + savePartPath;
+        File file1 = new File(savePath);
+        if (!file1.exists()) {
+            file1.mkdir();
+        }
         List<Dto> fileList = (List<Dto>) dto.getAsList("medias");
         if (null == fileList) {
             return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
@@ -339,7 +362,9 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
         }
 
         for (Dto fileDto : fileList) {
-            result = saveMediaFile(savePath, fileDto);
+            fileDto.put("time", dto.getAsString("time"));
+            fileDto.put("inspectrecordinfoid", dto.getAsInteger("inspectrecordinfoid"));
+            result = saveMediaFile(savePath, savePartPath, fileDto);
             if (null != result) {
                 return result;
             }

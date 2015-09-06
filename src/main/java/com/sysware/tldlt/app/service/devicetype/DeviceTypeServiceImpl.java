@@ -66,12 +66,12 @@ public class DeviceTypeServiceImpl extends BaseAppServiceImpl implements
     @SuppressWarnings("unchecked")
     private Dto checkInfo(Dto inDto) {
         String id = inDto.getAsString("devicetypeid");
-        if (AppTools.isEmptyString(id)) {
+        if (AppTools.isBlankString(id)) {
             return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
                     "设备类型编号为空");
         }
         String name = inDto.getAsString("devicetypename");
-        if (AppTools.isEmptyString(name)) {
+        if (AppTools.isBlankString(name)) {
             return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
                     "设备类型名称为空");
         }

@@ -1,7 +1,6 @@
 package com.sysware.tldlt.app.utils;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -45,9 +44,18 @@ public class AppTools {
      * @return 是否为空
      */
     public static boolean isEmptyString(String value) {
-        return (null == value || value.equals(""));
+        return (null == value || "".equals(value));
     }
 
+    /**
+     * 判断字符串为空.
+     * @param value 字符串
+     * @return 是否为空
+     */
+    public static boolean isBlankString(String value) {
+        return (null == value || value.trim().equals(""));
+        
+    }
     /**
      * unix时间转换为时间字符串.
      * @param unixTime unix时间.
@@ -165,5 +173,24 @@ public class AppTools {
                     .substring(1));// 加0x100是因为有的b[i]的十六进制只有1位
         }
         return strB.toString();
+    }
+    
+    /**
+     * 给路径加斜杠结束符.
+     * @param path 路径
+     * @return 路径.
+     */
+    public static String addPathEndSeprator(String path) {
+        if (path.endsWith("/")) {
+            return path;
+        }
+        if (path.endsWith("\\")) {
+            return path;
+        }
+        if (path.indexOf("\\") > -1) {
+            return path + "\\";
+        }
+        return path + "/";
+        
     }
 }

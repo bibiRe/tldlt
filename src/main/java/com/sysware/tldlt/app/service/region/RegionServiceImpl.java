@@ -63,7 +63,7 @@ public class RegionServiceImpl extends BaseAppServiceImpl implements
     @SuppressWarnings("unchecked")
     private Dto checkInfo(Dto inDto) {
         String name = inDto.getAsString("regionname");
-        if (AppTools.isEmptyString(name)) {
+        if (AppTools.isBlankString(name)) {
             return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
                     "区域名称为空");
         }

@@ -197,7 +197,20 @@ public class DtoUtils {
         writeRetDtoResponse(response, outDto);
         return null;
     }
-
+    
+    /**
+     * 返回错误信息.
+     * @param response response对象
+     * @param retCode 返回码.
+     * @param info 信息.
+     * @return Struts Actionforward 对象
+     * @throws IOException IO异常
+     */
+    public static ActionForward sendErrorRetDtoActionForward(
+            HttpServletResponse response, int retCode, String info) throws IOException {
+        writeRetDtoResponse(response, getErrorRetDto(retCode, info));
+        return null;
+    }
     /**
      * 设置dto信息.
      * @param dto

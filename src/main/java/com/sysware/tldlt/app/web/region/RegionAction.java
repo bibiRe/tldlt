@@ -19,6 +19,7 @@ import org.g4studio.system.common.dao.vo.UserInfoVo;
 
 import com.google.common.collect.Lists;
 import com.sysware.tldlt.app.service.region.RegionService;
+import com.sysware.tldlt.app.utils.AppCommon;
 import com.sysware.tldlt.app.utils.AppTools;
 import com.sysware.tldlt.app.utils.DtoUtils;
 import com.sysware.tldlt.app.web.common.BaseAppAction;
@@ -60,6 +61,10 @@ public class RegionAction extends BaseAppAction {
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         String deleteIds = request.getParameter("ids");
+        if (AppTools.isEmptyString(deleteIds)) {
+            return DtoUtils.sendErrorRetDtoActionForward(response,
+                    AppCommon.RET_CODE_NULL_VALUE, "没有删除编号列表");
+        }
         Dto inDto = new BaseDto();
         String[] arrChecked = deleteIds.split(",");
         inDto.put("ids", Lists.newArrayList(arrChecked));

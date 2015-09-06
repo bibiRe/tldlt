@@ -1,22 +1,20 @@
 package com.sysware.tldlt.app.local.rpc;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.FileUtils;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.mvc.xstruts.action.ActionForm;
 import org.g4studio.core.mvc.xstruts.action.ActionForward;
 import org.g4studio.core.mvc.xstruts.action.ActionMapping;
+import org.g4studio.core.mvc.xstruts.upload.FormFile;
+import org.g4studio.core.mvc.xstruts.upload.MultipartRequestHandler;
 
 import com.google.common.collect.Lists;
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
@@ -42,32 +40,23 @@ public class InspectAction extends BaseAppAction {
     }
 
     /**
-     * 检查上传的媒体列表. 
-     * @param request http request对象.
+     * 检查上传的媒体列表.
+     * @param form struts数据form对象.
      * @param response http response对象.
      * @param dto dto对象
      * @return 返回是否有效.
      * @throws IOException IO异常
      * @throws FileUploadException 文件上传异常.
      */
-    @SuppressWarnings({"deprecation"})
-    private boolean checkUploadMedias(HttpServletRequest request,
+    private boolean checkUploadMedias(ActionForm form,
             HttpServletResponse response, Dto dto) throws IOException,
             FileUploadException {
-        boolean isMultipart = ServletFileUpload.isMultipartContent(request);
-        if (!isMultipart) {
+        MultipartRequestHandler multiHandle = form.getMultipartRequestHandler();
+        if (null == multiHandle) {
             RPCUtils.sendErrorRPCInfoActionForward(response, "没有文件");
             return false;
         }
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-        String uploadFilePath = "E:/";
-        factory.setRepository(new File(uploadFilePath)); // 设置临时目录
-        factory.setSizeThreshold((int) (FileUtils.ONE_KB * 8)); // 8k的缓冲区,文件大于8K则保存到临时目录
-        ServletFileUpload servletFileUpload = new ServletFileUpload(factory);// 声明解析request的对象
-        servletFileUpload.setHeaderEncoding("UTF-8"); // 处理文件名中文
-        // upload.setFileSizeMax(1024 * 1024 * 5);// 设置每个文件最大为5M
-        servletFileUpload.setSizeMax(FileUtils.ONE_MB * 10);// 一共最多能上传10M
-        return createFileDtoList(request, response, dto, servletFileUpload);        
+        return createFileDtoList(response, dto, multiHandle);
     }
 
     /**
@@ -81,17 +70,15 @@ public class InspectAction extends BaseAppAction {
      * @throws IOException IO异常
      */
     @SuppressWarnings("unchecked")
-    private boolean createFileDtoList(HttpServletRequest request,
-            HttpServletResponse response, Dto dto, ServletFileUpload upload)
-            throws FileUploadException, IOException {
+    private boolean createFileDtoList(HttpServletResponse response, Dto dto,
+            MultipartRequestHandler multiHandle) throws FileUploadException,
+            IOException {
         List<Dto> fileList = Lists.newArrayList();
-        List<FileItem> fileItems = upload.parseRequest(request);
-        for (FileItem fileItem : fileItems) {
-            if (!fileItem.isFormField()) {
-                Dto fileDto = new BaseDto();
-                fileDto.put("file", fileItem);
-                fileList.add(fileDto);
-            }
+        Collection<FormFile> files = multiHandle.getFileElements().values();
+        for (FormFile fileItem : files) {
+            Dto fileDto = new BaseDto();
+            fileDto.put("file", fileItem);
+            fileList.add(fileDto);
         }
         if (fileList.size() < 1) {
             RPCUtils.sendErrorRPCInfoActionForward(response, "没有上传文件");
@@ -131,7 +118,7 @@ public class InspectAction extends BaseAppAction {
     }
 
     /**
-     * 保存巡检记录.
+     * 上传巡检记录媒体信息.
      * @param mapping struts mapping对象.
      * @param form struts数据form对象.
      * @param request http request对象.
@@ -143,7 +130,6 @@ public class InspectAction extends BaseAppAction {
     public ActionForward uploadInspectRecordMedia(ActionMapping mapping,
             ActionForm form, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        // request.setCharacterEncoding("UTF-8");
         Dto dto = getRequestDto(form, request);
         String key = dto.getAsString("key");
         if (AppTools.isEmptyString(key)) {
@@ -154,13 +140,42 @@ public class InspectAction extends BaseAppAction {
             return RPCUtils.sendErrorRPCInfoActionForward(response, "key值无效");
         }
         dto.put("userid", userDto.get("userId"));
-        if (!checkUploadMedias(request, response, dto)) {
+        if (!checkUploadMedias(form, response, dto)) {
             return null;
         }
 
         BaseRetDto outDto = (BaseRetDto) inspectService
                 .saveUploadInspectRecordMedia(dto);
-        return RPCUtils.sendRPCDtoActionForward(response,
-                RPCUtils.createDto(outDto.isRetSuccess(), outDto.getDesc()));
+        if (!outDto.isRetSuccess()) {
+            return RPCUtils
+                    .sendRPCDtoActionForward(
+                            response,
+                            RPCUtils.createDto(outDto.isRetSuccess(),
+                                    outDto.getDesc()));
+        }
+
+        return RPCUtils.sendRPCListDtoActionForward(response,
+                createUploadInspectRecordMediaSuccessRetList(dto));
+    }
+
+    /**
+     * 创建上传巡检记录媒体信息成功返回列表.
+     * @param dto dto对象
+     * @return 返回列表.
+     */
+    @SuppressWarnings("unchecked")
+    private Collection<Dto>
+            createUploadInspectRecordMediaSuccessRetList(Dto dto) {
+        Collection<Dto> retList = Lists.newArrayList();
+        List<Dto> fileList = (List<Dto>) dto.getAsList("medias");
+        for (Dto fileDto : fileList) {
+            Dto retDto = new BaseDto();
+            FormFile fileItem = (FormFile) fileDto.get("file");
+            retDto.put("filename", fileItem.getFileName());
+            retDto.put("address", fileDto.getAsString("address"));
+            retDto.put("hash", fileDto.getAsString("hash"));
+            retList.add(retDto);
+        }
+        return retList;
     }
 }
