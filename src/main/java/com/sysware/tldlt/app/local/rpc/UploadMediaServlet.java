@@ -26,6 +26,9 @@ import com.google.common.collect.Maps;
 import com.sysware.tldlt.app.utils.DtoUtils;
 
 public class UploadMediaServlet extends HttpServlet {
+    /**
+     * 处理方式.
+     */
     private Map<String, HandleUploadMediaRequest> handles = Maps.newHashMap();
     /**
      * 

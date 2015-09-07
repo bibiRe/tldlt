@@ -1,17 +1,13 @@
 package com.sysware.tldlt.app.service.inspect;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.g4studio.core.metatype.Dto;
-import org.g4studio.core.mvc.xstruts.upload.FormFile;
-import org.g4studio.core.util.G4Utils;
 import org.g4studio.system.common.util.SystemConstants;
 
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
@@ -152,7 +148,7 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
      * @return dto
      */
     private Dto checkInspectRecordMedia(Dto dto) {
-        Dto result =  checkInspectRecordInfoId(dto);
+        Dto result = checkInspectRecordInfoId(dto);
         if (null != result) {
             return result;
         }
@@ -283,7 +279,6 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
                 .intValue());
         outDto.put("inspectrecordinfoid",
                 inDto.getAsInteger("inspectrecordinfoid").intValue());
-
         return outDto;
     }
 
@@ -297,26 +292,15 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
      * @throws NoSuchAlgorithmException 没有
      */
     @SuppressWarnings("unchecked")
-    private Dto saveMediaFile(String savePath, String addressPart, Dto fileDto) throws IOException,
+    private Dto saveMediaFile(Dto dto, Dto fileDto) throws IOException,
             NoSuchAlgorithmException {
-        FormFile fileItem = (FormFile) fileDto.get("file");
-        if (null == fileItem) {
-            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
-                    "文件为空");
+        fileDto.put("inspectrecordinfoid",
+                dto.getAsInteger("inspectrecordinfoid"));
+        Dto result = DtoUtils.createMediaInfo(appDao, dto, fileDto);
+        if (null != result) {
+            return result;
         }
-        String fileName = fileItem.getFileName();
-        String realFileName = AppTools.addPathEndSeprator(savePath) + fileName;
-        FileUtils.copyInputStreamToFile(fileItem.getInputStream(), new File(
-                realFileName));
-        fileDto.put("type", AppCommon.MEDIA_TYPE_IMAGE);
-        fileDto.put("address", AppTools.addPathEndSeprator(addressPart) + fileName);
-        fileDto.put("hash", AppTools.getFileMD5CheckSum(realFileName));
-        appDao.insert("App.Inspect.addMediaInfo", fileDto);
-        if (null == fileDto.getAsInteger("mediainfoid")) {
-            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_ADD_FAIL,
-                    "媒体表新增失败");
-        }
-        appDao.insert("App.Inspect.addReleateMediaInfo", fileDto);        
+        appDao.insert("App.Inspect.addReleateMediaInfo", fileDto);
         if (null == fileDto.getAsInteger("releatemediaid")) {
             return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_ADD_FAIL,
                     "媒体关联表新增失败");
@@ -335,36 +319,13 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
     private Dto saveMediaFiles(Dto dto) throws IOException,
             NoSuchAlgorithmException {
         Dto result = null;
-        String savePath = AppTools.getAppPropertyValue("mediaFilePath", "");
-        if (AppTools.isBlankString(savePath)) {
-            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
-                    "保存路径没定义");
-        }
-        // 检查路径是否存在,如果不存在则创建之
-        File file = new File(savePath);
-        if (!file.exists()) {
-            file.mkdir();
-        }
-        String savePartPath = G4Utils.getCurDate();
-        savePath = AppTools.addPathEndSeprator(savePath) + savePartPath;
-        File file1 = new File(savePath);
-        if (!file1.exists()) {
-            file1.mkdir();
+        result = DtoUtils.checkMedias(dto);
+        if (null != result) {
+            return result;
         }
         List<Dto> fileList = (List<Dto>) dto.getAsList("medias");
-        if (null == fileList) {
-            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
-                    "没有文件列表");
-        }
-        if (fileList.size() < 1) {
-            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
-                    "文件列表为空");
-        }
-
         for (Dto fileDto : fileList) {
-            fileDto.put("time", dto.getAsString("time"));
-            fileDto.put("inspectrecordinfoid", dto.getAsInteger("inspectrecordinfoid"));
-            result = saveMediaFile(savePath, savePartPath, fileDto);
+            result = saveMediaFile(dto, fileDto);
             if (null != result) {
                 return result;
             }

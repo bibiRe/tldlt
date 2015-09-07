@@ -1,18 +1,25 @@
 package com.sysware.tldlt.app.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.io.FileUtils;
 import org.g4studio.common.dao.Dao;
 import org.g4studio.common.util.WebUtils;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.mvc.xstruts.action.ActionForward;
+import org.g4studio.core.mvc.xstruts.upload.FormFile;
+import org.g4studio.core.util.G4Utils;
 
+import com.google.common.collect.Lists;
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 
 /**
@@ -53,8 +60,7 @@ public class DtoUtils {
     public static Dto checkDtoCheckTime(Dto info, String timeKey) {
         Long time = info.getAsLong(timeKey);
         if (null == time) {
-            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
-                    "检查时间为空");
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "检查时间为空");
         }
         info.put("time", AppTools.unixTime2DateStr(time.longValue()));
         return null;
@@ -69,14 +75,12 @@ public class DtoUtils {
     public static Dto checkDtoDeviceId(Dao dao, Dto info) {
         String deviceId = info.getAsString("deviceID");
         if (AppTools.isEmptyString(deviceId)) {
-            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
-                    "设备编号为空");
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "设备编号为空");
         }
         Dto deviceDto = (BaseDto) dao.queryForObject(
                 "App.Device.queryDeviceInfo", deviceId);
         if (null == deviceDto) {
-            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_INVALID_VALUE,
-                    "设备编号无效");
+            return getErrorRetDto(AppCommon.RET_CODE_INVALID_VALUE, "设备编号无效");
         }
         return null;
     }
@@ -89,14 +93,12 @@ public class DtoUtils {
      */
     public static Dto checkDtoUserId(Dao dao, Dto info) {
         if (AppTools.isEmptyString(info.getAsString("userid"))) {
-            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
-                    "用户编号为空");
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "用户编号为空");
         }
         Dto userDto = (BaseDto) dao.queryForObject("User.getUserInfoByKey",
                 info);
         if (null == userDto) {
-            return getErrorRetDto(AppCommon.RET_CODE_INVALID_VALUE,
-                    "用户编号无效");
+            return getErrorRetDto(AppCommon.RET_CODE_INVALID_VALUE, "用户编号无效");
         }
         return null;
     }
@@ -108,16 +110,13 @@ public class DtoUtils {
      */
     public static Dto checkGPSInfo(Dto info) {
         if (null == info.getAsLong("datetime")) {
-            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
-                    "时间为空");
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "时间为空");
         }
         if (null == info.getAsBigDecimal("longtitude")) {
-            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
-                    "经度为空");
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "经度为空");
         }
         if (null == info.getAsBigDecimal("latitude")) {
-            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
-                    "纬度为空");
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "纬度为空");
         }
         return null;
     }
@@ -146,6 +145,75 @@ public class DtoUtils {
         BaseRetDto result = new BaseRetDto();
         setRetDtoInfo(result, retCode, info);
         return result;
+    }
+
+    /**
+     * 创建保存路径并且放入到dto.
+     * @param dto dto对象
+     * @return 创建示范成功.
+     */
+    @SuppressWarnings("unchecked")
+    public static Dto createSavePathAndPutInDto(Dto dto) {
+        String savePath = AppTools.getAppPropertyValue("mediaFilePath", "");
+        if (AppTools.isBlankString(savePath)) {
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "保存路径没定义");
+        }
+        // 检查路径是否存在,如果不存在则创建之
+        File file = new File(savePath);
+        if (!file.exists()) {
+            if (!file.mkdir()) {
+                return getErrorRetDto(AppCommon.RET_CODE_CREATE_PATH_FAIL,
+                        "创建保存路径失败");
+            }
+        }
+        dto.put("savePartPath", G4Utils.getCurDate());
+        savePath = AppTools.addPathEndSeprator(savePath)
+                + dto.getAsString("savePartPath");
+        File file1 = new File(savePath);
+        if (!file1.exists()) {
+            if (!file1.mkdir()) {
+                return getErrorRetDto(AppCommon.RET_CODE_CREATE_PATH_FAIL,
+                        "创建保存路径失败");
+            }
+        }
+        dto.put("savePath", savePath);
+        return null;
+    }
+
+    /**
+     * 创建媒体信息.
+     * @param appDao dao对象
+     * @param dto dto对象
+     * @param fileDto 文件对象
+     * @return dto
+     * @throws NoSuchAlgorithmException 没有此算法
+     * @throws IOException io异常
+     */
+    @SuppressWarnings("unchecked")
+    public static Dto createMediaInfo(Dao appDao, Dto dto, Dto fileDto)
+            throws NoSuchAlgorithmException, IOException {
+        fileDto.put("time", dto.getAsString("time"));
+        FormFile fileItem = (FormFile) fileDto.get("file");
+        if (null == fileItem) {
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "文件为空");
+        }
+        Dto result = createMediaFile(
+                AppTools.addPathEndSeprator(dto.getAsString("savePath")),
+                fileDto);
+        if (null != result) {
+            return result;
+        }
+        fileDto.put("type", AppCommon.MEDIA_TYPE_IMAGE);
+        fileDto.put("address",
+                AppTools.addPathEndSeprator(dto.getAsString("savePartPath"))
+                        + fileItem.getFileName());
+        fileDto.put("hash", AppTools.getFileMD5CheckSum(fileDto
+                .getAsString("realFileName")));
+        appDao.insert("App.Media.addInfo", fileDto);
+        if (null == fileDto.getAsInteger("mediainfoid")) {
+            return getErrorRetDto(AppCommon.RET_CODE_ADD_FAIL, "媒体表新增失败");
+        }
+        return null;
     }
 
     /**
@@ -197,7 +265,7 @@ public class DtoUtils {
         writeRetDtoResponse(response, outDto);
         return null;
     }
-    
+
     /**
      * 返回错误信息.
      * @param response response对象
@@ -207,10 +275,12 @@ public class DtoUtils {
      * @throws IOException IO异常
      */
     public static ActionForward sendErrorRetDtoActionForward(
-            HttpServletResponse response, int retCode, String info) throws IOException {
+            HttpServletResponse response, int retCode, String info)
+            throws IOException {
         writeRetDtoResponse(response, getErrorRetDto(retCode, info));
         return null;
     }
+
     /**
      * 设置dto信息.
      * @param dto
@@ -229,7 +299,7 @@ public class DtoUtils {
 
     /**
      * 设置返回dto信息.
-     * @param dto  dto对象
+     * @param dto dto对象
      * @param retCode 返回值
      * @param info 信息.
      */
@@ -284,5 +354,67 @@ public class DtoUtils {
         response.getWriter().write(str);
         response.getWriter().flush();
         response.getWriter().close();
+    }
+
+    /**
+     * 创建上传巡检记录媒体信息成功返回列表.
+     * @param dto dto对象
+     * @return 返回列表.
+     */
+    @SuppressWarnings("unchecked")
+    public static Collection<Dto> createUploadInspectRecordMediaSuccessRetList(
+            Dto dto) {
+        Collection<Dto> retList = Lists.newArrayList();
+        List<Dto> fileList = (List<Dto>) dto.getAsList("medias");
+        for (Dto fileDto : fileList) {
+            Dto retDto = new BaseDto();
+            FormFile fileItem = (FormFile) fileDto.get("file");
+            retDto.put("filename", fileItem.getFileName());
+            retDto.put("address", fileDto.getAsString("address"));
+            retDto.put("hash", fileDto.getAsString("hash"));
+            retList.add(retDto);
+        }
+        return retList;
+    }
+
+    /**
+     * 创建媒体文件.
+     * @param path 路径
+     * @param fileDto 文件dto
+     * @return dto对象.
+     */
+    @SuppressWarnings("unchecked")
+    private static Dto createMediaFile(String path, Dto fileDto) {
+        FormFile fileItem = (FormFile) fileDto.get("file");
+        if (null == fileItem) {
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "文件为空");
+        }
+        String fileName = fileItem.getFileName();
+        String realFileName = path + fileName;
+        try {
+            FileUtils.copyInputStreamToFile(fileItem.getInputStream(),
+                    new File(realFileName));
+        } catch (Exception e) {
+            getErrorRetDto(AppCommon.RET_CODE_CREATE_FILE_FAIL, e.getMessage());
+        }
+        fileDto.put("realFileName", realFileName);
+        return null;
+    }
+
+    /**
+     * 检查媒体信息.
+     * @param dto dto对象
+     * @return dto对象
+     */
+    @SuppressWarnings("unchecked")
+    public static Dto checkMedias(Dto dto) {
+        List<Dto> fileList = (List<Dto>) dto.getAsList("medias");
+        if (null == fileList) {
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "没有文件列表");
+        }
+        if (fileList.size() < 1) {
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "文件列表为空");
+        }
+        return createSavePathAndPutInDto(dto);
     }
 }

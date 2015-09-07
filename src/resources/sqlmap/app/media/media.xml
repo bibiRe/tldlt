@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 演示与教程手工映射SQL语句 -->
+<sqlMap namespace="App.Media">
+	<typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+	<insert id="addInfo" parameterClass="dto">
+		INSERT INTO mediainfo (Type, Time, Address, HashValue)
+		VALUES (#type#, '$time$', #address#, #hash#)
+		<selectKey resultClass="int" keyProperty="mediainfoid">
+			SELECT last_insert_id() as mediainfoid;
+		</selectKey>
+	</insert>	
+</sqlMap>

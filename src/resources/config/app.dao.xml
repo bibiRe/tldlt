@@ -51,6 +51,7 @@
 				<prop key="edit*">PROPAGATION_REQUIRED,-Exception</prop>
 				<prop key="modify*">PROPAGATION_REQUIRED,-Exception</prop>
 				<prop key="call*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="report*">PROPAGATION_REQUIRED,-Exception</prop>
 				<prop key="batch*">PROPAGATION_REQUIRED,-Exception</prop>
 				<prop key="*">PROPAGATION_SUPPORTS,-Exception</prop>
 			</props>

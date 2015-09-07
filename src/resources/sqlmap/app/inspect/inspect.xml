@@ -64,14 +64,6 @@
 		InspectRecord SET ExecuteEndTime = '$time$' WHERE InspectRecord_Id =
 		#inspectrecordid#
 	</update>
-
-	<insert id="addMediaInfo" parameterClass="dto">
-		INSERT INTO mediainfo (Type, Time, Address, HashValue)
-		VALUES (#type#, '$time$', #address#, #hash#)
-		<selectKey resultClass="int" keyProperty="mediainfoid">
-			SELECT last_insert_id() as mediainfoid;
-		</selectKey>
-	</insert>
 	
 	<insert id="addReleateMediaInfo" parameterClass="dto">
 		INSERT INTO ReleateMediaInfo (MediaInfo_Id, Type, ReleateRecordId,Remark)

@@ -131,7 +131,6 @@ public class DeviceAction extends BaseAppAction {
             HttpServletResponse response) throws Exception {
         Dto dto = getRequestDto(form, request);
         BaseRetDto outDto = (BaseRetDto) deviceService.saveGPSInfo(dto);
-        return RPCUtils.sendRPCDtoActionForward(response,
-                RPCUtils.createDto(outDto.isRetSuccess(), outDto.getDesc()));
+        return RPCUtils.sendBasicRetDtoRPCInfoActionForward(response, outDto);
     }
 }

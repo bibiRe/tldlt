@@ -13,6 +13,7 @@ import org.g4studio.core.mvc.xstruts.action.ActionMapping;
 
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 import com.sysware.tldlt.app.service.user.UserService;
+import com.sysware.tldlt.app.utils.DtoUtils;
 import com.sysware.tldlt.app.web.common.BaseAppAction;
 
 /**
@@ -98,8 +99,7 @@ public class UserAction extends BaseAppAction {
         }
         dto.put("userid", userDto.get("userId"));
         BaseRetDto outDto = (BaseRetDto) userService.saveGPSInfo(dto);
-        return RPCUtils.sendRPCDtoActionForward(response,
-                RPCUtils.createDto(outDto.isRetSuccess(), outDto.getDesc()));
+        return RPCUtils.sendBasicRetDtoRPCInfoActionForward(response, outDto);
     }
 
     /**
@@ -123,7 +123,38 @@ public class UserAction extends BaseAppAction {
         }
         dto.put("userid", userDto.get("userId"));
         BaseRetDto outDto = (BaseRetDto) userService.reportDeviceStatus(dto);
-        return RPCUtils.sendRPCDtoActionForward(response,
-                RPCUtils.createDto(outDto.isRetSuccess(), outDto.getDesc()));
+        return RPCUtils.sendBasicRetDtoRPCInfoActionForward(response, outDto);
+    }
+
+    /**
+     * 上报设备状态媒体信息.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
+     * @return struts跳转地址.
+     * @throws Exception 异常对象.
+     */
+    public ActionForward uploadDeviceStatusMedia(ActionMapping mapping,
+            ActionForm form, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        Dto dto = getRequestDto(form, request);
+        if (!RPCUtils.checkKeyAndSendErrorRPCInfoActionForward(response, dto)) {
+            return null;
+        }
+        if (!RPCUtils.checkUploadMediasAndSendErrorRPCInfoActionForward(form,
+                response, dto)) {
+            return null;
+        }
+
+        BaseRetDto outDto = (BaseRetDto) userService
+                .saveUploadDeviceStatusMedia(dto);
+        if (!outDto.isRetSuccess()) {
+            return RPCUtils.sendBasicRetDtoRPCInfoActionForward(response,
+                    outDto);
+        }
+
+        return RPCUtils.sendRPCListDtoActionForward(response,
+                DtoUtils.createUploadInspectRecordMediaSuccessRetList(dto));
     }
 }

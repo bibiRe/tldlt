@@ -21,6 +21,14 @@
     <select id="queryUserList" resultClass="dto">
 		SELECT a.UserID, a.USERNAME, a.ACCOUNT, a.PASSWORD FROM eauser a
     </select>
+    
+    <select id="queryDeviceSuggestInfoById" parameterClass="int"
+		resultClass="dto">
+		SELECT a.DeviceSuggestInfo_Id as devicesuggestinfoid, a.USERID as userid, a.Device_Id as deviceid, UNIX_TIMESTAMP(a.Time) as time 
+		FROM DeviceSuggestInfo a
+		WHERE a.DeviceSuggestInfo_Id = #devicesuggestinfoid#
+	</select>
+	
     <insert id="saveGPSInfo" parameterClass="dto">
 		INSERT INTO GPSInfo (Latitude, Longtitude, Height, Speed, Time)
         VALUES (#latitude#, #longtitude#, #height#, #speed#, '$time$')
@@ -32,11 +40,19 @@
 		INSERT INTO ReleateGPSInfo (GPSInfo_Id, ReleateRecordId, Type, Remark)
         VALUES (#gpsinfoid#, #userid#, 1, #remark#)
     </insert>
-    <insert id="reportDeviceStatus" parameterClass="dto">
+    <insert id="addDeviceSuggestInfo" parameterClass="dto">
 		INSERT INTO DeviceSuggestInfo (USERID, Device_Id, Content, Time)
         VALUES (#userid#, #deviceID#, #devicedesc#, '$time$')
         <selectKey resultClass="int"  keyProperty="devicesuggestinfoid" >    
              SELECT last_insert_id() as devicesuggestinfoid;   
         </selectKey>
     </insert>
+    
+    	<insert id="addReleateMediaInfo" parameterClass="dto">
+		INSERT INTO ReleateMediaInfo (MediaInfo_Id, Type, ReleateRecordId,Remark)
+		VALUES (#mediainfoid#, 3, #devicesuggestinfoid#, #remark#)
+		<selectKey resultClass="int" keyProperty="releatemediaid">
+			SELECT last_insert_id() as releatemediaid;
+		</selectKey>
+	</insert>
 </sqlMap>

@@ -1,7 +1,9 @@
 package org.g4studio.common.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -12,6 +14,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.g4studio.common.dao.Dao;
@@ -29,6 +36,7 @@ import org.g4studio.system.common.util.idgenerator.IDHelper;
 
 import com.sysware.tldlt.app.local.rpc.RPCUserManage;
 import com.sysware.tldlt.app.local.rpc.RPCUtils;
+import com.sysware.tldlt.app.utils.AppTools;
 import com.sysware.tldlt.app.utils.DtoUtils;
 
 /**
@@ -116,13 +124,18 @@ public class RequestFilter implements Filter {
 		return false;
 	}
 
-	private boolean filterRPCRequestKey(HttpServletRequest request, HttpServletResponse response, String uri)
+	@SuppressWarnings("unchecked")
+    private boolean filterRPCRequestKey(HttpServletRequest request, HttpServletResponse response, String uri)
 			throws IOException {
-		if (!uri.contains("loginAction.do") || !"login".equals(request.getParameter("reqCode"))) {
-			String key = request.getParameter("key");
+		if (!uri.contains("loginAction.do") || !"login".equals(request.getParameter("reqCode"))) {	        
+		    String key = request.getParameter("key");
 			if (G4Utils.isEmpty(key)) {
-				RPCUtils.writeErrorRPCInfo(response, "没有Key值");
-				return true;
+			    String contentType = request.getContentType();           
+	            if (contentType.startsWith("multipart/form-data")) {
+	                return false;
+	            }				
+                RPCUtils.writeErrorRPCInfo(response, "没有Key值");
+                return true;
 			}
 			if (!RPCUserManage.checkUserKey(key)) {
 				RPCUtils.writeErrorRPCInfo(response, "Key值无效");

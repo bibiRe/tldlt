@@ -51,6 +51,15 @@ public class AppCommon {
      */
     public static final int RET_CODE_ADD_FAIL = -7;
     /**
+     * 创建路径失败.
+     */
+    public static final int RET_CODE_CREATE_PATH_FAIL = -8;
+    /**
+     * 创建文件失败.
+     */
+    public static final int RET_CODE_CREATE_FILE_FAIL = -9;
+    
+    /**
      * GPS信息类型-设备.
      */
     public static final int GPS_INFO_TYPE_DEVICE = 2;

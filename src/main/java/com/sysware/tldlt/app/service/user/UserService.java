@@ -26,4 +26,11 @@ public interface UserService extends BaseService {
      */
     Dto reportDeviceStatus(Dto info);
 
+    /**
+     * 保存上报设备状态媒体信息.
+     * @param info dto对象
+     * @return dto返回信息
+     */
+    Dto saveUploadDeviceStatusMedia(Dto dto);
+
 }
