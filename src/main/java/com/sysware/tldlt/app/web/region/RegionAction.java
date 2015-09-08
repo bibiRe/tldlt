@@ -15,7 +15,6 @@ import org.g4studio.core.mvc.xstruts.action.ActionForward;
 import org.g4studio.core.mvc.xstruts.action.ActionMapping;
 import org.g4studio.core.util.G4Utils;
 import org.g4studio.system.admin.service.OrganizationService;
-import org.g4studio.system.common.dao.vo.UserInfoVo;
 
 import com.google.common.collect.Lists;
 import com.sysware.tldlt.app.service.region.RegionService;
@@ -30,10 +29,6 @@ import com.sysware.tldlt.app.web.common.BaseAppAction;
  * Create：SW-ITS-HHE
  * Create Time：2015年8月11日 上午11:33:42
  * Version：@version
- */
-/**
- * Type：RegionAction Descript： Create：SW-ITS-HHE Create Time：2015年8月17日
- * 下午3:56:04 Version：@version
  */
 public class RegionAction extends BaseAppAction {
     /**
@@ -75,39 +70,29 @@ public class RegionAction extends BaseAppAction {
 
     /**
      * 初始化.
-     * @param mapping
-     *            struts mapping对象.
-     * @param form
-     *            struts数据form对象.
-     * @param request
-     *            http request对象.
-     * @param response
-     *            http response对象.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
      * @return struts跳转地址.
-     * @throws Exception
-     *             异常对象.
+     * @throws Exception 异常对象.
      */
     public ActionForward init(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        setRequestUserDepartmentInfo(request);
+        setRequestUserDepartmentInfo(organizationService, request);
         String viewString = "regionView";
         return mapping.findForward(viewString);
     }
 
     /**
      * 查询区域管理.
-     * @param mapping
-     *            struts mapping对象.
-     * @param form
-     *            struts数据form对象.
-     * @param request
-     *            http request对象.
-     * @param response
-     *            http response对象.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
      * @return struts跳转地址.
-     * @throws Exception
-     *             异常对象.
+     * @throws Exception 异常对象.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public ActionForward queryRegionsForManage(ActionMapping mapping,
@@ -130,23 +115,17 @@ public class RegionAction extends BaseAppAction {
                 (Integer) appReader.queryForObject(
                         "App.Region.queryRegionsForManageForPageCount", dto),
                 null);
-        write(jsonString, response);
-        return getNullForward(mapping);
+        return DtoUtils.sendStrActionForward(response, jsonString);
     }
 
     /**
      * 区域树初始化.
-     * @param mapping
-     *            struts mapping对象.
-     * @param form
-     *            struts数据form对象.
-     * @param request
-     *            http request对象.
-     * @param response
-     *            http response对象.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
      * @return struts跳转地址.
-     * @throws Exception
-     *             异常对象.
+     * @throws Exception 异常对象.
      */
     @SuppressWarnings({"unchecked"})
     public ActionForward regionTreeInit(ActionMapping mapping, ActionForm form,
@@ -162,23 +141,18 @@ public class RegionAction extends BaseAppAction {
         Collection<Dto> outDtos = ((RegionService) this.service)
                 .queryRegionItems(dto);
         setOutInfoLeaf(outDtos, "id");
-        write(JsonHelper.encodeObject2Json(outDtos), response);
-        return mapping.findForward(null);
+        return DtoUtils.sendStrActionForward(response,
+                JsonHelper.encodeObject2Json(outDtos));
     }
 
     /**
      * 新增信息.
-     * @param mapping
-     *            struts mapping对象.
-     * @param form
-     *            struts数据form对象.
-     * @param request
-     *            http request对象.
-     * @param response
-     *            http response对象.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
      * @return struts跳转地址.
-     * @throws Exception
-     *             异常对象.
+     * @throws Exception 异常对象.
      */
     public ActionForward saveAddInfo(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
@@ -191,17 +165,12 @@ public class RegionAction extends BaseAppAction {
 
     /**
      * 更新信息.
-     * @param mapping
-     *            struts mapping对象.
-     * @param form
-     *            struts数据form对象.
-     * @param request
-     *            http request对象.
-     * @param response
-     *            http response对象.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
      * @return struts跳转地址.
-     * @throws Exception
-     *             异常对象.
+     * @throws Exception 异常对象.
      */
     public ActionForward saveUpdateInfo(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
@@ -228,27 +197,4 @@ public class RegionAction extends BaseAppAction {
         }
     }
 
-    /**
-     * 设置Http request对应用户部门信息.
-     * @param request
-     *            http request对象.
-     * @return 设置是否成功.
-     */
-    @SuppressWarnings("unchecked")
-    private boolean setRequestUserDepartmentInfo(HttpServletRequest request) {
-        Dto dto = new BaseDto();
-        UserInfoVo userInfo = super.getSessionContainer(request).getUserInfo();
-        if (null == userInfo) {
-            return false;
-        }
-        String deptid = userInfo.getDeptid();
-        dto.put("deptid", deptid);
-        Dto outDto = organizationService.queryDeptinfoByDeptid(dto);
-        if (null == outDto) {
-            return false;
-        }
-        request.setAttribute("rootDeptid", outDto.getAsString("deptid"));
-        request.setAttribute("rootDeptname", outDto.getAsString("deptname"));
-        return true;
-    }
 }

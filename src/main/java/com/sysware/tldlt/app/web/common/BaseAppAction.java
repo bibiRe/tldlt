@@ -10,9 +10,12 @@ import org.g4studio.common.service.BaseService;
 import org.g4studio.common.web.BaseAction;
 import org.g4studio.common.web.BaseActionForm;
 import org.g4studio.core.metatype.Dto;
+import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.mvc.xstruts.action.ActionForm;
 import org.g4studio.core.mvc.xstruts.action.ActionForward;
 import org.g4studio.core.mvc.xstruts.action.ActionMapping;
+import org.g4studio.system.admin.service.OrganizationService;
+import org.g4studio.system.common.dao.vo.UserInfoVo;
 
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 
@@ -32,6 +35,7 @@ public class BaseAppAction extends BaseAction {
      * 服务接口.
      */
     protected BaseService service;
+
     /**
      * 得到Dto翻页空返回.
      * @param dto dto对象
@@ -42,9 +46,9 @@ public class BaseAppAction extends BaseAction {
      * @return struts跳转地址.
      * @throws Exception 异常对象.
      */
-    public ActionForward geDtoPageNullForward(Dto dto,
-            String querySql, String queryCountSql,
-            HttpServletResponse response, ActionMapping mapping) throws Exception {
+    public ActionForward geDtoPageNullForward(Dto dto, String querySql,
+            String queryCountSql, HttpServletResponse response,
+            ActionMapping mapping) throws Exception {
         String jsonString = encodeList2PageJson(
                 appReader.queryForPage(querySql, dto),
                 (Integer) appReader.queryForObject(queryCountSql, dto), null);
@@ -72,17 +76,17 @@ public class BaseAppAction extends BaseAction {
      * @return struts跳转地址.
      * @throws Exception 异常对象.
      */
-    protected ActionForward getPageNullForward(ActionMapping mapping,
-            ActionForm form, HttpServletRequest request,
-            HttpServletResponse response, String querySql,
-            String queryCountSql) throws Exception {
+    protected ActionForward
+            getPageNullForward(ActionMapping mapping, ActionForm form,
+                    HttpServletRequest request, HttpServletResponse response,
+                    String querySql, String queryCountSql) throws Exception {
         Dto dto = getRequestDto(form, request);
-        return geDtoPageNullForward(dto, querySql, queryCountSql,
-                response, mapping);
+        return geDtoPageNullForward(dto, querySql, queryCountSql, response,
+                mapping);
     }
 
     /**
-     * 得到请求的dto. 
+     * 得到请求的dto.
      * @param form struts数据form对象.
      * @param request http request对象.
      * @return dto
@@ -106,7 +110,7 @@ public class BaseAppAction extends BaseAction {
             throws IOException {
         BaseRetDto retDto = (BaseRetDto) outDto;
         if (retDto.isRetSuccess()) {
-        	retDto.setSuccess(true);
+            retDto.setSuccess(true);
             retDto.setMsg("操作成功");
         } else {
             StringBuilder strB = new StringBuilder();
@@ -114,13 +118,41 @@ public class BaseAppAction extends BaseAction {
             strB.append("操作失败，错误码:");
             strB.append(retDto.getRetCode());
             strB.append("，错误信息:");
-            strB.append(outDto.getMsg());            
+            strB.append(outDto.getMsg());
             retDto.setMsg(strB.toString());
         }
         write(outDto.toJson(), response);
     }
-    
+
+    /**
+     * 设置Http request对应用户部门信息.
+     * @param request http request对象.
+     * @return 设置是否成功.
+     */
+    @SuppressWarnings("unchecked")
+    protected boolean
+            setRequestUserDepartmentInfo(
+                    OrganizationService organizationService,
+                    HttpServletRequest request) {
+        super.removeSessionAttribute(request, "deptid");
+        Dto dto = new BaseDto();
+        UserInfoVo userInfo = super.getSessionContainer(request).getUserInfo();
+        if (null == userInfo) {
+            return false;
+        }
+        String deptid = userInfo.getDeptid();
+        dto.put("deptid", deptid);
+        Dto outDto = organizationService.queryDeptinfoByDeptid(dto);
+        if (null == outDto) {
+            return false;
+        }
+        request.setAttribute("rootDeptid", outDto.getAsString("deptid"));
+        request.setAttribute("rootDeptname", outDto.getAsString("deptname"));
+        request.setAttribute("login_account", userInfo.getAccount());
+        return true;
+    }
+
     public void setService(BaseService service) {
         this.service = service;
-    }    
+    }
 }

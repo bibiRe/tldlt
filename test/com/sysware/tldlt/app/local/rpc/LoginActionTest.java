@@ -3,6 +3,8 @@ package com.sysware.tldlt.app.local.rpc;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.sysware.tldlt.app.local.rpc.RPCUserManage;
+
 import utils.AppMockStrutsTestCase;
 
 public class LoginActionTest  extends AppMockStrutsTestCase {

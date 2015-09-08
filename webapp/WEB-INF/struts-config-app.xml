@@ -12,52 +12,48 @@
 
 		<!-- 设备类型 -->
 		<action name="baseActionForm" path="/deviceType" scope="request"
-			parameter="reqCode"
-			type="com.sysware.tldlt.app.web.devicetype.DeviceTypeAction">
+			parameter="reqCode" type="com.sysware.tldlt.app.web.devicetype.DeviceTypeAction">
 			<forward name="deviceTypeView" path="/devicetype/devicetypeview.jsp" />
 		</action>
 		<!-- 区域管理 -->
 		<action name="baseActionForm" path="/region" scope="request"
-			parameter="reqCode"
-			type="com.sysware.tldlt.app.web.region.RegionAction">
+			parameter="reqCode" type="com.sysware.tldlt.app.web.region.RegionAction">
 			<forward name="regionView" path="/region/regionview.jsp" />
 		</action>
-		
-
-		
+		<!-- 设备厂家 -->
 		<action name="baseActionForm" path="/deviceManufacture" scope="request"
 			parameter="reqCode"
 			type="com.sysware.tldlt.app.web.devicemanufacture.DeviceManufactureAction">
 			<forward name="deviceManufactureView" path="/devicemanufacture/devicemanufactureview.jsp" />
 		</action>
-		
+		<!-- 设备型号 -->
 		<action name="baseActionForm" path="/deviceModel" scope="request"
-			parameter="reqCode"
-			type="com.sysware.tldlt.app.web.devicemodel.DeviceModelAction">
+			parameter="reqCode" type="com.sysware.tldlt.app.web.devicemodel.DeviceModelAction">
 			<forward name="deviceModelView" path="/devicemodel/devicemodelview.jsp" />
 		</action>
-		
-		
+		<!-- 用户分组 -->
 		<action name="baseActionForm" path="/userGroup" scope="request"
-			parameter="reqCode"
-			type="com.sysware.tldlt.app.web.usergroup.UserGroupAction">
+			parameter="reqCode" type="com.sysware.tldlt.app.web.usergroup.UserGroupAction">
 			<forward name="UserGroupView" path="/usergroup/usergroupview.jsp" />
 		</action>
-		
-		
+		<!-- 设备管理 -->
 		<action name="baseActionForm" path="/devMgr" scope="request"
-			parameter="reqCode"
-			type="com.sysware.tldlt.app.web.devmgr.DevMgrAction">
+			parameter="reqCode" type="com.sysware.tldlt.app.web.devmgr.DevMgrAction">
 			<forward name="DevMgrView" path="/devmgr/devmgrview.jsp" />
 		</action>
-		
-		
-	    <action name="baseActionForm" path="/inspectionPlan" scope="request"
+		<!-- 巡检计划 -->
+		<action name="baseActionForm" path="/inspectionPlan" scope="request"
 			parameter="reqCode"
 			type="com.sysware.tldlt.app.web.inspectionplan.InspectionPlanAction">
 			<forward name="InspectionPlanView" path="/inspectionplan/inspectionplanview.jsp" />
 		</action>
+		<!-- 巡检 -->
+		<action name="baseActionForm" path="/inspectView" scope="request"
+			parameter="reqCode"
+			type="com.sysware.tldlt.app.web.inspect.InspectViewAction">
+			<forward name="init" path="/inspectview/inspectrealview.jsp" />
+		</action>
 
-   </action-mappings>
+	</action-mappings>
 
 </struts-config>

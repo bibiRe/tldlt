@@ -65,17 +65,12 @@ public class DeviceTypeAction extends BaseAppAction {
 
     /**
      * 区域树初始化.
-     * @param mapping
-     *            struts mapping对象.
-     * @param form
-     *            struts数据form对象.
-     * @param request
-     *            http request对象.
-     * @param response
-     *            http response对象.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
      * @return struts跳转地址.
-     * @throws Exception
-     *             异常对象.
+     * @throws Exception 异常对象.
      */
     @SuppressWarnings({"unchecked"})
     public ActionForward deviceTypeTreeInit(ActionMapping mapping,
@@ -86,23 +81,18 @@ public class DeviceTypeAction extends BaseAppAction {
         Collection<Dto> outDtos = ((DeviceTypeService) this.service)
                 .queryDeviceTypeItems(dto);
         setOutInfoLeaf(outDtos, "id");
-        write(JsonHelper.encodeObject2Json(outDtos), response);
-        return mapping.findForward(null);
+        return DtoUtils.sendStrActionForward(response,
+                JsonHelper.encodeObject2Json(outDtos));
     }
 
     /**
      * 初始化.
-     * @param mapping
-     *            struts mapping对象.
-     * @param form
-     *            struts数据form对象.
-     * @param request
-     *            http request对象.
-     * @param response
-     *            http response对象.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
      * @return struts跳转地址.
-     * @throws Exception
-     *             异常对象.
+     * @throws Exception 异常对象.
      */
     public ActionForward init(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
@@ -113,17 +103,12 @@ public class DeviceTypeAction extends BaseAppAction {
 
     /**
      * 查询区域管理.
-     * @param mapping
-     *            struts mapping对象.
-     * @param form
-     *            struts数据form对象.
-     * @param request
-     *            http request对象.
-     * @param response
-     *            http response对象.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
      * @return struts跳转地址.
-     * @throws Exception
-     *             异常对象.
+     * @throws Exception 异常对象.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public ActionForward queryDeviceTypesForManage(ActionMapping mapping,
@@ -147,23 +132,17 @@ public class DeviceTypeAction extends BaseAppAction {
                 (Integer) appReader.queryForObject(
                         "App.DeviceType.queryDeviceTypesForManageForPageCount",
                         dto), null);
-        write(jsonString, response);
-        return getNullForward(mapping);
+        return DtoUtils.sendStrActionForward(response, jsonString);
     }
 
     /**
      * 新增信息.
-     * @param mapping
-     *            struts mapping对象.
-     * @param form
-     *            struts数据form对象.
-     * @param request
-     *            http request对象.
-     * @param response
-     *            http response对象.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
      * @return struts跳转地址.
-     * @throws Exception
-     *             异常对象.
+     * @throws Exception 异常对象.
      */
     public ActionForward saveAddInfo(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
@@ -176,17 +155,12 @@ public class DeviceTypeAction extends BaseAppAction {
 
     /**
      * 更新信息.
-     * @param mapping
-     *            struts mapping对象.
-     * @param form
-     *            struts数据form对象.
-     * @param request
-     *            http request对象.
-     * @param response
-     *            http response对象.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
      * @return struts跳转地址.
-     * @throws Exception
-     *             异常对象.
+     * @throws Exception 异常对象.
      */
     public ActionForward saveUpdateInfo(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)

@@ -1,4 +1,4 @@
-package com.sysware.tldlt.test.web;
+package com.sysware.tldlt.app.web;
 
 import org.junit.After;
 import org.junit.Before;

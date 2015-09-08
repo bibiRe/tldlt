@@ -43,9 +43,10 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
     /**
      * 增加巡检记录.
      * @param inDto 巡检记录
+     * @return dto
      */
     @SuppressWarnings("unchecked")
-    private void addInspectRecord(Dto inDto) {
+    private BaseRetDto addInspectRecord(Dto inDto) {
         Integer inspectRecordDto = (Integer) appDao.queryForObject(
                 "App.Inspect.queryInspectRecordByPlanId",
                 inDto.getAsInteger("planID").intValue());
@@ -54,19 +55,27 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
             inspectRecordId = inspectRecordDto.intValue();
         }
         if (inspectRecordId < 1) {
-            appDao.insert("App.Inspect.addInspectRecord", inDto);
+            BaseRetDto result = (BaseRetDto) DtoUtils.addInfoAndCheckIntIdFail(
+                    appDao, "App.Inspect.addInspectRecord", inDto,
+                    "inspectrecordid", "巡检记录");
+            if (null != result) {
+                return result;
+            }
             inspectRecordId = inDto.getAsInteger("inspectrecordid").intValue();
         } else {
             inDto.put("inspectrecordid", inspectRecordId);
         }
+        return null;
     }
 
     /**
      * 增加巡检记录信息.
      * @param inDto dto对象
      */
-    private void addInspectRecordInfo(Dto inDto) {
-        appDao.insert("App.Inspect.addInspectRecordInfo", inDto);
+    private BaseRetDto addInspectRecordInfo(Dto inDto) {
+        return (BaseRetDto) DtoUtils.addInfoAndCheckIntIdFail(appDao,
+                "App.Inspect.addInspectRecordInfo", inDto,
+                "inspectrecordinfoid", "巡检记录信息");
     }
 
     /**
@@ -105,6 +114,7 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
      * @param inDto dto对象
      * @return 是否有效
      */
+    @SuppressWarnings("unchecked")
     private Dto checkDtoIsOK(Dto inDto) {
         String isOK = inDto.getAsString("isOK");
         if (AppTools.isEmptyString(isOK)) {
@@ -116,7 +126,10 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
                 return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
                         "故障没有描述信息");
             }
-        }
+            inDto.put("state", SystemConstants.ENABLED_N);
+        } else {
+            inDto.put("state", SystemConstants.ENABLED_Y);
+        }    
         return null;
     }
 
@@ -259,8 +272,15 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
      */
     @SuppressWarnings("unchecked")
     private BaseRetDto getAddInspectRecordRetInfo(Dto inDto) {
-        addInspectRecord(inDto);
-        addInspectRecordInfo(inDto);
+        BaseRetDto result = addInspectRecord(inDto);
+        if (null != result) {
+            return result;
+        }
+
+        result = addInspectRecordInfo(inDto);
+        if (null != result) {
+            return result;
+        }
         int counta = ((Integer) appDao.queryForObject(
                 "App.Inspect.queryInspectRecordDeviceFinished", inDto
                         .getAsInteger("planID").intValue())).intValue();
@@ -300,12 +320,9 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
         if (null != result) {
             return result;
         }
-        appDao.insert("App.Inspect.addReleateMediaInfo", fileDto);
-        if (null == fileDto.getAsInteger("releatemediaid")) {
-            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_ADD_FAIL,
-                    "媒体关联表新增失败");
-        }
-        return null;
+        return DtoUtils.addInfoAndCheckIntIdFail(appDao,
+                "App.Inspect.addReleateMediaInfo", fileDto, "releatemediaid",
+                "媒体关联记录");
     }
 
     /**

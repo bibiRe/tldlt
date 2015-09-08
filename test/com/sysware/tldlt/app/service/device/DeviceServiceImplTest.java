@@ -13,6 +13,7 @@ import utils.TestUtils;
 
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 import com.sysware.tldlt.app.service.common.BaseAppServiceImpl;
+import com.sysware.tldlt.app.service.device.DeviceServiceImpl;
 import com.sysware.tldlt.app.utils.AppCommon;
 
 /**
@@ -61,8 +62,8 @@ public class DeviceServiceImplTest extends BaseAppServiceImplTest {
         inspectPlanDto.put("inspectplandeviceid", 1);
         Mockito.when(
                 appDao.queryForObject(
-                        "App.InspectPlan.queryPlanDeviceByPlanIdAndDeviceId", dto))
-                .thenReturn(inspectPlanDto);
+                        "App.InspectPlan.queryPlanDeviceByPlanIdAndDeviceId",
+                        dto)).thenReturn(inspectPlanDto);
     }
 
     /**
@@ -73,9 +74,7 @@ public class DeviceServiceImplTest extends BaseAppServiceImplTest {
         Dto dto = createDeviceGPSDto();
         TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
         mockQueryInspectPlanDevice(dto);
-        Mockito.doNothing().when(appDao).insert("App.User.saveGPSInfo", dto);
-        Mockito.doNothing().when(appDao)
-                .insert("App.Device.saveReleateGPSInfo", dto);
+        TestUtils.mockAddGPSInfo(appDao, dto);
         BaseRetDto outDto = (BaseRetDto) deviceServiceImpl.saveGPSInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }
@@ -90,9 +89,7 @@ public class DeviceServiceImplTest extends BaseAppServiceImplTest {
         dto.put("planID", null);
         TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
         mockQueryInspectPlanDevice(dto);
-        Mockito.doNothing().when(appDao).insert("App.User.saveGPSInfo", dto);
-        Mockito.doNothing().when(appDao)
-                .insert("App.Device.saveReleateGPSInfo", dto);
+        TestUtils.mockAddGPSInfo(appDao, dto);
         BaseRetDto outDto = (BaseRetDto) deviceServiceImpl.saveGPSInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }
@@ -108,8 +105,8 @@ public class DeviceServiceImplTest extends BaseAppServiceImplTest {
         TestUtils.mockQueryDeviceInfo(appDao, dto.getAsString("deviceID"));
         Mockito.when(
                 appDao.queryForObject(
-                        "App.InspectPlan.queryPlanDeviceByPlanIdAndDeviceId", dto))
-                .thenReturn(null);
+                        "App.InspectPlan.queryPlanDeviceByPlanIdAndDeviceId",
+                        dto)).thenReturn(null);
         BaseRetDto outDto = (BaseRetDto) deviceServiceImpl.saveGPSInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_INVALID_VALUE));
     }

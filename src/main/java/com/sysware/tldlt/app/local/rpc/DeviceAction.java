@@ -24,6 +24,9 @@ import com.sysware.tldlt.app.web.common.BaseAppAction;
  * Version：@version
  */
 public class DeviceAction extends BaseAppAction {
+    /**
+     * 设备服务.
+     */
     private DeviceService deviceService;
 
     public DeviceAction() {
@@ -55,7 +58,7 @@ public class DeviceAction extends BaseAppAction {
         }
         RPCRetDto outDto = RPCUtils.createDto(true, null);
         List<Dto> list = appReader.queryForList(
-                "App.Device.queryInspectRecord", deviceID);
+                "App.Device.queryInspectRecordByDeviceId", deviceID);
         for (Dto dm : list) {
             Integer state = dm.getAsInteger("State");
             if ((null != state) && 1 == state.intValue()) {
@@ -63,16 +66,14 @@ public class DeviceAction extends BaseAppAction {
             } else {
                 dm.put("isOk", SystemConstants.ENABLED_N);
             }
-            String recordInfoId = dm.getAsString("inspectRecordInfoId");
-            if (!AppTools.isEmptyString(recordInfoId)) {
-                dto.put("inspectRecordInfoId", recordInfoId);
+            String inspectrecordinfoid = dm.getAsString("inspectrecordinfoid");
+            if (!AppTools.isEmptyString(inspectrecordinfoid)) {
+                dto.put("inspectrecordinfoid", inspectrecordinfoid);
                 List<Dto> imglist = appReader.queryForList(
                         "App.Inspect.queryImages", dto);
                 dm.put("images", imglist);
-                String mediaFileUrl = AppTools.getAppPropertyValue("mediaFileUrl", "");
-                if ((mediaFileUrl.length() < 1) || (mediaFileUrl.charAt(mediaFileUrl.length()) != '/')) {
-                    mediaFileUrl += "/";
-                }
+                String mediaFileUrl = AppTools.addPathEndSeprator(AppTools
+                        .getAppPropertyValue("mediaFileUrl", ""));
                 for (Dto iDto : imglist) {
                     String url = iDto.getAsString("mediaurl");
                     url = mediaFileUrl + url;
@@ -107,8 +108,8 @@ public class DeviceAction extends BaseAppAction {
         if (AppTools.isEmptyString(deviceID)) {
             return RPCUtils.sendErrorRPCInfoActionForward(response, "设备编号不存在");
         }
-        List<Dto> list = appReader.queryForList("App.Device.queryDeviceInfo",
-                deviceID);
+        List<Dto> list = appReader.queryForList(
+                "App.Device.queryDeviceInfoByDeviceId", deviceID);
         return RPCUtils.sendRPCListDtoActionForward(response, list);
     }
 

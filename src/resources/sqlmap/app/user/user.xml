@@ -29,17 +29,6 @@
 		WHERE a.DeviceSuggestInfo_Id = #devicesuggestinfoid#
 	</select>
 	
-    <insert id="saveGPSInfo" parameterClass="dto">
-		INSERT INTO GPSInfo (Latitude, Longtitude, Height, Speed, Time)
-        VALUES (#latitude#, #longtitude#, #height#, #speed#, '$time$')
-        <selectKey resultClass="int"  keyProperty="gpsinfoid" >    
-             SELECT last_insert_id() as gpsinfoid;   
-        </selectKey>
-    </insert>
-    <insert id="saveReleateGPSInfo" parameterClass="dto">
-		INSERT INTO ReleateGPSInfo (GPSInfo_Id, ReleateRecordId, Type, Remark)
-        VALUES (#gpsinfoid#, #userid#, 1, #remark#)
-    </insert>
     <insert id="addDeviceSuggestInfo" parameterClass="dto">
 		INSERT INTO DeviceSuggestInfo (USERID, Device_Id, Content, Time)
         VALUES (#userid#, #deviceID#, #devicedesc#, '$time$')

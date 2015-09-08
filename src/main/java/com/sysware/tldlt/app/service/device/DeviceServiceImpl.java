@@ -60,7 +60,7 @@ public class DeviceServiceImpl extends BaseAppServiceImpl implements
         if (null != result) {
             return result;
         }
-        
+
         result = checkGPSInspectPlanInfo(info);
         if (null != result) {
             return result;
@@ -78,8 +78,10 @@ public class DeviceServiceImpl extends BaseAppServiceImpl implements
         if (null != result) {
             return result;
         }
-        appDao.insert("App.User.saveGPSInfo", info);
-        appDao.insert("App.Device.saveReleateGPSInfo", info);
+        result = DtoUtils.addGPSInfo(appDao, info);
+        if (null != result) {
+            return result;
+        }
         return DtoUtils.getSuccessRetDto("");
     }
 

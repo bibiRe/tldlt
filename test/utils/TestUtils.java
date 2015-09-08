@@ -17,6 +17,8 @@ import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.mvc.xstruts.upload.FormFile;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.Lists;
 import com.sysware.tldlt.app.local.rpc.RPCUserManage;
@@ -43,6 +45,72 @@ public class TestUtils {
      */
     public static void assertRPCRetInfoSuccess(String actual) {
         assertTrue(actual.contains("\"success\":\"1\""));
+    }
+
+    /**
+     * 创建文件Dto.
+     * @param factory 文件条目工厂.
+     * @param fieldName 字段名
+     * @param fileName 文件名
+     * @param realFileName 实际文件名.
+     * @return 文件dto对象
+     * @throws FileNotFoundException 文件未找到异常.
+     * @throws IOException IO异常.
+     */
+    @SuppressWarnings("unchecked")
+    private static Dto createFileDto(DiskFileItemFactory factory,
+            String fieldName, String fileName, String realFileName)
+            throws FileNotFoundException, IOException {
+        FileItem fileItem = createFileItem(factory, fieldName, fileName,
+                realFileName);
+        FormFile formFile = new TestFormFile(fileItem);
+        Dto fileDto = new BaseDto();
+        fileDto.put("file", formFile);
+        return fileDto;
+    }
+
+    /**
+     * 创建测试FileDto列表.
+     * @param dto 对象.
+     * @return 文件列表
+     * @throws FileNotFoundException 文件没找到异常.
+     * @throws IOException IO异常
+     */
+    @SuppressWarnings("unchecked")
+    public static List<Dto> createFileDtoList(Dto dto) throws FileNotFoundException,
+            IOException {
+        List<Dto> fileList = Lists.newArrayList();
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+        String uploadFilePath = "E:/";
+        factory.setRepository(new File(uploadFilePath)); // 设置临时目录
+        factory.setSizeThreshold(FileUtils.ONE_KB * 8); // 8k的缓冲区,文件大于8K则保存到临时目录
+        fileList.add(createFileDto(factory, "img1", "1.jpg", "e:/1.jpg"));
+        dto.put("medias", fileList);
+        return fileList;
+    }
+
+    /**
+     * 创建文件条目对象.
+     * @param factory 文件条目工厂.
+     * @param fieldName 字段名
+     * @param fileName 文件名
+     * @param realFileName 实际文件名.
+     * @return 文件条目对象
+     * @throws FileNotFoundException 文件未找到异常.
+     * @throws IOException IO异常.
+     */
+    private static FileItem createFileItem(DiskFileItemFactory factory,
+            String fieldName, String fileName, String realFileName)
+            throws FileNotFoundException, IOException {
+        FileItem fileItem = factory.createItem(fieldName, "UTF-8", false,
+                fileName);
+        FileInputStream inStream = new FileInputStream(realFileName);
+        byte[] inOutb = new byte[inStream.available()];
+        inStream.read(inOutb); // 读入流,保存在byte数组
+        fileItem.getOutputStream().write(inOutb); // 写出流,保存在文件newFace.gif中
+        inStream.close();
+        fileItem.getOutputStream().close();
+        return fileItem;
     }
 
     /**
@@ -73,6 +141,32 @@ public class TestUtils {
     }
 
     /**
+     * mock 增加gps信息.
+     * @param appDao app Dao
+     * @param dto dto对象
+     */
+    public static void mockAddGPSInfo(Dao appDao, Dto dto) {
+        Mockito.doAnswer(new Answer<Object>(){
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
+                dto.put("gpsinfoid", 1);
+                return null;
+            }
+        }).when(appDao).insert("App.GPS.addInfo", dto);
+        Mockito.doAnswer(new Answer<Object>(){
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
+                dto.put("releategpsinfoid", 1);
+                return null;
+            }
+        }).when(appDao).insert("App.GPS.saveReleateGPSInfo", dto);
+    }
+
+    /**
      * mock查询设备信息.
      * @param deviceId 设备编号
      * @return dto对象
@@ -83,7 +177,7 @@ public class TestUtils {
         deviceDto.put("deviceID", deviceId);
         deviceDto.put("parentDeviceId", null);
         deviceDto.put("devicename", "测试设备");
-        Mockito.when(dao.queryForObject("App.Device.queryDeviceInfo", deviceId))
+        Mockito.when(dao.queryForObject("App.Device.queryDeviceInfoByDeviceId", deviceId))
                 .thenReturn(deviceDto);
         return deviceDto;
     }
@@ -105,7 +199,7 @@ public class TestUtils {
                 .thenReturn(userDto);
         return userDto;
     }
-
+    
     /**
      * 设置Dto GPS信息.
      * @param dto dto信息.
@@ -119,69 +213,4 @@ public class TestUtils {
         dto.put("datetime", getCurrentUnixTime());
     }
 
-    /**
-     * 创建测试FileDto列表.
-     * @param dto 对象.
-     * @return 文件列表
-     * @throws FileNotFoundException 文件没找到异常.
-     * @throws IOException IO异常
-     */
-    @SuppressWarnings("unchecked")
-    public static List<Dto> createFileDtoList(Dto dto) throws FileNotFoundException,
-            IOException {
-        List<Dto> fileList = Lists.newArrayList();
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-        String uploadFilePath = "E:/";
-        factory.setRepository(new File(uploadFilePath)); // 设置临时目录
-        factory.setSizeThreshold(FileUtils.ONE_KB * 8); // 8k的缓冲区,文件大于8K则保存到临时目录
-        fileList.add(createFileDto(factory, "img1", "1.jpg", "e:/1.jpg"));
-        dto.put("medias", fileList);
-        return fileList;
-    }
-
-    /**
-     * 创建文件Dto.
-     * @param factory 文件条目工厂.
-     * @param fieldName 字段名
-     * @param fileName 文件名
-     * @param realFileName 实际文件名.
-     * @return 文件dto对象
-     * @throws FileNotFoundException 文件未找到异常.
-     * @throws IOException IO异常.
-     */
-    @SuppressWarnings("unchecked")
-    private static Dto createFileDto(DiskFileItemFactory factory,
-            String fieldName, String fileName, String realFileName)
-            throws FileNotFoundException, IOException {
-        FileItem fileItem = createFileItem(factory, fieldName, fileName,
-                realFileName);
-        FormFile formFile = new TestFormFile(fileItem);
-        Dto fileDto = new BaseDto();
-        fileDto.put("file", formFile);
-        return fileDto;
-    }
-
-    /**
-     * 创建文件条目对象.
-     * @param factory 文件条目工厂.
-     * @param fieldName 字段名
-     * @param fileName 文件名
-     * @param realFileName 实际文件名.
-     * @return 文件条目对象
-     * @throws FileNotFoundException 文件未找到异常.
-     * @throws IOException IO异常.
-     */
-    private static FileItem createFileItem(DiskFileItemFactory factory,
-            String fieldName, String fileName, String realFileName)
-            throws FileNotFoundException, IOException {
-        FileItem fileItem = factory.createItem(fieldName, "UTF-8", false,
-                fileName);
-        FileInputStream inStream = new FileInputStream(realFileName);
-        byte[] inOutb = new byte[inStream.available()];
-        inStream.read(inOutb); // 读入流,保存在byte数组
-        fileItem.getOutputStream().write(inOutb); // 写出流,保存在文件newFace.gif中
-        inStream.close();
-        fileItem.getOutputStream().close();
-        return fileItem;
-    }
 }

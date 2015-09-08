@@ -1,4 +1,4 @@
-package com.sysware.tldlt.test.service.devicetype;
+package com.sysware.tldlt.app.service.devicetype;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

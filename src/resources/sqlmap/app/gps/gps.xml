@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 演示与教程手工映射SQL语句 -->
+<sqlMap namespace="App.GPS">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+    <insert id="addInfo" parameterClass="dto">
+		INSERT INTO GPSInfo (Latitude, Longtitude, Height, Speed, Time)
+        VALUES (#latitude#, #longtitude#, #height#, #speed#, '$time$')
+        <selectKey resultClass="int"  keyProperty="gpsinfoid" >    
+             SELECT last_insert_id() as gpsinfoid;   
+        </selectKey>
+    </insert>
+    <insert id="saveReleateGPSInfo" parameterClass="dto">
+		INSERT INTO ReleateGPSInfo (GPSInfo_Id, ReleateRecordId, Type, Remark)
+        VALUES (#gpsinfoid#, #releaterecordid#, #type#, #remark#)
+        <selectKey resultClass="int"  keyProperty="releategpsinfoid" >    
+             SELECT last_insert_id() as releategpsinfoid;   
+        </selectKey>
+    </insert>     
+</sqlMap>

@@ -78,7 +78,7 @@ public class UserServiceImplTest extends BaseAppServiceImplTest {
     public void testSaveGPSInfo_Fail_UserId_10003333_Invalid() {
         String userid = "10003333";
         Dto dto = createUserGPSDto(userid);
-        Mockito.doNothing().when(appDao).insert("App.User.saveGPSInfo", dto);
+        Mockito.doNothing().when(appDao).insert("App.GPS.addInfo", dto);
         Mockito.when(g4Dao.queryForObject("User.getUserInfoByKey", dto))
                 .thenReturn(null);
         BaseRetDto outDto = (BaseRetDto) userServiceImpl.saveGPSInfo(dto);
@@ -111,8 +111,8 @@ public class UserServiceImplTest extends BaseAppServiceImplTest {
         dto.put("deviceID", deviceId);
         TestUtils.mockQueryUserByUserId(g4Dao, dto, userid);
         Mockito.when(
-                appDao.queryForObject("App.Device.queryDeviceInfo", deviceId))
-                .thenReturn(null);
+                appDao.queryForObject("App.Device.queryDeviceInfoByDeviceId",
+                        deviceId)).thenReturn(null);
         BaseRetDto outDto = (BaseRetDto) userServiceImpl
                 .reportDeviceStatus(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_INVALID_VALUE));
@@ -142,9 +142,7 @@ public class UserServiceImplTest extends BaseAppServiceImplTest {
         String userid = "10004894";
         Dto dto = createUserGPSDto(userid);
         TestUtils.mockQueryUserByUserId(g4Dao, dto, userid);
-        Mockito.doNothing().when(appDao).insert("App.User.saveGPSInfo", dto);
-        Mockito.doNothing().when(appDao)
-                .insert("App.User.saveReleateGPSInfo", dto);
+        TestUtils.mockAddGPSInfo(appDao, dto);
         BaseRetDto outDto = (BaseRetDto) userServiceImpl.saveGPSInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }
@@ -222,8 +220,7 @@ public class UserServiceImplTest extends BaseAppServiceImplTest {
                 dto.put("releatemediaid", 1);
                 return null;
             }
-        }).when(appDao)
-                .insert("App.User.addReleateMediaInfo", fileList.get(0));
+        }).when(appDao).insert("App.User.addReleateMediaInfo", fileList.get(0));
         BaseRetDto outDto = (BaseRetDto) userServiceImpl
                 .saveUploadDeviceStatusMedia(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));

@@ -1,4 +1,4 @@
-package com.sysware.tldlt.test.service.region;
+package com.sysware.tldlt.app.service.region;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

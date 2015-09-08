@@ -1,4 +1,4 @@
-package com.sysware.tldlt.test.web.region;
+package com.sysware.tldlt.app.web.region;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -9,11 +9,11 @@
 		FROM mediainfo a, releatemediainfo b
 		WHERE a.MediaInfo_Id = b.MediaInfo_Id
 		<dynamic>
-			<isNotEmpty prepend="AND" property="inspectRecordInfoId">
-				b.ReleateRecordId = #inspectRecordInfoId# and b.Type= '1'
+			<isNotEmpty prepend="AND" property="inspectrecordinfoid">
+				b.ReleateRecordId = #inspectrecordinfoid# and b.Type= '1'
 			</isNotEmpty>
-			<isNotEmpty prepend="AND" property="inspectRecordItemId">
-				b.ReleateRecordId = #inspectRecordItemId# and b.Type= '2'
+			<isNotEmpty prepend="AND" property="inspectrecorditemid">
+				b.ReleateRecordId = #inspectrecorditemid# and b.Type= '2'
 			</isNotEmpty>
 		</dynamic>
 	</select>

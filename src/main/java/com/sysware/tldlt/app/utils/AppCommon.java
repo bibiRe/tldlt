@@ -60,6 +60,11 @@ public class AppCommon {
     public static final int RET_CODE_CREATE_FILE_FAIL = -9;
     
     /**
+     * GPS信息类型-用户.
+     */
+    public static final int GPS_INFO_TYPE_USER = 1;
+    
+    /**
      * GPS信息类型-设备.
      */
     public static final int GPS_INFO_TYPE_DEVICE = 2;

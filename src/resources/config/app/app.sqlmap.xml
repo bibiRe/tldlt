@@ -15,4 +15,5 @@
 	<sqlMap resource="sqlmap/app/user/user.xml" />
 	<sqlMap resource="sqlmap/app/devicefault/devicefault.xml" />
 	<sqlMap resource="sqlmap/app/media/media.xml" />
+	<sqlMap resource="sqlmap/app/gps/gps.xml" />
 </sqlMapConfig>

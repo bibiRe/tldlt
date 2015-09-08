@@ -1,4 +1,4 @@
-package com.sysware.tldlt.test.devicetype;
+package com.sysware.tldlt.app.devicetype;
 
 import org.jbehave.core.annotations.AfterScenario;
 import org.jbehave.core.annotations.Given;

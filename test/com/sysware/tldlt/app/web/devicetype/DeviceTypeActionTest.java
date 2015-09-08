@@ -1,4 +1,4 @@
-package com.sysware.tldlt.test.web.devicetype;
+package com.sysware.tldlt.app.web.devicetype;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.sysware.tldlt.test.web.devicetype;
+package com.sysware.tldlt.app.web.devicetype;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import com.sysware.tldlt.test.web.CommonWebTest;
+import com.sysware.tldlt.app.web.CommonWebTest;
 
 /**
  * Type：DeviceTypeWebTest
@@ -31,8 +31,10 @@ public class DeviceTypeWebTest extends CommonWebTest {
     @Test
     public void testOpen() throws InterruptedException {
         menuClick("基础数据", "设备类型");
-        Thread.sleep(3000);      
-        driver.switchTo().frame(driver.findElement(By.xpath("//iframe[contains(@src, 'deviceType.do')]")));
+        Thread.sleep(3000);
+        driver.switchTo().frame(
+                driver.findElement(By
+                        .xpath("//iframe[contains(@src, 'deviceType.do')]")));
         WebElement element = driver.findElement(By
                 .xpath("//div/span/span[text()='设备类型数据列表']"));
         assertThat(element, notNullValue());

@@ -1,4 +1,4 @@
-package com.sysware.tldlt.test.web.login;
+package com.sysware.tldlt.app.web.login;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import com.sysware.tldlt.test.web.CommonWebTest;
+import com.sysware.tldlt.app.web.CommonWebTest;
 
 /**
  * Type：LoginPageTest

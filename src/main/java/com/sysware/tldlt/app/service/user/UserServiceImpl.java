@@ -125,14 +125,19 @@ public class UserServiceImpl extends BaseAppServiceImpl implements UserService {
         return outDto;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Dto saveGPSInfo(Dto info) {
         Dto outDto = checkSaveGPSInfo(info);
         if (null != outDto) {
             return outDto;
         }
-        appDao.insert("App.User.saveGPSInfo", info);
-        appDao.insert("App.User.saveReleateGPSInfo", info);
+        info.put("type", AppCommon.GPS_INFO_TYPE_USER);
+        info.put("releaterecordid", info.getAsString("userid"));
+        Dto result = DtoUtils.addGPSInfo(appDao, info);
+        if (null != result) {
+            return result;
+        }
         return DtoUtils.getSuccessRetDto("");
     }
 
@@ -154,12 +159,9 @@ public class UserServiceImpl extends BaseAppServiceImpl implements UserService {
         if (null != result) {
             return result;
         }
-        appDao.insert("App.User.addReleateMediaInfo", fileDto);
-        if (null == fileDto.getAsInteger("releatemediaid")) {
-            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_ADD_FAIL,
-                    "媒体关联表新增失败");
-        }
-        return null;
+        return DtoUtils.addInfoAndCheckIntIdFail(appDao,
+                "App.User.addReleateMediaInfo", fileDto, "releatemediaid",
+                "媒体关联记录");
     }
 
     /**
