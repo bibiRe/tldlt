@@ -13,6 +13,7 @@ import org.g4studio.system.common.util.SystemConstants;
 
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 import com.sysware.tldlt.app.service.device.DeviceService;
+import com.sysware.tldlt.app.service.media.MediaUrlService;
 import com.sysware.tldlt.app.utils.AppTools;
 import com.sysware.tldlt.app.web.common.BaseAppAction;
 
@@ -28,9 +29,14 @@ public class DeviceAction extends BaseAppAction {
      * 设备服务.
      */
     private DeviceService deviceService;
+    /**
+     * 媒体链接服务.
+     */
+    private MediaUrlService mediaUrlService;
 
     public DeviceAction() {
         deviceService = (DeviceService) this.getService("deviceService");
+        mediaUrlService = (MediaUrlService) this.getService("mediaUrlService");
     }
 
     /**
@@ -72,12 +78,10 @@ public class DeviceAction extends BaseAppAction {
                 List<Dto> imglist = appReader.queryForList(
                         "App.Inspect.queryImages", dto);
                 dm.put("images", imglist);
-                String mediaFileUrl = AppTools.addPathEndSeprator(AppTools
-                        .getAppPropertyValue("mediaFileUrl", ""));
+
                 for (Dto iDto : imglist) {
-                    String url = iDto.getAsString("mediaurl");
-                    url = mediaFileUrl + url;
-                    iDto.put("mediaurl", url);
+                    iDto.put("mediaurl", this.mediaUrlService.getUrl(iDto
+                            .getAsString("mediaurl")));
                 }
             }
         }

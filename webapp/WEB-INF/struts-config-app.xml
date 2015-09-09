@@ -51,7 +51,7 @@
 		<action name="baseActionForm" path="/inspectView" scope="request"
 			parameter="reqCode"
 			type="com.sysware.tldlt.app.web.inspect.InspectViewAction">
-			<forward name="init" path="/inspectview/inspectrealview.jsp" />
+			<forward name="inspectRealView" path="/inspectview/inspectrealview.jsp" />
 		</action>
 
 	</action-mappings>

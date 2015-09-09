@@ -9,7 +9,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.g4studio.core.properties.PropertiesFactory;
 import org.g4studio.core.properties.PropertiesFile;
 import org.g4studio.core.properties.PropertiesHelper;
@@ -56,6 +55,7 @@ public class AppTools {
         return (null == value || value.trim().equals(""));
         
     }
+    
     /**
      * unix时间转换为时间字符串.
      * @param unixTime unix时间.
@@ -67,6 +67,25 @@ public class AppTools {
         return G4Utils.Date2String(dt, G4Constants.FORMAT_DateTime);
     }
 
+    /**
+     * 得到当前unix时间
+     * @return unix时间
+     */
+    public static long currentUnixTime() {
+        Date dt = new Date();
+        return dt.getTime() / AppCommon.TIME_INTERVAL;
+    }
+    
+    /**
+     * 得到不同unix时间
+     * @param secs 秒.
+     * @return unix时间
+     */
+    public static long diffUnixTime(long unixTime, long secs) {
+        return unixTime + secs;
+    }
+    
+    
     /**
      * 将yyyy-MM-dd HH:mm:ss 时间字符串改为unix时间值.
      * @param unixTime unix时间.
@@ -119,7 +138,7 @@ public class AppTools {
      */
     private static byte[] create5InStreamMD5CheckSum(InputStream inStream)
             throws NoSuchAlgorithmException, IOException {
-        byte[] buffer = new byte[FileUtils.ONE_KB];
+        byte[] buffer = new byte[AppCommon.KB_SIZE];
         MessageDigest complete = MessageDigest.getInstance("MD5"); // 如果想使用SHA-1或SHA-256，则传入SHA-1,SHA-256
         int numRead;
 
@@ -193,4 +212,5 @@ public class AppTools {
         return path + "/";
         
     }
+    
 }

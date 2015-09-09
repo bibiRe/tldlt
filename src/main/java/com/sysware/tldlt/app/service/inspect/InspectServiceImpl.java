@@ -7,11 +7,13 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.g4studio.common.util.SpringBeanLoader;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.system.common.util.SystemConstants;
 
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 import com.sysware.tldlt.app.service.common.BaseAppServiceImpl;
+import com.sysware.tldlt.app.service.media.MediaPathService;
 import com.sysware.tldlt.app.utils.AppCommon;
 import com.sysware.tldlt.app.utils.AppTools;
 import com.sysware.tldlt.app.utils.DtoUtils;
@@ -25,10 +27,15 @@ import com.sysware.tldlt.app.utils.DtoUtils;
  */
 public class InspectServiceImpl extends BaseAppServiceImpl implements
         InspectService {
+
     /**
      * 日志对象.
      */
     private static final Log log = LogFactory.getLog(InspectServiceImpl.class);
+    /**
+     * 媒体服务对象.
+     */
+    private MediaPathService mediaPathService;
 
     @Override
     public Dto addInfo(Dto inDto) {
@@ -129,7 +136,7 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
             inDto.put("state", SystemConstants.ENABLED_N);
         } else {
             inDto.put("state", SystemConstants.ENABLED_Y);
-        }    
+        }
         return null;
     }
 
@@ -336,7 +343,7 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
     private Dto saveMediaFiles(Dto dto) throws IOException,
             NoSuchAlgorithmException {
         Dto result = null;
-        result = DtoUtils.checkMedias(dto);
+        result = DtoUtils.checkMedias(dto, mediaPathService);
         if (null != result) {
             return result;
         }
@@ -369,6 +376,10 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
             return result;
         }
         return DtoUtils.getSuccessRetDto("");
+    }
+
+    public void setMediaPathService(MediaPathService mediaPathService) {
+        this.mediaPathService = mediaPathService;
     }
 
 }

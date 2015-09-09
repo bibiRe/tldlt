@@ -49,7 +49,7 @@ public class AppMockStrutsTestCase extends MockStrutsTestCase {
      * 得到Action执行Response返回字符串.
      * @return 字符串
      */
-    private String getActionExecuteResponseString() {
+    public String getActionExecuteResponseString() {
         actionPerform();
         String actual = ((HttpServletResponseSimulator) this.getResponse())
                 .getWriterBuffer().toString();

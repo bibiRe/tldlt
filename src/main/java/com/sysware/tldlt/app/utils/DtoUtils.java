@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.g4studio.common.dao.Dao;
+import org.g4studio.common.util.SpringBeanLoader;
 import org.g4studio.common.util.WebUtils;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
@@ -23,6 +24,8 @@ import org.g4studio.core.util.G4Utils;
 
 import com.google.common.collect.Lists;
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
+import com.sysware.tldlt.app.service.media.MediaPathService;
+import com.sysware.tldlt.app.service.media.MediaUrlService;
 
 /**
  * Type：DtoUtils Descript：Dto工具类.
@@ -44,12 +47,12 @@ public class DtoUtils {
      * @return dto
      */
     public static Dto addGPSInfo(Dao appDao, Dto inDto) {
-        Dto result = DtoUtils.addInfoAndCheckIntIdFail(appDao,
+        Dto result = addInfoAndCheckIntIdFail(appDao,
                 "App.GPS.addInfo", inDto, "gpsinfoid", "GPS记录");
         if (null != result) {
             return result;
         }
-        return DtoUtils.addInfoAndCheckIntIdFail(appDao,
+        return addInfoAndCheckIntIdFail(appDao,
                 "App.GPS.saveReleateGPSInfo", inDto, "releategpsinfoid",
                 "GPS关联记录");
     }
@@ -171,7 +174,7 @@ public class DtoUtils {
      * @return dto对象
      */
     @SuppressWarnings("unchecked")
-    public static Dto checkMedias(Dto dto) {
+    public static Dto checkMedias(Dto dto, MediaPathService mediaPathService) {
         List<Dto> fileList = (List<Dto>) dto.getAsList("medias");
         if (null == fileList) {
             return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "没有文件列表");
@@ -179,7 +182,7 @@ public class DtoUtils {
         if (fileList.size() < 1) {
             return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "文件列表为空");
         }
-        return createSavePathAndPutInDto(dto);
+        return createSavePathAndPutInDto(dto, mediaPathService);
     }
 
     /**
@@ -246,8 +249,8 @@ public class DtoUtils {
      * @return 创建示范成功.
      */
     @SuppressWarnings("unchecked")
-    public static Dto createSavePathAndPutInDto(Dto dto) {
-        String savePath = AppTools.getAppPropertyValue("mediaFilePath", "");
+    public static Dto createSavePathAndPutInDto(Dto dto, MediaPathService mediaPathService) {        
+        String savePath = mediaPathService.getPath("");
         if (AppTools.isBlankString(savePath)) {
             return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "保存路径没定义");
         }
@@ -260,8 +263,7 @@ public class DtoUtils {
             }
         }
         dto.put("savePartPath", G4Utils.getCurDate());
-        savePath = AppTools.addPathEndSeprator(savePath)
-                + dto.getAsString("savePartPath");
+        savePath = mediaPathService.getPath(dto.getAsString("savePartPath"));
         File file1 = new File(savePath);
         if (!file1.exists()) {
             if (!file1.mkdir()) {
@@ -281,13 +283,20 @@ public class DtoUtils {
     @SuppressWarnings("unchecked")
     public static Collection<Dto> createUploadInspectRecordMediaSuccessRetList(
             Dto dto) {
+        MediaUrlService mediaUrlService = (MediaUrlService) SpringBeanLoader
+                .getSpringBean("mediaUrlService");
         Collection<Dto> retList = Lists.newArrayList();
         List<Dto> fileList = (List<Dto>) dto.getAsList("medias");
         for (Dto fileDto : fileList) {
             Dto retDto = new BaseDto();
             FormFile fileItem = (FormFile) fileDto.get("file");
             retDto.put("filename", fileItem.getFileName());
-            retDto.put("address", fileDto.getAsString("address"));
+            if (null != mediaUrlService) {
+                retDto.put("mediaurl",
+                        mediaUrlService.getUrl(fileDto.getAsString("address")));
+            } else {
+                retDto.put("mediaurl", fileDto.getAsString("address"));
+            }
             retDto.put("hash", fileDto.getAsString("hash"));
             retList.add(retDto);
         }

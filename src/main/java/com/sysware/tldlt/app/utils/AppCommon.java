@@ -93,4 +93,24 @@ public class AppCommon {
      */
     public static final int MEDIA_TYPE_IMAGE = 0;
 
+    /**
+     * 长度-KB
+     */
+    public static final int KB_SIZE = 1024;
+    
+    /**
+     * 长度-MB
+     */
+    public static final int MB_SIZE = 1024 * KB_SIZE;
+
+    
+    /**
+     * 分钟秒数
+     */
+    public static final int MIN_SEC = 60;
+    
+    /**
+     * 小时秒数
+     */
+    public static final int HOUR_SEC = 60 * MIN_SEC;
 }

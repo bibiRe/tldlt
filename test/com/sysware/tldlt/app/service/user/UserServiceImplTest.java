@@ -189,7 +189,7 @@ public class UserServiceImplTest extends BaseAppServiceImplTest {
 
     /**
      * 测试上传巡检记录媒体成功.
-     * @throws Exception
+     * @throws Exception 异常
      */
     @SuppressWarnings({"unchecked"})
     @Test

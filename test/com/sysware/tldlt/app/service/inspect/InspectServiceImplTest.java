@@ -20,6 +20,7 @@ import utils.TestUtils;
 import com.google.common.collect.Lists;
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 import com.sysware.tldlt.app.service.common.BaseAppServiceImpl;
+import com.sysware.tldlt.app.service.media.MediaPathService;
 import com.sysware.tldlt.app.utils.AppCommon;
 
 /**
@@ -30,6 +31,18 @@ import com.sysware.tldlt.app.utils.AppCommon;
  * Version：@version
  */
 public class InspectServiceImplTest extends BaseAppServiceImplTest {
+    /**
+     * 路径服务类.
+     */
+    private MediaPathService mediaPathService;
+
+    @Override
+    public void setUp() {
+        mediaPathService = Mockito.mock(MediaPathService.class);
+        super.setUp();
+
+    }
+
     /**
      * 巡检计划设备信息编号.
      */
@@ -79,6 +92,7 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
     @Override
     protected BaseAppServiceImpl createService() {
         inspectServiceImpl = new InspectServiceImpl();
+        inspectServiceImpl.setMediaPathService(mediaPathService);
         return inspectServiceImpl;
     }
 
@@ -688,6 +702,7 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
         Dto inspectRecordInfoDto = new BaseDto();
         inspectRecordInfoDto.put("inspectrecordinfoid",
                 dto.getAsInteger("inspectrecordinfoid").intValue());
+        Mockito.when(mediaPathService.getPath(Mockito.anyString())).thenReturn("e:/temp");
         Mockito.when(
                 appDao.queryForObject("App.Inspect.queryInspectRecordInfoById",
                         dto.getAsInteger("inspectrecordinfoid"))).thenReturn(
@@ -713,6 +728,5 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                 .saveUploadInspectRecordMedia(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }
-
 
 }

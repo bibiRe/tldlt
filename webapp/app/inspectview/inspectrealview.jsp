@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"%>
 <%@ include file="/common/include/taglib.jsp"%>
 <G4Studio:html title="实时查看" >
-<G4Studio:import src="/app/inspect/js/inspectRealView.js" />
+<G4Studio:import src="/app/inspectview/js/inspectRealView.js" />
 <G4Studio:ext.codeRender fields="SEX,LOCKED,USERTYPE"/>
 <G4Studio:ext.codeStore fields="SEX,LOCKED,USERTYPE:3"/>
 <G4Studio:body>
