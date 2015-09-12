@@ -4,6 +4,7 @@ import org.g4studio.core.metatype.Dto;
 
 import com.sysware.tldlt.app.service.common.BaseAppServiceImpl;
 import com.sysware.tldlt.app.utils.AppCommon;
+import com.sysware.tldlt.app.utils.AppTools;
 import com.sysware.tldlt.app.utils.DtoUtils;
 
 /**
@@ -82,7 +83,31 @@ public class DeviceServiceImpl extends BaseAppServiceImpl implements
         if (null != result) {
             return result;
         }
+        appDao.update("App.Device.updateLongLatInfo", info);
         return DtoUtils.getSuccessRetDto("");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Dto getLongLatInfo(String deviceId) {
+        if (AppTools.isEmptyString(deviceId)) {
+            return null;
+        }
+        Dto dto = (Dto) appDao.queryForObject(
+                "App.Device.queryLongLatInfoByDeviceId", deviceId);
+        if (null == dto) {
+            return null;
+        }
+        if (!AppTools.isEmptyString(dto.getAsString("longtitude"))) {
+            return dto;
+        }
+        Dto pDto = getLongLatInfo(dto.getAsString("parentdeviceid"));
+        if (null == pDto) {
+            return null;
+        }
+        dto.put("longtitude", pDto.getAsString("longtitude"));
+        dto.put("latitude", pDto.getAsString("latitude"));
+        return dto;
     }
 
 }

@@ -64,7 +64,7 @@ public class DeviceAction extends BaseAppAction {
         }
         RPCRetDto outDto = RPCUtils.createDto(true, null);
         List<Dto> list = appReader.queryForList(
-                "App.Device.queryInspectRecordByDeviceId", deviceID);
+                "App.Inspect.queryInspectRecordByDeviceId", deviceID);
         for (Dto dm : list) {
             Integer state = dm.getAsInteger("State");
             if ((null != state) && 1 == state.intValue()) {

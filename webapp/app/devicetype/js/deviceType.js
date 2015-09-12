@@ -36,7 +36,7 @@ Ext.onReady(function() {
 		deviceTypeStore.load({
 			params: {
 				start: 0,
-				limit: bbar.pageSize,
+				limit: gridBottomBar.getPageSize(),
 				devicetypeid: deviceTypeId
 			}
 		});
@@ -85,7 +85,7 @@ Ext.onReady(function() {
 		deviceTypeStore.load({
 			params: {
 				start: 0,
-				limit: bbar.pageSize,
+				limit: gridBottomBar.getPageSize(),
 				devicetypeid: devicetypeid
 			},
 			callback: function(r, options, success) {
@@ -161,51 +161,7 @@ Ext.onReady(function() {
 			deviceTypeName: Ext.getCmp('deviceTypeName').getValue()
 		};
 	});
-
-	var pagesize_combo = new Ext.form.ComboBox({
-		name: 'pagesize',
-		hiddenName: 'pagesize',
-		typeAhead: true,
-		triggerAction: 'all',
-		lazyRender: true,
-		mode: 'local',
-		store: new Ext.data.ArrayStore({
-			fields: ['value', 'text'],
-			data: [
-				[10, '10条/页'],
-				[20, '20条/页'],
-				[50, '50条/页'],
-				[100, '100条/页'],
-				[250, '250条/页'],
-				[500, '500条/页']
-			]
-		}),
-		valueField: 'value',
-		displayField: 'text',
-		value: '50',
-		editable: false,
-		width: 85
-	});
-	var number = parseInt(pagesize_combo.getValue());
-	pagesize_combo.on("select", function(comboBox) {
-		bbar.pageSize = parseInt(comboBox.getValue());
-		number = parseInt(comboBox.getValue());
-		store.reload({
-			params: {
-				start: 0,
-				limit: bbar.pageSize
-			}
-		});
-	});
-
-	var bbar = new Ext.PagingToolbar({
-		pageSize: number,
-		store: deviceTypeStore,
-		displayInfo: true,
-		displayMsg: '显示{0}条到{1}条,共{2}条',
-		emptyMsg: "没有符合条件的记录",
-		items: ['-', '&nbsp;&nbsp;', pagesize_combo]
-	});
+	var gridBottomBar = new Ext.ux.grid.BottomBar(deviceTypeStore);
 	var deviceTypeInfoGrid = new Ext.grid.GridPanel({
 		title: '<span class="commoncss">设备类型信息表</span>',
 		height: 500,
@@ -265,13 +221,13 @@ Ext.onReady(function() {
 				deviceTypeStore.reload();
 			}
 		}],
-		bbar: bbar
+		bbar: gridBottomBar.bbar
 	});
 
 	deviceTypeStore.load({
 		params: {
 			start: 0,
-			limit: bbar.pageSize,
+			limit: gridBottomBar.getPageSize(),
 			firstload: 'true'
 		}
 	});
@@ -280,10 +236,6 @@ Ext.onReady(function() {
 		editInit();
 	});
 	deviceTypeInfoGrid.on('sortchange', function() {
-		// deviceTypeInfoGrid.getSelectionModel().selectFirstRow();
-	});
-
-	bbar.on("change", function() {
 		// deviceTypeInfoGrid.getSelectionModel().selectFirstRow();
 	});
 
@@ -476,7 +428,7 @@ Ext.onReady(function() {
 		deviceTypeStore.load({
 			params: {
 				start: 0,
-				limit: bbar.pageSize,
+				limit: gridBottomBar.getPageSize(),
 				deviceTypeName: Ext.getCmp('deviceTypeName').getValue()
 			}
 		});

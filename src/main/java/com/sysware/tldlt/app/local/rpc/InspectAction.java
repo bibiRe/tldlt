@@ -10,7 +10,6 @@ import org.g4studio.core.mvc.xstruts.action.ActionMapping;
 
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 import com.sysware.tldlt.app.service.inspect.InspectService;
-import com.sysware.tldlt.app.service.media.MediaUrlService;
 import com.sysware.tldlt.app.utils.AppTools;
 import com.sysware.tldlt.app.utils.DtoUtils;
 import com.sysware.tldlt.app.web.common.BaseAppAction;

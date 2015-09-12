@@ -141,7 +141,6 @@ public class AppTools {
         byte[] buffer = new byte[AppCommon.KB_SIZE];
         MessageDigest complete = MessageDigest.getInstance("MD5"); // 如果想使用SHA-1或SHA-256，则传入SHA-1,SHA-256
         int numRead;
-
         do {
             numRead = inStream.read(buffer); // 从文件读到buffer，最多装满buffer
             if (numRead > 0) {

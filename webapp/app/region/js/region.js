@@ -35,7 +35,7 @@ Ext.onReady(function() {
 		regionStore.load({
 			params: {
 				start: 0,
-				limit: bbar.pageSize,
+				limit: gridBottomBar.getPageSize(),
 				regionid: regionId
 			}
 		});
@@ -86,7 +86,7 @@ Ext.onReady(function() {
 		regionStore.load({
 			params: {
 				start: 0,
-				limit: bbar.pageSize,
+				limit: gridBottomBar.getPageSize(),
 				regionid: regionid
 			},
 			callback: function(r, options, success) {
@@ -179,50 +179,7 @@ Ext.onReady(function() {
 
 
 
-	var pagesize_combo = new Ext.form.ComboBox({
-		name: 'pagesize',
-		hiddenName: 'pagesize',
-		typeAhead: true,
-		triggerAction: 'all',
-		lazyRender: true,
-		mode: 'local',
-		store: new Ext.data.ArrayStore({
-			fields: ['value', 'text'],
-			data: [
-				[10, '10条/页'],
-				[20, '20条/页'],
-				[50, '50条/页'],
-				[100, '100条/页'],
-				[250, '250条/页'],
-				[500, '500条/页']
-			]
-		}),
-		valueField: 'value',
-		displayField: 'text',
-		value: '50',
-		editable: false,
-		width: 85
-	});
-	var number = parseInt(pagesize_combo.getValue());
-	pagesize_combo.on("select", function(comboBox) {
-		bbar.pageSize = parseInt(comboBox.getValue());
-		number = parseInt(comboBox.getValue());
-		store.reload({
-			params: {
-				start: 0,
-				limit: bbar.pageSize
-			}
-		});
-	});
-
-	var bbar = new Ext.PagingToolbar({
-		pageSize: number,
-		store: regionStore,
-		displayInfo: true,
-		displayMsg: '显示{0}条到{1}条,共{2}条',
-		emptyMsg: "没有符合条件的记录",
-		items: ['-', '&nbsp;&nbsp;', pagesize_combo]
-	});
+	var gridBottomBar = new Ext.ux.grid.BottomBar(regionStore);
 	var regionInfoGrid = new Ext.grid.GridPanel({
 		title: '<span class="commoncss">区域信息表</span>',
 		height: 500,
@@ -282,13 +239,13 @@ Ext.onReady(function() {
 				regionStore.reload();
 			}
 		}],
-		bbar: bbar
+		bbar: gridBottomBar.bbar
 	});
 
 	regionStore.load({
 		params: {
 			start: 0,
-			limit: bbar.pageSize,
+			limit: gridBottomBar.getPageSize(),
 			firstload: 'true'
 		}
 	});
@@ -297,10 +254,6 @@ Ext.onReady(function() {
 		editInit();
 	});
 	regionInfoGrid.on('sortchange', function() {
-		// regionInfoGrid.getSelectionModel().selectFirstRow();
-	});
-
-	bbar.on("change", function() {
 		// regionInfoGrid.getSelectionModel().selectFirstRow();
 	});
 
@@ -561,7 +514,7 @@ Ext.onReady(function() {
 		regionStore.load({
 			params: {
 				start: 0,
-				limit: bbar.pageSize,
+				limit: gridBottomBar.getPageSize(),
 				regionName: Ext.getCmp('regionName').getValue()
 			}
 		});

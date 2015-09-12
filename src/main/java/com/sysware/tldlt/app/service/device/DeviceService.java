@@ -18,5 +18,10 @@ public interface DeviceService extends BaseService {
      * @return 
      */
     Dto saveGPSInfo(Dto info);
-
+    /**
+     * 得到设备的GPS信息.
+     * @param deviceId 设备编号
+     * @return dto信息.
+     */
+    Dto getLongLatInfo(String deviceId);
 }

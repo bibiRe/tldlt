@@ -37,11 +37,28 @@
         </selectKey>
     </insert>
     
-    	<insert id="addReleateMediaInfo" parameterClass="dto">
+    <insert id="addReleateMediaInfo" parameterClass="dto">
 		INSERT INTO ReleateMediaInfo (MediaInfo_Id, Type, ReleateRecordId,Remark)
 		VALUES (#mediainfoid#, 3, #devicesuggestinfoid#, #remark#)
 		<selectKey resultClass="int" keyProperty="releatemediaid">
 			SELECT last_insert_id() as releatemediaid;
 		</selectKey>
 	</insert>
+	
+	<select id="queryGPSInfo" parameterClass="map"
+		resultClass="dto">
+		SELECT a.USERID, a.USERNAME, c.GPSInfo_Id as gpsinfoid, DATE_FORMAT(c.time, '%Y-%m-%d %H:%i:%S') as time, c.Longtitude, c.latitude, c.speed 
+		FROM eauser a, gpsinfo c, releategpsinfo d
+		where a.deptid and c.GPSInfo_Id = d.GPSInfo_Id and d.Type = 1 and d.ReleateRecordId = a.USERID
+		<dynamic>
+			<isNotEmpty prepend="AND" property="datetime">
+				c.Time > '$datetime$'
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="userid">
+				a.USERID = #userid#
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY a.USERID ASC, c.time desc
+	</select>
+	
 </sqlMap>

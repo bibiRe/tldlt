@@ -133,11 +133,11 @@ Ext.onReady(function() {
 		header : '部门编号',
 		dataIndex : 'deptid',
 		hidden : true
-	},{
+	}, {
 		header : '设备编号',
 		dataIndex : 'devid',
 		hidden : true
-	},{
+	}, {
 		header : '区域编号',
 		dataIndex : 'regionid',
 		hidden : true,

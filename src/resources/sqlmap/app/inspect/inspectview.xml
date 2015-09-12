@@ -4,7 +4,7 @@
 <sqlMap namespace="App.InspectView">
 	<typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
 	<sql id="sqlQueryUserForManage">
-		SELECT a.USERID, a.USERNAME, a.SEX, a.DEPTID, b.DEPTNAME
+		SELECT a.USERID, a.USERNAME, a.SEX, a.DEPTID, b.DEPTNAME, DATE_FORMAT(c.time, '%Y-%m-%d %H:%i:%S') as time
 	</sql>
 	<sql id="sqlQueryUserForManageCount">
 		SELECT count(*) as count
@@ -12,8 +12,8 @@
 	<sql id="sqlQueryUserForManageCondition1">
 		FROM eauser a, eadept b, 
 	</sql>
-	<sql id="sqlQueryUserForManageCondition2">
-		(SELECT distinct a.USERID as USERID FROM eauser a, gpsinfo c, releategpsinfo d where a.deptid and c.GPSInfo_Id = d.GPSInfo_Id and d.Type = 1 and d.ReleateRecordId = a.USERID 
+	<sql id="sqlQueryUserForManageCondition2">		
+		(SELECT a.USERID as USERID, max(c.Time) as time FROM eauser a, gpsinfo c, releategpsinfo d where c.GPSInfo_Id = d.GPSInfo_Id and d.Type = 1 and d.ReleateRecordId = a.USERID 
 		<dynamic>
 			<isNotEmpty prepend="AND" property="deptid">
 				a.DEPTID like '$deptid$%'
@@ -25,7 +25,7 @@
 				c.Time > '$datetime$'
 			</isNotEmpty>
 		</dynamic>
-		 order by c.Time desc) c WHERE a.userid = c.userid and a.deptid=b.deptid
+		 GROUP BY a.USERID) c WHERE a.userid = c.userid and a.deptid=b.deptid
 	</sql>
 	<sql id="sqlQueryUserForManageCondition">
 		<include refid="sqlQueryUserForManageCondition1"/>
@@ -44,20 +44,23 @@
 	</select>
 		
 	<sql id="sqlQueryInfoForManage">
-		SELECT name, type, time, info
+		SELECT name, type, DATE_FORMAT(time, '%Y-%m-%d %H:%i:%S') as time, info
 	</sql>
 	<sql id="sqlQueryInfoForManageC1">
 		FROM (
 	</sql>
-	<sql id="sqlQueryInfoCommonTypeInfoForManage">
-		concat(concat(concat(concat(concat('上报GPS,经度:', cast(c.Longtitude as char(32))), ' 纬度:'), cast(c.Latitude as char(32))), ' 速度:'), cast(c.speed as char(32))) as info
+	<sql id="sqlQueryInfoCommonTypeInfoForManageHead">
+		concat('{gpsinfoid:', cast(c.GPSInfo_Id as char(32)), ', longtitude:', cast(c.Longtitude as char(32)), ', latitude:', cast(c.Latitude as char(32)), ', speed:', cast(c.speed as char(32))
 	</sql>
-	<sql id="sqlQueryInfoCommonTypeForManage">
-		c.Time as time, <include refid="sqlQueryInfoCommonTypeInfoForManage"/>
+	<sql id="sqlQueryInfoCommonTypeInfoForManageEnd">
+		, '}') as info
+	</sql>
+	<sql id="sqlQueryInfoCommonTypeInfoForUserManage">
+		<include refid="sqlQueryInfoCommonTypeInfoForManageHead"/>, ', userid:"', cast(a.USERID as char(32)), '"'<include refid="sqlQueryInfoCommonTypeInfoForManageEnd"/> 
 	</sql>
 	<sql id="sqlQueryInfoUserGPSForManage">
-		(SELECT a.USERNAME as name, 1 as type, 
-		<include refid="sqlQueryInfoCommonTypeForManage"/>
+		(SELECT a.USERNAME as name, 1 as type, c.Time as time, 
+		<include refid="sqlQueryInfoCommonTypeInfoForUserManage"/>
 		FROM eauser a, gpsinfo c, releategpsinfo d 
 		where  c.GPSInfo_Id = d.GPSInfo_Id and d.Type = 1 and d.ReleateRecordId = a.USERID
 		<dynamic>
@@ -74,12 +77,13 @@
 		 <include refid="sqlQueryInfoForManageC3"/>
 		 )
 	</sql>
-
-
+	<sql id="sqlQueryInfoCommonTypeInfoForDeviceManage">
+		<include refid="sqlQueryInfoCommonTypeInfoForManageHead"/>, ', deviceid:"', cast(a.DEVICE_ID as char(32)), '"'<include refid="sqlQueryInfoCommonTypeInfoForManageEnd"/> 
+	</sql>
 	<sql id="sqlQueryInfoDeviceGPSForManage">	
 		UNION
-		(SELECT a.Name as name, 2 as type, 
-		<include refid="sqlQueryInfoCommonTypeForManage"/>
+		(SELECT a.Name as name, 2 as type, c.Time as time, 
+		<include refid="sqlQueryInfoCommonTypeInfoForDeviceManage"/>
 		FROM device a, gpsinfo c, releategpsinfo d, region e 
 		where c.GPSInfo_Id = d.GPSInfo_Id and d.Type = 2 and d.ReleateRecordId = a.Device_ID and a.REGION_ID = e.REGION_ID
 		<dynamic>
@@ -96,15 +100,38 @@
 		 <include refid="sqlQueryInfoForManageC3"/>
 		 )
 	</sql>
-
-	<sql id="sqlQueryInfoForManageC2">
-		) c
-<!-- 		<dynamic prepend="WHERE">
-			<isNotEmpty prepend="AND" property="infoName">
-				c.info like	'%$infoName$%'
+	<sql id="sqlQueryInfoCommonTypeInfoForPlanDeviceManage">
+		<include refid="sqlQueryInfoCommonTypeInfoForManageHead"/>, ', inspectplanid:', cast(g.InspectPlan_ID as char(32)), ', inspectplandeviceid:', cast(f.InspectPlanDevice_ID as char(32))<include refid="sqlQueryInfoCommonTypeInfoForManageEnd"/> 
+	</sql>
+	<sql id="sqlQueryInfoPlanDeviceForManage">	
+		UNION 
+		(SELECT t.name, t.type, t.time, t.info FROM 
+		(SELECT concat(i.deptname, h.username, '执行', g.Name, '检查', a.Name) as name, 3 as type, c.Time as time, 
+		<include refid="sqlQueryInfoCommonTypeInfoForPlanDeviceManage"/>
+		FROM device a, gpsinfo c, releategpsinfo d, region e, InspectPlanDevice f, InspectPlan g, eauser h, eadept i
+		where c.GPSInfo_Id = d.GPSInfo_Id and d.Type = 3 and d.ReleateRecordId = f.InspectPlanDevice_ID and g.InspectPlan_ID = f.InspectPlan_ID AND f.DEVICE_ID = a.DEVICE_ID and a.REGION_ID = e.REGION_ID and g.ExecuteUserId = h.userID and h.DEPTID=i.DEPTID 
+		<dynamic>
+			<isNotEmpty prepend="AND" property="deptid">
+				e.DEPTID like '$deptid$%'
 			</isNotEmpty>
-		</dynamic> -->
-		
+			<isNotEmpty prepend="AND" property="infoName">
+				(g.Name like '%$infoName$%' OR a.Name like '%$infoName$%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="datetime">
+				c.Time > '$datetime$'
+			</isNotEmpty>
+		</dynamic>
+		 <include refid="sqlQueryInfoForManageC3"/>
+		 ) t
+		 <dynamic prepend="WHERE">
+			<isNotEmpty prepend="AND" property="infoName">
+				t.Name like '%$infoName$%'
+			</isNotEmpty>
+		</dynamic>
+		 )
+	</sql>
+	<sql id="sqlQueryInfoForManageC2">
+		) c	
 	</sql>
 	<sql id="sqlQueryInfoForManageC3">
 		order by c.time desc
@@ -115,6 +142,7 @@
 		<include refid="sqlQueryInfoForManageC1" />
 		<include refid="sqlQueryInfoUserGPSForManage" />
 		<include refid="sqlQueryInfoDeviceGPSForManage" />
+		<include refid="sqlQueryInfoPlanDeviceForManage" />
 		<include refid="sqlQueryInfoForManageC2" />
 		<include refid="sqlQueryInfoForManageC3" />
 	</select>
@@ -125,6 +153,8 @@
 		<include refid="sqlQueryInfoForManageC1" />
 		<include refid="sqlQueryInfoUserGPSForManage" />
 		<include refid="sqlQueryInfoDeviceGPSForManage" />
+		<include refid="sqlQueryInfoPlanDeviceForManage" />
 		<include refid="sqlQueryInfoForManageC2" />
 	</select>
+
 </sqlMap>

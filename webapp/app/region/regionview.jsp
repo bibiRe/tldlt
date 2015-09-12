@@ -3,6 +3,7 @@
 <G4Studio:html title="区域管理" >
 <G4Studio:ext.codeRender fields="REGIONTYPE"  />
 <G4Studio:ext.codeStore fields="REGIONTYPE:3"/>
+<G4Studio:import src="/app/common/gridBbar.js" />
 <G4Studio:import src="/app/region/js/region.js" />
 <G4Studio:body>
 <G4Studio:div key="regionTreeDiv"></G4Studio:div>

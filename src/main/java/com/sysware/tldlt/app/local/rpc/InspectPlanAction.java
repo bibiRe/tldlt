@@ -22,7 +22,7 @@ import com.sysware.tldlt.app.web.common.BaseAppAction;
  */
 public class InspectPlanAction extends BaseAppAction {
 	/**
-	 * 删除巡检计划基本信息.
+	 * 查询巡检计划基本信息.
 	 * 
 	 * @param mapping
 	 *            struts mapping对象.

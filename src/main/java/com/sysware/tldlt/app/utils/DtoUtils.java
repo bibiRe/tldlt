@@ -47,14 +47,13 @@ public class DtoUtils {
      * @return dto
      */
     public static Dto addGPSInfo(Dao appDao, Dto inDto) {
-        Dto result = addInfoAndCheckIntIdFail(appDao,
-                "App.GPS.addInfo", inDto, "gpsinfoid", "GPS记录");
+        Dto result = addInfoAndCheckIntIdFail(appDao, "App.GPS.addInfo", inDto,
+                "gpsinfoid", "GPS记录");
         if (null != result) {
             return result;
         }
-        return addInfoAndCheckIntIdFail(appDao,
-                "App.GPS.saveReleateGPSInfo", inDto, "releategpsinfoid",
-                "GPS关联记录");
+        return addInfoAndCheckIntIdFail(appDao, "App.GPS.saveReleateGPSInfo",
+                inDto, "releategpsinfoid", "GPS关联记录");
     }
 
     /**
@@ -249,7 +248,8 @@ public class DtoUtils {
      * @return 创建示范成功.
      */
     @SuppressWarnings("unchecked")
-    public static Dto createSavePathAndPutInDto(Dto dto, MediaPathService mediaPathService) {        
+    public static Dto createSavePathAndPutInDto(Dto dto,
+            MediaPathService mediaPathService) {
         String savePath = mediaPathService.getPath("");
         if (AppTools.isBlankString(savePath)) {
             return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "保存路径没定义");
@@ -332,18 +332,22 @@ public class DtoUtils {
      * 得到返回Dto Json字符串.
      * @param outDto dto对象
      */
+    @SuppressWarnings("unchecked")
     private static String getRetDtoJson(Dto outDto) {
         BaseRetDto retDto = (BaseRetDto) outDto;
         BaseRetDto retDto1 = new BaseRetDto();
         try {
             BeanUtils.copyProperties(retDto1, retDto);
+            retDto1.putAll(retDto);
         } catch (IllegalAccessException e) {
             log.info(e);
         } catch (InvocationTargetException e) {
             log.info(e);
         }
         if (retDto1.isRetSuccess()) {
-            retDto1.setMsg("操作成功");
+            if (AppTools.isEmptyString(retDto1.getMsg())) {
+                retDto1.setMsg("");
+            }
         } else {
             StringBuilder strB = new StringBuilder();
             strB.append("操作失败，错误码:");
@@ -410,12 +414,26 @@ public class DtoUtils {
      * 设置返回信息.
      * @param response response对象
      * @param outDto dto对象
-     * @return Struts Actionforward 对象
      * @throws IOException IO异常
      */
     public static ActionForward sendRetDtoActionForward(
             HttpServletResponse response, Dto outDto) throws IOException {
         return sendStrActionForward(response, getRetDtoJson(outDto));
+    }
+
+    /**
+     * 返回成功数据RetDto信息.
+     * @param response response对象
+     * @param data 数据
+     * @throws IOException IO异常
+     */
+    @SuppressWarnings("unchecked")
+    public static ActionForward sendSuccessDataRetDtoActionForward(
+            HttpServletResponse response, Object data) throws IOException {
+        BaseRetDto result = new BaseRetDto();
+        result.put("data", data);
+        result.setRetSuccess();
+        return sendRetDtoActionForward(response, result);
     }
 
     /**

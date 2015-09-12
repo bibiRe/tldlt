@@ -304,15 +304,20 @@
         a.Device_Id=b.Device_Id AND x.DeviceType_Id = y.devicetype_Id AND
         y.devicemodel_id = b.devicemodel_Id AND a.InspectPlan_Id = #planID#
     </select>
-    
-    <sql id="sqlQueryPlanBasic">
+    <sql id="sqlQueryPlanBasicType">
         SELECT a.InspectPlan_Id as planID, a.Name as planname,
         a.State, a.ExecuteUserId as executoruserid,
         (SELECT username FROM
         eauser WHERE userid = a.ExecuteUserId) as executor,
         UNIX_TIMESTAMP(a.ExecuteStartTime) as ExecuteStartTime,
-        UNIX_TIMESTAMP(a.ExecuteEndTime) as ExecuteEndTime
-        FROM InspectPlan a
+        UNIX_TIMESTAMP(a.ExecuteEndTime) as ExecuteEndTime        
+    </sql>
+    <sql id="sqlQueryPlanBasicTable">
+    	FROM InspectPlan a
+    </sql>
+    <sql id="sqlQueryPlanBasic">
+        <include refid="sqlQueryPlanBasicType"/>
+        <include refid="sqlQueryPlanBasicTable"/>
     </sql>
     <sql id="sqlQueryExecuteUserPlanOutlineCondition">
         <dynamic prepend="WHERE">
@@ -394,5 +399,57 @@
 	<update id="updateInspectPlanFinished" parameterClass="dto">
 		UPDATE InspectPlan SET State = #state# WHERE InspectPlan_Id = #planID#
     </update>    
+    <sql id="sqlQueryExecutingPlanCondition">
+    	, InspectRecord b WHERE a.InspectPlan_Id = b.InspectPlan_Id AND a.State = 5
+        <dynamic>
+            <isNotEmpty prepend="AND" property="userid">
+                a.ExecuteUserId = #userid#
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="datetime">
+                b.ExecuteStartTime <![CDATA[<=]]> '$datetime$' AND a.ExecuteEndTime <![CDATA[>=]]> '$datetime$'              
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+	<sql id="sqlQueryExecutingPlanBasic">
+		<include refid="sqlQueryPlanBasicType"/>, b.InspectRecord_Id as inspectrecordid, date_format(b.ExecuteStartTime, '%Y-%m-%d %H:%i:%s') as RealStartTime      	
+    	<include refid="sqlQueryPlanBasicTable"/>		
+	</sql>
+    <select id = "queryExecutingPlan" parameterClass="dto"
+        resultClass="dto">
+        <include refid="sqlQueryExecutingPlanBasic" />
+    	<include refid="sqlQueryExecutingPlanCondition"/>
+    </select>
+    <sql id="sqlQuerySoonExecutePlanCondition">
+    	WHERE a.State = 4
+        <dynamic>
+            <isNotEmpty prepend="AND" property="userid">
+                a.ExecuteUserId = #userid#
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="datetime">
+                a.ExecuteEndTime <![CDATA[>=]]> '$datetime$'
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+    <select id = "querySoonExecutePlan" parameterClass="dto"
+        resultClass="dto">
+    	<include refid="sqlQueryPlanBasic"/>
+    	<include refid="sqlQuerySoonExecutePlanCondition"/>
+    </select>
     
+    <sql id="sqlQueryNotFinishedPlanCondition">
+    	WHERE a.State in [4, 5]
+        <dynamic>
+            <isNotEmpty prepend="AND" property="userid">
+                a.ExecuteUserId = #userid#
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="datetime">
+                a.ExecuteEndTime <![CDATA[<]]> '$datetime$'
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+    <select id = "queryNotFinishedPlanPlan" parameterClass="dto"
+        resultClass="dto">
+    	<include refid="sqlQueryPlanBasic"/>
+    	<include refid="sqlQueryNotFinishedPlanCondition"/>
+    </select>
 </sqlMap>

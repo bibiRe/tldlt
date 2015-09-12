@@ -2,7 +2,8 @@ package com.sysware.tldlt.app.service.device;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
 import org.junit.Test;
@@ -39,8 +40,8 @@ public class DeviceServiceImplTest extends BaseAppServiceImplTest {
         Dto dto = new BaseDto();
         int planId = 1;
         String deviceId = "0000000001";
-        dto.put("planID", planId);
         dto.put("deviceID", deviceId);
+        dto.put("planID", planId);
         TestUtils.setGPSDto(dto);
         return dto;
     }
@@ -110,4 +111,78 @@ public class DeviceServiceImplTest extends BaseAppServiceImplTest {
         BaseRetDto outDto = (BaseRetDto) deviceServiceImpl.saveGPSInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_INVALID_VALUE));
     }
+    
+    /**
+     * 测试得到经纬度成功-设备经纬度存在.
+     */
+    @Test
+    public void testGetLongLatInfo_Success_LongLatExist() {
+        String deviceId = "0000000001";
+        Dto dto = createDeviceDto(deviceId, null);
+        TestUtils.setGPSDto(dto);        
+        Mockito.when(
+                appDao.queryForObject(
+                        "App.Device.queryLongLatInfoByDeviceId",
+                        deviceId)).thenReturn(dto);
+        Dto outDto = deviceServiceImpl.getLongLatInfo(deviceId);
+        assertThat(outDto, notNullValue());
+        assertThat(outDto.getAsString("deviceid"), is(deviceId));
+    }
+
+    /**
+     * 创建设备Dto.
+     * @param deviceId 设备编号.
+     * @param parentid 父设备编号.
+     * @return dto对象.
+     */
+    @SuppressWarnings("unchecked")
+    private Dto createDeviceDto(String deviceId, String parentid) {
+        Dto dto = new BaseDto();
+        dto.put("deviceid", deviceId);
+        dto.put("parentdeviceid", parentid);
+        return dto;
+    }
+
+    /**
+     * 测试得到经纬度成功-设备经纬度存在.
+     */
+    @Test
+    public void testGetLongLatInfo_Success_Parent_LongLatExist() {
+        String deviceId = "0000000001";
+        String parentid = "000002";
+        Dto dto = createDeviceDto(deviceId, parentid);
+        Mockito.when(
+                appDao.queryForObject(
+                        "App.Device.queryLongLatInfoByDeviceId",
+                        deviceId)).thenReturn(dto);
+        Dto pDto = createDeviceDto(parentid, null);
+        TestUtils.setGPSDto(pDto);
+        Mockito.when(
+                appDao.queryForObject(
+                        "App.Device.queryLongLatInfoByDeviceId",
+                        parentid)).thenReturn(pDto);
+        Dto outDto = deviceServiceImpl.getLongLatInfo(deviceId);
+        assertThat(outDto, notNullValue());
+    }
+    
+    /**
+     * 测试得到经纬度成功-设备经纬度存在.
+     */
+    @Test
+    public void testGetLongLatInfo_Fail_Parent_LongLatNotExist() {
+        String deviceId = "0000000001";
+        String parentid = "000002";
+        Dto dto = createDeviceDto(deviceId, parentid);
+        Mockito.when(
+                appDao.queryForObject(
+                        "App.Device.queryLongLatInfoByDeviceId",
+                        deviceId)).thenReturn(dto);
+        Dto pDto = createDeviceDto(parentid, null);
+        Mockito.when(
+                appDao.queryForObject(
+                        "App.Device.queryLongLatInfoByDeviceId",
+                        parentid)).thenReturn(pDto);
+        Dto outDto = deviceServiceImpl.getLongLatInfo(deviceId);
+        assertThat(outDto, nullValue());
+    }    
 }
