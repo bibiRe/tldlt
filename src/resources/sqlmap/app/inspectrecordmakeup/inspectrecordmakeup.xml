@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 演示与教程手工映射SQL语句 -->
+<sqlMap namespace="App.InspectRecordMakeup">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+
+
+    <select id="getRecordMakeupCount" parameterClass="dto" resultClass="java.lang.Integer">
+    
+        SELECT count(*)
+        
+		from inspectrecordmakeup a , InspectPlan b
+		
+		where 1 = 1
+		
+		and  a.InspectPlan_Id = b.InspectPlan_Id
+		
+		and b.State = '4'
+		
+        
+        <dynamic>
+        
+
+
+            <isNotEmpty prepend="AND" property="uselogin">
+                ( 
+                
+
+                    b.ExecuteUserId = #loginuserid#
+
+                 )
+            </isNotEmpty>
+            
+            <isNotEmpty prepend="AND" property="canmgr">
+                ( 
+                
+
+                 b.ExecuteUserId in (select userid from eauser c where c.deptid like '$deptid$%')
+                 
+                 )
+            </isNotEmpty>
+            
+            
+            
+             <isNotEmpty prepend="AND" property="queryParam">
+                ( 
+                
+                 
+                 b.ExecuteUserId in (select userid from eauser c where c.username like '%$queryParam$%')
+                 
+                 
+                 )
+            </isNotEmpty>
+            
+             <isNotEmpty prepend="AND" property="startdatetime">
+                 
+                  ( 
+                 
+                	  UNIX_TIMESTAMP(a.ApproveTime) <![CDATA[>=]]> UNIX_TIMESTAMP(#startdatetime#)  
+                 	
+                 
+                 )
+                 
+            </isNotEmpty>
+            
+            
+            <isNotEmpty prepend="AND" property="enddatetime">
+                 
+                  ( 
+                 
+                 	    UNIX_TIMESTAMP(a.ApproveTime) <![CDATA[<=]]> UNIX_TIMESTAMP(#enddatetime#)  
+                 
+                 )
+                 
+            </isNotEmpty>
+            
+        </dynamic>
+        
+    </select>
+    
+    
+    
+    <select id="getRecordMakeup" parameterClass="dto" resultClass="dto">
+    
+		select 
+		
+		a.InspectRecordMarkup_Id as recordmakeupid ,
+		
+		a.InspectPlan_Id as inspecplanid ,
+		
+		
+		b.ExecuteUserId as recordmakeupapplyuserid,
+		
+		(SELECT username FROM eauser WHERE userid =  b.ExecuteUserId) as recordmakeupapplyusername,
+			
+		a.ApplyContent as recordmakeupapplycontent ,
+		
+		date_format((a.ApplyTime),'%Y-%m-%d %H:%i:%s') as   recordmakeupapplytime ,
+		
+		
+		
+		
+		
+		a.ApproveUserId as recordmakeupapproveuserid ,
+		
+		(SELECT username FROM eauser WHERE userid =  a.ApproveUserId) as recordmakeupapproveusername,
+		
+		a.ApproveContent as recordmakeupapprovecontent ,
+		
+		date_format((a.ApproveTime),'%Y-%m-%d %H:%i:%s') as   recordmakeupapprovetime ,
+		
+		
+		
+		a.State as recordmakeupstate ,
+		
+		b.Name as planname ,
+		
+		b.Remark as planremark 
+		
+		from inspectrecordmakeup a , InspectPlan b
+		
+		where 1 = 1
+		
+		and  a.InspectPlan_Id = b.InspectPlan_Id
+		
+		and b.State = '4'
+		
+        
+        <dynamic>
+        
+
+
+            <isNotEmpty prepend="AND" property="uselogin">
+                ( 
+                
+
+                    b.ExecuteUserId = #loginuserid#
+
+                 )
+            </isNotEmpty>
+            
+            <isNotEmpty prepend="AND" property="canmgr">
+                ( 
+                
+
+                 b.ExecuteUserId in (select userid from eauser c where c.deptid like '$deptid$%')
+                 
+                 )
+            </isNotEmpty>
+            
+            
+            
+             <isNotEmpty prepend="AND" property="queryParam">
+                ( 
+                
+                 
+                 b.ExecuteUserId in (select userid from eauser c where c.username like '%$queryParam$%')
+                 
+                 
+                 )
+            </isNotEmpty>
+            
+             <isNotEmpty prepend="AND" property="startdatetime">
+                 
+                  ( 
+                 
+                	  UNIX_TIMESTAMP(a.ApproveTime) <![CDATA[>=]]> UNIX_TIMESTAMP(#startdatetime#)  
+                 	
+                 
+                 )
+                 
+            </isNotEmpty>
+            
+            
+            <isNotEmpty prepend="AND" property="enddatetime">
+                 
+                  ( 
+                 
+                 	    UNIX_TIMESTAMP(a.ApproveTime) <![CDATA[<=]]> UNIX_TIMESTAMP(#enddatetime#)  
+                 
+                 )
+                 
+            </isNotEmpty>
+            
+        </dynamic>
+        
+    </select>
+    
+    
+    
+     <select id="getInspecPlan" parameterClass="dto" resultClass="dto">
+
+			select 
+			
+			a.InspectPlan_Id as id,
+			
+			a.Name as value ,
+			
+			a.Remark as remark
+			
+			from inspectplan a
+			
+			where 1 = 1
+			
+			and a.State = '4'
+			
+			and a.ExecuteUserId = #loginuserid#
+
+
+    </select>
+    
+    
+    <insert id="AddRecordMakeup" parameterClass="dto">
+        INSERT INTO inspectrecordmakeup
+        (
+       	  InspectRecordMarkup_Id,InspectPlan_Id,ApplyTime,ApplyContent,State
+        )
+        VALUES (#id#,#inspecplanid#,now(),#recordmakeupapplycontent#,#recordmakeupstate#)
+    </insert>
+    
+    
+    
+    <update id="UpdateRecordMakeup" parameterClass="dto">
+    
+        UPDATE inspectrecordmakeup SET
+       
+        InspectPlan_Id=#inspecplanid#,
+        ApplyTime=now(),
+        ApplyContent=#recordmakeupapplycontent#,
+        State=#recordmakeupstate#
+
+        WHERE InspectRecordMarkup_Id = #recordmakeupid#
+        
+    </update>
+    
+    
+	<delete id="deleteRecordMakeup" parameterClass="dto" >
+		
+		DELETE FROM inspectrecordmakeup
+		
+		where 1 = 1
+		
+		<dynamic>
+		
+		   <isNotEmpty prepend="AND" property="recordmakeupid">
+	                InspectRecordMarkup_Id = #recordmakeupid#
+	       </isNotEmpty>
+            
+       </dynamic>
+		
+	</delete>
+	
+	
+	  <update id="ApprovalRecordMakeup" parameterClass="dto">
+        UPDATE inspectrecordmakeup SET
+       
+        ApproveUserId=#loginuserid#,
+        ApproveContent=#approvecontent#,
+        State=#recordmakeupstate#,
+        ApproveTime=now()
+        
+        WHERE InspectRecordMarkup_Id = #recordmakeupid#
+    </update>
+        
+    
+</sqlMap>

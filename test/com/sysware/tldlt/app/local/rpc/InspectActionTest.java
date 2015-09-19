@@ -69,5 +69,18 @@ public class InspectActionTest extends AppMockStrutsTestCase {
                 new String[] {Long.toString(checktime)});
         actionExecuteAndAssertRPCRetInfoSuccess();
     }
-        
+
+    /**
+     * 测试保存巡检记录成功.
+     */
+    @Test
+    public void testQueryInspectRecordByPlanIdSuccess() {
+        String key = TestUtils.loginUser();
+        addRequestParameter("reqCode",
+                new String[] {"queryInspectRecordByPlanId"});
+        addRequestParameter("key", new String[] {key});
+        addRequestParameter("planID", new String[] {"1"});
+        actionExecuteAndAssertRPCRetInfoSuccess();
+    }
+
 }

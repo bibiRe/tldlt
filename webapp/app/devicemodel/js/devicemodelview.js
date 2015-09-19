@@ -5,6 +5,12 @@
  * @since now
  */
 Ext.onReady(function() {
+	
+	Ext.getDoc().on("contextmenu", function(e)
+			{
+				e.stopEvent();
+			});
+	
 	var sm = new Ext.grid.CheckboxSelectionModel();
 	var cm = new Ext.grid.ColumnModel([new Ext.grid.RowNumberer({header : '序号',width : 40}), sm, 
 	        {
@@ -402,6 +408,7 @@ storeDevManuf.load();
 							name : 'realname',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						},comboDevType,comboDevManuf ,{
 							fieldLabel : '备注',
@@ -409,6 +416,7 @@ storeDevManuf.load();
 							anchor : '100%',
 							allowBlank : true,
 							labelStyle : micolor,
+							maxLength: 250,
 							xtype: 'textarea'
 						}
 					]
@@ -589,6 +597,7 @@ storeEditDevManuf.load();
 							name : 'realname',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						},comboEditDevType,comboEditDevManuf ,{
 							fieldLabel : '备注',
@@ -596,6 +605,7 @@ storeEditDevManuf.load();
 							anchor : '100%',
 							allowBlank : true,
 							labelStyle : micolor,
+							maxLength: 250,
 							xtype: 'textarea'
 						},{
 							fieldLabel : '编号',

@@ -1,8 +1,8 @@
 <%@ page contentType="text/html; charset=utf-8"%>
 <%@ include file="/common/include/taglib.jsp"%>
 <G4Studio:html title="巡检计划" uxEnabled="true">
-//<G4Studio:ext.myux uxType="datatimefield"/>
-//<G4Studio:ext.myux uxType="monthpicker"/>
+<G4Studio:ext.myux uxType="datatimefield"/>
+<G4Studio:ext.myux uxType="monthpicker"/>
 <G4Studio:import src="/app/inspectionplan/js/inspectionplanview.js"/>
 <G4Studio:ext.codeRender fields="ENABLED,EDITMODE"/>
 <G4Studio:ext.codeStore fields="ENABLED,EDITMODE"/>

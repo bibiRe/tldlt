@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" output="target/classes" path="test"/>
 	<classpathentry kind="src" path="src/resources"/>
+	<classpathentry kind="src" output="target/classes" path="test"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry exported="true" kind="lib" path="D:/.gradle/caches/modules-2/files-2.1/joda-time/joda-time/2.8.1/f5bfc718c95a7b1d3c371bb02a188a4df18361a9/joda-time-2.8.1.jar" sourcepath="D:/.gradle/caches/modules-2/files-2.1/joda-time/joda-time/2.8.1/bf0996237b66ce00cd3132af179612df02ff9771/joda-time-2.8.1-sources.jar">
@@ -80,12 +80,27 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/org/mockito/mockito-all/1.10.19/mockito-all-1.10.19.jar">
+	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/org/mockito/mockito-all/1.10.19/mockito-all-1.10.19.jar" sourcepath="D:/.m2/repository/org/mockito/mockito-all/1.10.19/mockito-all-1.10.19-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/org/powermock/powermock-api-mockito/1.6.2/powermock-api-mockito-1.6.2.jar" sourcepath="D:/.m2/repository/org/powermock/powermock-api-mockito/1.6.2/powermock-api-mockito-1.6.2-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/org/powermock/powermock-module-junit4/1.6.2/powermock-module-junit4-1.6.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar" sourcepath="D:/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4.jar" sourcepath="D:/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
@@ -155,6 +170,16 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/org/powermock/powermock-api-support/1.6.2/powermock-api-support-1.6.2.jar" sourcepath="D:/.m2/repository/org/powermock/powermock-api-support/1.6.2/powermock-api-support-1.6.2-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/org/powermock/powermock-module-junit4-common/1.6.2/powermock-module-junit4-common-1.6.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="D:/.gradle/caches/modules-2/files-2.1/net.minidev/json-smart/2.1.1/922d12fb1f394e2b6999ae0f7936ab13f4dffb81/json-smart-2.1.1.jar" sourcepath="D:/.gradle/caches/modules-2/files-2.1/net.minidev/json-smart/2.1.1/45cf5fe4b585af94ba39bfd26ea3c61002072d04/json-smart-2.1.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
@@ -206,6 +231,16 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/io/netty/netty/3.5.2.Final/netty-3.5.2.Final.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/org/powermock/powermock-core/1.6.2/powermock-core-1.6.2.jar" sourcepath="D:/.m2/repository/org/powermock/powermock-core/1.6.2/powermock-core-1.6.2-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/org/powermock/powermock-reflect/1.6.2/powermock-reflect-1.6.2.jar" sourcepath="D:/.m2/repository/org/powermock/powermock-reflect/1.6.2/powermock-reflect-1.6.2-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
@@ -281,6 +316,16 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="D:/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.websocket/websocket-client/9.2.11.v20150529/7e2597d596a1e99a6ca3d95356563befd9ec501b/websocket-client-9.2.11.v20150529.jar" sourcepath="D:/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.websocket/websocket-client/9.2.11.v20150529/49c48341b2269f57e593f733275ec57ff991f939/websocket-client-9.2.11.v20150529-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/org/javassist/javassist/3.19.0-GA/javassist-3.19.0-GA.jar" sourcepath="D:/.m2/repository/org/javassist/javassist/3.19.0-GA/javassist-3.19.0-GA-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/org/objenesis/objenesis/2.1/objenesis-2.1.jar" sourcepath="D:/.m2/repository/org/objenesis/objenesis/2.1/objenesis-2.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
@@ -380,12 +425,12 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar">
+	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar" sourcepath="D:/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="D:/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.1/f5aa318bda4c6c8d688c9d00b90681dcd82ce636/httpcore-4.4.1.jar" sourcepath="D:/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.1/9700be0d0a331691654a8e901943c9a74e33c5fc/httpcore-4.4.1-sources.jar">
+	<classpathentry exported="true" kind="lib" path="D:/.m2/repository/org/apache/httpcomponents/httpcore/4.4.1/httpcore-4.4.1.jar" sourcepath="D:/.m2/repository/org/apache/httpcomponents/httpcore/4.4.1/httpcore-4.4.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
@@ -746,6 +791,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="E:/Source/Java/TLDLT铁路电力通/Source/tldlt/webapp/WEB-INF/lib/log4j-1.2.14.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="E:/Source/Java/TLDLT铁路电力通/Source/tldlt/webapp/WEB-INF/lib/mybatis-spring-1.1.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>

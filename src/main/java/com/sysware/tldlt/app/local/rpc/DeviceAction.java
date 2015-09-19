@@ -13,7 +13,7 @@ import org.g4studio.system.common.util.SystemConstants;
 
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 import com.sysware.tldlt.app.service.device.DeviceService;
-import com.sysware.tldlt.app.service.media.MediaUrlService;
+import com.sysware.tldlt.app.service.inspect.InspectService;
 import com.sysware.tldlt.app.utils.AppTools;
 import com.sysware.tldlt.app.web.common.BaseAppAction;
 
@@ -29,14 +29,15 @@ public class DeviceAction extends BaseAppAction {
      * 设备服务.
      */
     private DeviceService deviceService;
+
     /**
-     * 媒体链接服务.
+     * 巡检服务.
      */
-    private MediaUrlService mediaUrlService;
+    private InspectService inspectService;
 
     public DeviceAction() {
         deviceService = (DeviceService) this.getService("deviceService");
-        mediaUrlService = (MediaUrlService) this.getService("mediaUrlService");
+        inspectService = (InspectService) this.getService("inspectService");
     }
 
     /**
@@ -62,7 +63,7 @@ public class DeviceAction extends BaseAppAction {
         if (AppTools.isEmptyString(deviceID)) {
             return RPCUtils.sendErrorRPCInfoActionForward(response, "设备编号不存在");
         }
-        RPCRetDto outDto = RPCUtils.createDto(true, null);
+        RPCRetDto outDto = RPCUtils.createSuccessDto();
         List<Dto> list = appReader.queryForList(
                 "App.Inspect.queryInspectRecordByDeviceId", deviceID);
         for (Dto dm : list) {
@@ -74,14 +75,11 @@ public class DeviceAction extends BaseAppAction {
             }
             String inspectrecordinfoid = dm.getAsString("inspectrecordinfoid");
             if (!AppTools.isEmptyString(inspectrecordinfoid)) {
-                dto.put("inspectrecordinfoid", inspectrecordinfoid);
-                List<Dto> imglist = appReader.queryForList(
-                        "App.Inspect.queryImages", dto);
-                dm.put("images", imglist);
-
-                for (Dto iDto : imglist) {
-                    iDto.put("mediaurl", this.mediaUrlService.getUrl(iDto
-                            .getAsString("mediaurl")));
+                List<Dto> images = inspectService
+                        .queryInspectRecordInfoImages(Integer
+                                .parseInt(inspectrecordinfoid));
+                if (null != images) {
+                    dm.put("images", images);
                 }
             }
         }

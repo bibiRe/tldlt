@@ -49,6 +49,25 @@ public class RPCUtils {
     }
 
     /**
+     * 创建成功的dto对象.
+     * @return dto对象
+     */
+    public static RPCRetDto createDataSuccessDto() {
+        RPCRetDto outDto = createSuccessDto();
+        Dto data = new BaseDto();
+        outDto.addData(data);
+        return outDto;
+    }
+
+    /**
+     * 创建成功的dto对象.
+     * @return dto对象
+     */
+    public static RPCRetDto createSuccessDto() {
+        return RPCUtils.createDto(true, null);
+    }
+    
+    /**
      * 给Reponse写RPC错误信息.
      * @param response Http Response对象
      * @param info 信息
@@ -71,11 +90,12 @@ public class RPCUtils {
      */
     public static ActionForward sendBasicRetDtoRPCInfoActionForward(
             HttpServletResponse response, BaseRetDto info) throws IOException {
-        RPCRetDto outDto = createDto(info.isRetSuccess(), AppTools.convertNullStr(info.getDesc()));
+        RPCRetDto outDto = createDto(info.isRetSuccess(),
+                AppTools.convertNullStr(info.getDesc()));
         DtoUtils.writeToResponse(outDto.toJson(), response);
         return null;
     }
-    
+
     /**
      * 给Reponse写RPC Dto信息.
      * @param response Http Response对象
@@ -89,7 +109,6 @@ public class RPCUtils {
         return null;
     }
 
-    
     /**
      * 给Reponse写RPCList信息.
      * @param response Http Response对象

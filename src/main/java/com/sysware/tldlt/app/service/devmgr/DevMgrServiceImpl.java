@@ -218,6 +218,24 @@ public class DevMgrServiceImpl  extends BaseAppServiceImpl implements DevMgrServ
 	    }
     	
     	
+    	{
+    		String v = inDto.getAsString("devname");
+    	
+        
+	        if(v != null)
+	        {
+	        	v = v.trim();
+	        }
+	        
+	        if (AppTools.isEmptyString(v)) 
+	        {
+	            return DtoUtils.getErrorDto("设备名称不合理");
+	        }
+	        
+	        inDto.put("devname", v);
+	    }
+    	
+    	
         try
         {
 

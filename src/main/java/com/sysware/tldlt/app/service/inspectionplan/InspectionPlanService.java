@@ -14,4 +14,10 @@ public interface InspectionPlanService
 	public Dto addPlan(Dto pDto);
 	
 	public String getDevice(Dto pDto);
+	
+	public Dto deletePlan(Dto inDto);
+	
+	public Dto updatePlan(Dto inDto);
+	
+	public Dto approvalPlan(Dto inDto);
 }

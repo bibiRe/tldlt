@@ -114,8 +114,63 @@
 			<isNotEmpty prepend="AND" property="deptid">
 				e.DEPTID like '$deptid$%'
 			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="datetime">
+				c.Time > '$datetime$'
+			</isNotEmpty>
+		</dynamic>
+		 <include refid="sqlQueryInfoForManageC3"/>
+		 ) t
+		 <dynamic prepend="WHERE">
 			<isNotEmpty prepend="AND" property="infoName">
-				(g.Name like '%$infoName$%' OR a.Name like '%$infoName$%')
+				t.Name like '%$infoName$%'
+			</isNotEmpty>
+		</dynamic>
+		 )
+	</sql>
+	<sql id="sqlQueryInfoCommonTypeInfoForInspectRecordManage">
+		concat('{inspectrecordid:', cast(c.InspectRecord_Id as char(32)), ', inspectrecordinfoid:',	cast(c.InspectRecordInfo_Id as char(32)), 
+		', inspectstate:', cast(c.state as char(32)), ', inspectplanid:', cast(g.InspectPlan_ID as char(32)), ', planname:"', g.Name,
+		'", deptname:"', i.deptname, '", username:"', h.username, '", deviceid:"', a.DEVICE_ID, '", devicename:"', a.Name, '",  remark:"', IFNULL(c.remark, ''), '"'
+		<include refid="sqlQueryInfoCommonTypeInfoForManageEnd"/> 
+	</sql>
+	<sql id="sqlQueryInfoInspectRecordForManage">	
+		UNION 
+		(SELECT t.name, t.type, t.time, t.info FROM 
+		(SELECT concat(i.deptname, h.username, '完成', a.Name, '巡检') as name, 4 as type, c.Time as time, 
+		<include refid="sqlQueryInfoCommonTypeInfoForInspectRecordManage"/> 
+		FROM device a, InspectRecordInfo c, region e, InspectPlanDevice f, InspectPlan g, eauser h, eadept i
+		where c.InspectPlanDevice_Id = f.InspectPlanDevice_Id and g.InspectPlan_ID = f.InspectPlan_ID AND f.DEVICE_ID = a.DEVICE_ID and a.REGION_ID = e.REGION_ID and g.ExecuteUserId = h.userID and h.DEPTID=i.DEPTID 
+		<dynamic>
+			<isNotEmpty prepend="AND" property="deptid">
+				e.DEPTID like '$deptid$%'
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="datetime">
+				c.Time > '$datetime$'
+			</isNotEmpty>
+		</dynamic>
+		 <include refid="sqlQueryInfoForManageC3"/>
+		 ) t
+		 <dynamic prepend="WHERE">
+			<isNotEmpty prepend="AND" property="infoName">
+				t.Name like '%$infoName$%'
+			</isNotEmpty>
+		</dynamic>
+		 )
+	</sql>
+	<sql id="sqlQueryInfoCommonTypeInfoForDeviceSuggestManage">
+		concat('{devicesuggestinfoid:', cast(c.DeviceSuggestInfo_Id as char(32)), ', deptname:"', b.deptname, '", username:"', a.username, '", deviceid:"', c.DEVICE_ID, '", devicename:"', d.Name, '",  remark:"', IFNULL(c.Content, ''), '"'
+		<include refid="sqlQueryInfoCommonTypeInfoForManageEnd"/> 
+	</sql>
+	<sql id="sqlQueryInfoDeviceSuggestForManage">
+		UNION 
+		(SELECT t.name, t.type, t.time, t.info FROM
+		(SELECT concat(b.deptname, a.USERNAME, '上报设备', d.name, '情况') as name, 5 as type, c.Time as time,
+		<include refid="sqlQueryInfoCommonTypeInfoForDeviceSuggestManage"/> 		
+		FROM eauser a, eadept b, DeviceSuggestInfo c, device d
+		where  c.USERID = a.USERID and c.DEVICE_ID = d.DEVICE_ID and a.DEPTID = b.DEPTID
+		<dynamic>
+			<isNotEmpty prepend="AND" property="deptid">
+				a.DEPTID like '$deptid$%'
 			</isNotEmpty>
 			<isNotEmpty prepend="AND" property="datetime">
 				c.Time > '$datetime$'
@@ -136,25 +191,53 @@
 	<sql id="sqlQueryInfoForManageC3">
 		order by c.time desc
 	</sql>	
-	<select id="queryInfoForManage" parameterClass="map"
-		resultClass="dto">
-		<include refid="sqlQueryInfoForManage" />
-		<include refid="sqlQueryInfoForManageC1" />
+	<sql id="sqlQueryInfoForManageCommon">
+			<include refid="sqlQueryInfoForManageC1" />
 		<include refid="sqlQueryInfoUserGPSForManage" />
 		<include refid="sqlQueryInfoDeviceGPSForManage" />
 		<include refid="sqlQueryInfoPlanDeviceForManage" />
+ 		<include refid="sqlQueryInfoInspectRecordForManage" />
+ 		<include refid="sqlQueryInfoDeviceSuggestForManage" />
 		<include refid="sqlQueryInfoForManageC2" />
+	</sql>
+	<select id="queryInfoForManage" parameterClass="map"
+		resultClass="dto">
+		<include refid="sqlQueryInfoForManage" />
+		<include refid="sqlQueryInfoForManageCommon" />		
 		<include refid="sqlQueryInfoForManageC3" />
 	</select>
 
 	<select id="queryInfoForManageForPageCount"
 		parameterClass="map" resultClass="java.lang.Integer">
 		<include refid="sqlQueryUserForManageCount" />
-		<include refid="sqlQueryInfoForManageC1" />
-		<include refid="sqlQueryInfoUserGPSForManage" />
-		<include refid="sqlQueryInfoDeviceGPSForManage" />
-		<include refid="sqlQueryInfoPlanDeviceForManage" />
-		<include refid="sqlQueryInfoForManageC2" />
+		<include refid="sqlQueryInfoForManageCommon" />			
 	</select>
-
+	<sql id="sqlQueryFaultInfoForManage">
+		SELECT c.DeviceFaultInfo_Id as devicefaultinfoid, d.Name as devicename, c.Reporter, a.USERNAME, b.deptname, DATE_FORMAT(c.time, '%Y-%m-%d %H:%i:%S') as time, c.state, c.FaultInfo, c.DEVICE_ID as deviceid			
+	</sql>
+	<sql id="sqlQueryFaultInfoForManageCondition">
+		FROM devicefaultinfo c, eauser a, eadept b, device d WHERE c.Reporter = a.USERID AND a.DEPTID = b.DEPTID and c.DEVICE_ID=d.DEVICE_ID
+		<dynamic>
+			<isNotEmpty prepend="AND" property="deptid">
+				b.DEPTID like '$deptid$%'
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="faultInfoName">
+				((a.USERNAME like '%$faultInfoName$%')  OR (d.Name like '%$faultInfoName$%') OR (c.FaultInfo like '%$faultInfoName$%'))  
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="datetime">
+				c.Time > '$datetime$'
+			</isNotEmpty>
+		</dynamic> 
+	</sql>
+	<select id="queryFaultInfoForManage" parameterClass="map"
+		resultClass="dto">
+		<include refid="sqlQueryFaultInfoForManage" />
+		<include refid="sqlQueryFaultInfoForManageCondition" />		
+		<include refid="sqlQueryInfoForManageC3" />
+	</select>
+	<select id="queryFaultInfoForManageForPageCount"
+		parameterClass="map" resultClass="java.lang.Integer">
+		<include refid="sqlQueryUserForManageCount" />
+		<include refid="sqlQueryFaultInfoForManageCondition" />			
+	</select>
 </sqlMap>

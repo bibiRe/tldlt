@@ -10,6 +10,8 @@
 	<sqlMap resource="sqlmap/app/inspectplan/inspectplan.xml" />
 	<sqlMap resource="sqlmap/app/device/device.xml" />
 	<sqlMap resource="sqlmap/app/inspect/inspect.xml" />
+	<sqlMap resource="sqlmap/app/inspectrecord/inspectrecord.xml" />
+	<sqlMap resource="sqlmap/app/inspectrecordmakeup/inspectrecordmakeup.xml" />
 	<sqlMap resource="sqlmap/app/inspect/inspectview.xml" />
 	<sqlMap resource="sqlmap/app/usergroup/usergroup.xml" />
 	<sqlMap resource="sqlmap/app/devmgr/devmgr.xml" />
@@ -17,4 +19,5 @@
 	<sqlMap resource="sqlmap/app/devicefault/devicefault.xml" />
 	<sqlMap resource="sqlmap/app/media/media.xml" />
 	<sqlMap resource="sqlmap/app/gps/gps.xml" />
+	<sqlMap resource="sqlmap/app/devicetypecheckitem/devicetypecheckitem.xml" />
 </sqlMapConfig>

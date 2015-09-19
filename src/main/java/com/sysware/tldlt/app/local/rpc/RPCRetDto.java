@@ -87,6 +87,18 @@ public class RPCRetDto {
     }
 
     /**
+     * 得到第一个dto数据.
+     * @return dto 数据
+     */
+    public Dto getFirstData() {
+        Dto result = null;
+        if (this.data.size() > 0) {
+            result = (Dto) this.data.iterator().next();
+        }
+        return result;
+    }
+    
+    /**
      * 增加列表数据.
      * @param list 列表数据
      */

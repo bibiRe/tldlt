@@ -2,6 +2,8 @@ package utils;
 
 import java.io.File;
 
+import junit.framework.AssertionFailedError;
+
 import org.junit.Before;
 
 import utils.mockstruts.HttpServletResponseSimulator;
@@ -65,5 +67,18 @@ public class AppMockStrutsTestCase extends MockStrutsTestCase {
         setContextDirectory(new File("webapp"));
         setConfigFile("app", "/WEB-INF/struts-config-app.xml");
         setConfigFile("rpc", "/WEB-INF/struts-config-rpc.xml");
+    }
+    
+    /**
+     * 校验路径.
+     * @param forwardName forward名称
+     * @param forwardPath forward路径
+     * @throws AssertionFailedError assert异常.
+     */
+    protected void actionExecuteAndVerifyForward(String forwardName,
+            String forwardPath) throws AssertionFailedError {
+        actionPerform();
+        verifyForward(forwardName);
+        verifyForwardPath(forwardPath);
     }
 }

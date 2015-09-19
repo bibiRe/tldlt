@@ -36,9 +36,8 @@ public class RegionActionTest extends AppMockStrutsTestCase {
     @Test
     public void testInitSuccess() {
         addRequestParameter("reqCode", new String[] {"init"});
-        actionPerform();
-        verifyForward("regionView");
-        verifyForwardPath("/app/region/regionview.jsp");
+        actionExecuteAndVerifyForward("regionView",
+                "/app/region/regionview.jsp");
     }
 
     @Test
@@ -60,7 +59,7 @@ public class RegionActionTest extends AppMockStrutsTestCase {
                 .getWriterBuffer().toString();
         assertTrue(actual.contains("parentid"));
     }
-    
+
     @Test
     public void testSaveAddInfoSuccess() {
         addRequestParameter("reqCode", new String[] {"saveAddInfo"});
@@ -73,7 +72,7 @@ public class RegionActionTest extends AppMockStrutsTestCase {
                 .getWriterBuffer().toString();
         assertTrue(actual.contains("\"retCode\":0"));
     }
-    
+
     @Test
     public void testSaveAddInfoSuccess_parentid_null() {
         addRequestParameter("reqCode", new String[] {"saveAddInfo"});
@@ -85,7 +84,7 @@ public class RegionActionTest extends AppMockStrutsTestCase {
                 .getWriterBuffer().toString();
         assertTrue(actual.contains("\"retCode\":0"));
     }
-    
+
     @Test
     public void testSaveAddInfoSuccess_parentid_empty() {
         addRequestParameter("reqCode", new String[] {"saveAddInfo"});
@@ -98,7 +97,7 @@ public class RegionActionTest extends AppMockStrutsTestCase {
                 .getWriterBuffer().toString();
         assertTrue(actual.contains("\"retCode\":0"));
     }
-    
+
     @Test
     public void testSaveAddInfoSuccess_parentid_0() {
         addRequestParameter("reqCode", new String[] {"saveAddInfo"});
@@ -111,7 +110,7 @@ public class RegionActionTest extends AppMockStrutsTestCase {
                 .getWriterBuffer().toString();
         assertTrue(actual.contains("\"retCode\":0"));
     }
-    
+
     @Test
     public void testSaveUpdateInfoSuccess() {
         addRequestParameter("reqCode", new String[] {"saveUpdateInfo"});

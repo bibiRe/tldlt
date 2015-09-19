@@ -5,6 +5,12 @@
  * @since now
  */
 Ext.onReady(function() {
+	
+	Ext.getDoc().on("contextmenu", function(e)
+			{
+				e.stopEvent();
+			});
+	
 
 var  g_groupid = '';
 
@@ -144,12 +150,14 @@ var root = new Ext.tree.AsyncTreeNode( {
 							name : 'groupname',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						},{
 							fieldLabel : '备注',
 							name : 'remark',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 250,
 							allowBlank : true,
 							xtype: 'textarea'
 						}]
@@ -244,12 +252,14 @@ var root = new Ext.tree.AsyncTreeNode( {
 							name : 'groupname',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						},{
 							fieldLabel : '备注',
 							name : 'remark',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 250,
 							allowBlank : true,
 							xtype: 'textarea'
 						},{

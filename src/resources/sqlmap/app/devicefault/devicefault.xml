@@ -4,8 +4,8 @@
 <sqlMap namespace="App.DeviceFault">
     <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />	
 	<insert id="addInfo" parameterClass="dto">
-		INSERT INTO devicefaultinfo (Reporter, Time, FaultInfo, State)
-        VALUES (#userid#, '$time$', #checkdesc#, 0)
+		INSERT INTO devicefaultinfo (Reporter, DEVICE_ID, Time, FaultInfo, State)
+        VALUES (#userid#,  #deviceID#, '$time$', #checkdesc#, 0)
         <selectKey resultClass="int"  keyProperty="devicefaultinfoid" >    
              SELECT last_insert_id() as devicefaultinfoid;   
         </selectKey>

@@ -1,5 +1,7 @@
 package com.sysware.tldlt.app.local.rpc;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,7 +58,17 @@ public class InspectAction extends BaseAppAction {
         }
         dto.put("userid", userDto.get("userId"));
         BaseRetDto outDto = (BaseRetDto) inspectService.addInfo(dto);
-        return RPCUtils.sendBasicRetDtoRPCInfoActionForward(response, outDto);
+        if (!outDto.isRetSuccess()) {
+            return RPCUtils.sendBasicRetDtoRPCInfoActionForward(response,
+                    outDto);
+        }
+        RPCRetDto rDto = RPCUtils.createDataSuccessDto();
+        Dto data = rDto.getFirstData();
+        data.put("inspectrecordid", outDto.getAsString("inspectrecordid"));
+        data.put("inspectrecordinfoid",
+                outDto.getAsString("inspectrecordinfoid"));
+        return RPCUtils.sendRPCDtoActionForward(response, rDto);
+
     }
 
     /**
@@ -83,11 +95,53 @@ public class InspectAction extends BaseAppAction {
         BaseRetDto outDto = (BaseRetDto) inspectService
                 .saveUploadInspectRecordMedia(dto);
         if (!outDto.isRetSuccess()) {
-            return RPCUtils.sendBasicRetDtoRPCInfoActionForward(response, outDto);
+            return RPCUtils.sendBasicRetDtoRPCInfoActionForward(response,
+                    outDto);
         }
 
         return RPCUtils.sendRPCListDtoActionForward(response,
                 DtoUtils.createUploadInspectRecordMediaSuccessRetList(dto));
     }
 
+    /**
+     * 通过巡检计划查询巡检记录.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
+     * @return struts跳转地址.
+     * @throws Exception 异常对象.
+     */
+    @SuppressWarnings("unchecked")
+    public ActionForward queryInspectRecordByPlanId(ActionMapping mapping,
+            ActionForm form, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        String planID = request.getParameter("planID");
+        if (AppTools.isEmptyString(planID)) {
+            return RPCUtils
+                    .sendErrorRPCInfoActionForward(response, "巡检计划编号不存在");
+        }
+        Dto inspectRecord = (Dto) appReader.queryForObject(
+                "App.Inspect.queryInspectRecordByPlanId", Integer.parseInt(planID));
+        if (null == inspectRecord) {
+            return RPCUtils.sendErrorRPCInfoActionForward(response, "巡检记录不存在");
+        }
+        RPCRetDto rpcRetDto = RPCUtils.createSuccessDto();
+        rpcRetDto.addData(inspectRecord);
+        List<Dto> inspectRecordInfos = appReader.queryForList(
+                "App.Inspect.queryInspectRecordInfoByInspectRecordId",
+                inspectRecord.getAsInteger("inspectrecordid"));
+        if (null != inspectRecordInfos) {
+            inspectRecord.put("infos", inspectRecordInfos);
+            for (Dto inspectRecrodInfo : inspectRecordInfos) {
+                List<Dto> images = inspectService
+                        .queryInspectRecordInfoImages(inspectRecrodInfo
+                                .getAsInteger("inspectrecordinfoid"));
+                if (null != images) {
+                    inspectRecrodInfo.put("images", images);
+                }
+            }
+        }
+        return RPCUtils.sendRPCDtoActionForward(response, rpcRetDto);
+    }
 }

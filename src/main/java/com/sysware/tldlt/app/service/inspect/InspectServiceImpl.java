@@ -7,13 +7,14 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.g4studio.common.util.SpringBeanLoader;
 import org.g4studio.core.metatype.Dto;
+import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.system.common.util.SystemConstants;
 
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 import com.sysware.tldlt.app.service.common.BaseAppServiceImpl;
 import com.sysware.tldlt.app.service.media.MediaPathService;
+import com.sysware.tldlt.app.service.media.MediaUrlService;
 import com.sysware.tldlt.app.utils.AppCommon;
 import com.sysware.tldlt.app.utils.AppTools;
 import com.sysware.tldlt.app.utils.DtoUtils;
@@ -27,15 +28,20 @@ import com.sysware.tldlt.app.utils.DtoUtils;
  */
 public class InspectServiceImpl extends BaseAppServiceImpl implements
         InspectService {
-
     /**
      * 日志对象.
      */
     private static final Log log = LogFactory.getLog(InspectServiceImpl.class);
+
     /**
      * 媒体服务对象.
      */
     private MediaPathService mediaPathService;
+
+    /**
+     * 媒体链接服务接口.
+     */
+    private MediaUrlService mediaUrlService;
 
     @Override
     public Dto addInfo(Dto inDto) {
@@ -55,7 +61,7 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
     @SuppressWarnings("unchecked")
     private BaseRetDto addInspectRecord(Dto inDto) {
         Integer inspectRecordDto = (Integer) appDao.queryForObject(
-                "App.Inspect.queryInspectRecordByPlanId",
+                "App.Inspect.queryInspectRecordIdByPlanId",
                 inDto.getAsInteger("planID").intValue());
         int inspectRecordId = 0;
         if (null != inspectRecordDto) {
@@ -299,7 +305,12 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
         }
         appDao.update("App.InspectPlan.updateInspectPlanFinished", inDto);
         if (!SystemConstants.ENABLED_Y.equals(inDto.getAsString("isOK"))) {
-            appDao.insert("App.DeviceFault.addInfo", inDto);
+            result = (BaseRetDto) DtoUtils.addInfoAndCheckIntIdFail(appDao,
+                    "App.DeviceFault.addInfo", inDto, "devicefaultinfoid",
+                    "设备故障信息");
+            if (null != result) {
+                return result;
+            }
         }
         BaseRetDto outDto = (BaseRetDto) DtoUtils.getSuccessRetDto("");
         outDto.put("inspectrecordid", inDto.getAsInteger("inspectrecordid")
@@ -307,6 +318,20 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
         outDto.put("inspectrecordinfoid",
                 inDto.getAsInteger("inspectrecordinfoid").intValue());
         return outDto;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Dto> queryInspectRecordInfoImages(int inspectRecordInfoId) {
+        List<Dto> result = null;
+        Dto dto = new BaseDto();
+        dto.put("inspectrecordinfoid", inspectRecordInfoId);
+        result = appDao.queryForList("App.Inspect.queryImages", dto);
+        for (Dto iDto : result) {
+            iDto.put("mediaurl",
+                    mediaUrlService.getUrl(iDto.getAsString("mediaurl")));
+        }
+        return result;
     }
 
     /**
@@ -380,6 +405,10 @@ public class InspectServiceImpl extends BaseAppServiceImpl implements
 
     public void setMediaPathService(MediaPathService mediaPathService) {
         this.mediaPathService = mediaPathService;
+    }
+
+    public void setMediaUrlService(MediaUrlService mediaUrlService) {
+        this.mediaUrlService = mediaUrlService;
     }
 
 }

@@ -51,13 +51,17 @@ public class AppCommon {
      */
     public static final int RET_CODE_ADD_FAIL = -7;
     /**
+     * 更新保存失败.
+     */
+    public static final int RET_CODE_UPDATE_FAIL = -8;    
+    /**
      * 创建路径失败.
      */
-    public static final int RET_CODE_CREATE_PATH_FAIL = -8;
+    public static final int RET_CODE_CREATE_PATH_FAIL = -10;
     /**
      * 创建文件失败.
      */
-    public static final int RET_CODE_CREATE_FILE_FAIL = -9;
+    public static final int RET_CODE_CREATE_FILE_FAIL = -11;
     
     /**
      * GPS信息类型-用户.
@@ -73,6 +77,30 @@ public class AppCommon {
      * GPS信息类型-巡检计划设备.
      */
     public static final int GPS_INFO_TYPE_INSPECTPLAN_DEVICE = 3;
+
+    /**
+     * 实时巡检数据类型-用户GPS.
+     */
+    public static final int INSPECT_REAL_VIEW_DATA_TYPE_GPS_USER = 1;
+    
+    /**
+     * 实时巡检数据类型-设备GPS.
+     */
+    public static final int INSPECT_REAL_VIEW_DATA_TYPE_GPS_DEVICE = 2;
+    
+    /**
+     * 实时巡检数据类型-巡检设备GPS.
+     */
+    public static final int INSPECT_REAL_VIEW_DATA_TYPE_GPS_INSPECTPLAN_DEVICE = 3;
+
+    /**
+     * 实时巡检数据类型-巡检设备.
+     */
+    public static final int INSPECT_REAL_VIEW_DATA_TYPE_INSPECT_DEVICE = 4;
+    /**
+     * 实时巡检数据类型-设备上报.
+     */
+    public static final int INSPECT_REAL_VIEW_DATA_TYPE_DEVICESUGGEST = 5;
 
     /**
      * 时间间隔.

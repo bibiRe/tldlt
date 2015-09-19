@@ -6,7 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.g4studio.common.web.BaseActionForm;
 import org.g4studio.core.json.JsonHelper;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
@@ -101,6 +100,8 @@ public class DeviceTypeAction extends BaseAppAction {
         return mapping.findForward(viewString);
     }
 
+ 
+
     /**
      * 查询区域管理.
      * @param mapping struts mapping对象.
@@ -147,11 +148,12 @@ public class DeviceTypeAction extends BaseAppAction {
     public ActionForward saveAddInfo(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        BaseActionForm aForm = (BaseActionForm) form;
-        Dto inDto = aForm.getParamAsDto(request);
+        Dto inDto = getRequestDto(form, request);
         Dto outDto = ((DeviceTypeService) service).addInfo(inDto);
         return DtoUtils.sendRetDtoActionForward(response, outDto);
     }
+    
+
 
     /**
      * 更新信息.
@@ -165,8 +167,7 @@ public class DeviceTypeAction extends BaseAppAction {
     public ActionForward saveUpdateInfo(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        BaseActionForm aForm = (BaseActionForm) form;
-        Dto inDto = aForm.getParamAsDto(request);
+        Dto inDto = getRequestDto(form, request);
         Dto outDto = ((DeviceTypeService) service).updateInfo(inDto);
         return DtoUtils.sendRetDtoActionForward(response, outDto);
     }

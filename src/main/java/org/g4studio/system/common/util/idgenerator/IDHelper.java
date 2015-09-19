@@ -94,6 +94,8 @@ public class IDHelper {
 	
 	private static DefaultIDGenerator defaultIDGenerator_idGenerator_inspecplandeviceid = null;
 	
+	private static DefaultIDGenerator defaultIDGenerator_idGenerator_inspecrecordmakeupid = null;
+	
 	static {
 		IdGenerator idGenerator_eventid = new IdGenerator();
 		idGenerator_eventid.setFieldname("DEVICE");
@@ -218,6 +220,24 @@ public class IDHelper {
 		IdGenerator idGenerator_tmp= new IdGenerator();
 		idGenerator_tmp.setFieldname("INSPECTPLANDEVICEID");
 		defaultIDGenerator_idGenerator_inspecplandeviceid = idGenerator_tmp.getDefaultIDGenerator();
+	}
+	
+	
+	static
+	{
+		IdGenerator idGenerator_tmp= new IdGenerator();
+		idGenerator_tmp.setFieldname("INSPECTRECORDMAKUPID");
+		defaultIDGenerator_idGenerator_inspecrecordmakeupid = idGenerator_tmp.getDefaultIDGenerator();
+	}
+	
+	
+	public static String NewInspectRecordMakeupID()
+	{
+		String id = defaultIDGenerator_idGenerator_inspecrecordmakeupid.create();
+		
+		id = id.trim();
+		
+		return id;
 	}
 	
 	

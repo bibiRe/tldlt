@@ -5,7 +5,7 @@
     <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
     <sql id="sqlQueryDeviceTypeInfo">
         SELECT devicetype_Id as id, Parent_DeviceType_Id as
-        parentid,  Name as text, Remark FROM
+        parentid, Name as text, Remark FROM
         DEVICETYPE WHERE 1 = 1
     </sql>
     <sql id="sqlQueryDeviceTypeItemsByDtoCondition">
@@ -20,14 +20,14 @@
             </isNotEmpty>
         </dynamic>
     </sql>
-    
+
     <select id="queryDeviceTypeItemsByDto" parameterClass="map"
         resultClass="dto">
         <include refid="sqlQueryDeviceTypeInfo" />
         <include refid="sqlQueryDeviceTypeItemsByDtoCondition" />
     </select>
     <sql id="sqlQueryDeviceTypeInfoByIdCondition">
-         AND DeviceType_Id = #devicetypeid#
+        AND DeviceType_Id = #devicetypeid#
     </sql>
     <select id="queryDeviceTypeInfoById" parameterClass="string"
         resultClass="dto">
@@ -49,17 +49,17 @@
         FROM devicetype a WHERE 1 = 1
         <dynamic>
             <isNotEmpty prepend="AND" property="deviceTypeName">
-                a.name like
-                '%$deviceTypeName$%'
+                a.name like '%$deviceTypeName$%'
             </isNotEmpty>
             <isNotEmpty prepend="AND" property="devicetypeid">
                 <isEqual property="devicetypeid" compareValue="0">
                     isnull(Parent_DeviceType_Id)
                 </isEqual>
                 <isNotEqual property="devicetypeid" compareValue="0">
-                    (a.devicetype_Id = #devicetypeid# OR a.Parent_DeviceType_Id = #devicetypeid#)
+                    (a.devicetype_Id = #devicetypeid# OR a.Parent_DeviceType_Id =
+                    #devicetypeid#)
                 </isNotEqual>
-            </isNotEmpty>        
+            </isNotEmpty>
         </dynamic>
     </sql>
     <select id="queryDeviceTypesForManage" parameterClass="map"
@@ -68,11 +68,12 @@
         <include refid="sqlQueryDeviceTypesForManageCondition" />
     </select>
 
-    <select id="queryDeviceTypesForManageForPageCount" parameterClass="map"
-        resultClass="java.lang.Integer">
+    <select id="queryDeviceTypesForManageForPageCount"
+        parameterClass="map" resultClass="java.lang.Integer">
         <include refid="sqlQueryDeviceTypesForManageCount" />
         <include refid="sqlQueryDeviceTypesForManageCondition" />
     </select>
+
     <!-- 插入一条记录 -->
     <insert id="addInfo" parameterClass="dto">
         INSERT INTO DEVICETYPE (devicetype_Id, Name, PARENT_DEVICETYPE_ID, Remark)
@@ -80,7 +81,8 @@
     </insert>
     <!-- 更新一条记录 -->
     <update id="updateInfo" parameterClass="dto">
-        UPDATE DEVICETYPE SET DEVICETYPE_ID = #devicetypeid#, Name = #devicetypename#, PARENT_DEVICETYPE_ID = #parentid#, Remark = #remark#
+        UPDATE DEVICETYPE SET DEVICETYPE_ID = #devicetypeid#, Name =
+        #devicetypename#, PARENT_DEVICETYPE_ID = #parentid#, Remark = #remark#
         WHERE DEVICETYPE_ID = #oid#
     </update>
 
@@ -88,20 +90,14 @@
     <delete id="deleteInfo" parameterClass="string">
         DELETE FROM DEVICETYPE WHERE DEVICETYPE_ID = #devicetypeid#
     </delete>
-    
+
     <delete id="deleteChildInfo" parameterClass="string">
         DELETE FROM DEVICETYPE WHERE PARENT_DEVICETYPE_ID = #devicetypeid#
     </delete>
-    
+
     <select id="queryChildDeviceTypeIds" parameterClass="string"
         resultClass="string">
-        SELECT DEVICETYPE_ID FROM DEVICETYPE WHERE PARENT_DEVICETYPE_ID = #devicetypeid#
-    </select>
-    
-       <select id="queryCheckItems" parameterClass="string"
-        resultClass="dto">
-        SELECT a.DeviceCheckContent_Id as checkId, a.Name as itemname, a.Action, a.Content
-         FROM DeviceCheckContent a
-          WHERE a.State = 1 AND a.DeviceType_ID = #devicetypeid#
+        SELECT DEVICETYPE_ID FROM DEVICETYPE WHERE PARENT_DEVICETYPE_ID =
+        #devicetypeid#
     </select>
 </sqlMap>

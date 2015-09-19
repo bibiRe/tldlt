@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 演示与教程手工映射SQL语句 -->
+<sqlMap namespace="App.InspectRecord">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+
+
+    <select id="getRecordCount" parameterClass="dto" resultClass="java.lang.Integer">
+    
+        SELECT count(*)
+        
+          from inspectrecord a ,InspectPlan b
+          
+          where 1 = 1
+        
+        
+          and a.InspectPlan_Id = b.InspectPlan_Id
+
+          and b.applyuserid in (select userid from eauser c where c.deptid like '$deptid$%')
+        
+         <dynamic>
+        
+
+            <isNotEmpty prepend="AND" property="queryParam">
+                ( 
+                
+
+                 b.applyuserid in (select userid from eauser c where c.deptid in (select d.DEPTID  from eadept d where d.DEPTNAME like '%$queryParam$%'))
+                 
+                 
+                 OR
+                 
+                 b.executeuserid in (select userid from eauser c where c.username like '%$queryParam$%')
+                 
+                 
+                 )
+            </isNotEmpty>
+            
+             <isNotEmpty prepend="AND" property="startdatetime">
+                 
+                  ( 
+                 
+                	  UNIX_TIMESTAMP(a.ExecuteStartTime) <![CDATA[>=]]> UNIX_TIMESTAMP(#startdatetime#)  
+                 	
+                 
+                 )
+                 
+            </isNotEmpty>
+            
+            
+            <isNotEmpty prepend="AND" property="enddatetime">
+                 
+                  ( 
+                 
+                 	    UNIX_TIMESTAMP(a.ExecuteEndTime) <![CDATA[<=]]> UNIX_TIMESTAMP(#enddatetime#)  
+                 
+                 )
+                 
+            </isNotEmpty>
+            
+        </dynamic>
+        
+    </select>
+    
+    
+    
+    <select id="getRecord" parameterClass="dto" resultClass="dto">
+    
+		select 
+
+		a.InspectRecord_Id as recordid,
+		
+		a.InspectPlan_Id  as planid,
+		
+		date_format((a.ExecuteStartTime),'%Y-%m-%d %H:%i:%s') as recordexecutestarttime,
+		
+		date_format((a.ExecuteEndTime),'%Y-%m-%d %H:%i:%s') as recordexecuteendtime ,
+		
+        
+         b.Name as planname,  
+         
+         b.State as planstate,
+         
+         
+         b.ApplyUserId as planapplyuserid,
+        
+        (SELECT username FROM eauser WHERE userid = b.ApplyUserId) as planapplyusername,
+        
+        date_format((b.ApplyTime),'%Y-%m-%d %H:%i:%s') as planapplytime,
+        
+       
+        
+        b.ExecuteUserId as planexecuteuserid,
+        
+        (SELECT username FROM eauser WHERE userid = b.ExecuteUserId) as planexecuteusername,
+        
+         date_format((b.ExecuteStartTime),'%Y-%m-%d %H:%i:%s') as planexecutestartime,
+        
+         date_format((b.ExecuteEndTime),'%Y-%m-%d %H:%i:%s') as   planexecuteendtime ,
+        
+        
+        
+        b.ApprovUserId as planapprovuserid,
+        
+        (SELECT username FROM eauser WHERE userid = b.ApprovUserId) as planapproveusername,
+        
+        b.ApproveContent as approvecontent,
+        
+         date_format((b.ApproveTime),'%Y-%m-%d %H:%i:%s') as planapprovetime ,
+         
+         
+        b.Remark as planremark
+
+        from inspectrecord a ,InspectPlan b
+
+        where 1 = 1
+        
+        
+          and a.InspectPlan_Id = b.InspectPlan_Id
+
+          and b.applyuserid in (select userid from eauser c where c.deptid like '$deptid$%')
+        
+        <dynamic>
+        
+
+            <isNotEmpty prepend="AND" property="queryParam">
+                ( 
+                
+
+                 b.applyuserid in (select userid from eauser c where c.deptid in (select d.DEPTID  from eadept d where d.DEPTNAME like '%$queryParam$%'))
+                 
+                 
+                 OR
+                 
+                 b.executeuserid in (select userid from eauser c where c.username like '%$queryParam$%')
+                 
+                 
+                 )
+            </isNotEmpty>
+            
+             <isNotEmpty prepend="AND" property="startdatetime">
+                 
+                  ( 
+                 
+                	  UNIX_TIMESTAMP(a.ExecuteStartTime) <![CDATA[>=]]> UNIX_TIMESTAMP(#startdatetime#)  
+                 	
+                 
+                 )
+                 
+            </isNotEmpty>
+            
+            
+            <isNotEmpty prepend="AND" property="enddatetime">
+                 
+                  ( 
+                 
+                 	    UNIX_TIMESTAMP(a.ExecuteEndTime) <![CDATA[<=]]> UNIX_TIMESTAMP(#enddatetime#)  
+                 
+                 )
+                 
+            </isNotEmpty>
+            
+        </dynamic>
+        
+    </select>
+    
+    
+        <select id="getRecordInfoCount" parameterClass="dto" resultClass="java.lang.Integer">
+    
+		select
+		
+		count(*)
+		
+		
+		from inspectrecordinfo a ,inspectplandevice b ,devicemodel d ,(device c left join device e on c.Parent_Device_Id = e.Device_Id)
+		
+		where 1=1 
+		
+		and a.InspectRecord_Id = #recordid#
+		
+		and a.InspectPlanDevice_Id = b.InspectPlanDevice_Id
+		
+		and c.Device_Id = b.Device_Id
+		
+		and c.DeviceModel_Id = d.DeviceModel_Id
+        
+
+        
+    </select>
+    
+    <select id="getRecordInfo" parameterClass="dto" resultClass="dto">
+    
+		select
+		
+		a.InspectRecordInfo_Id  as recordinfoid,
+		
+		a.InspectRecord_Id  as  recordid,
+		
+		a.InspectPlanDevice_Id as plandevid ,
+		
+		a.State  as  devstate,
+		
+		date_format((a.Time),'%Y-%m-%d %H:%i:%s') as recordinfotime,
+		
+		a.Remark as recordinforemark ,
+		
+		b.Device_Id as devid ,
+		
+		c.Name as devname ,
+		
+		c.Remark as devremark,
+		
+		e.Name as parentdevname ,e.Device_Id as parentdevid,
+		
+		d.Name as devmodelname ,
+		
+		d.DeviceModel_Id as devmodelid
+		
+		from inspectrecordinfo a ,inspectplandevice b ,devicemodel d ,(device c left join device e on c.Parent_Device_Id = e.Device_Id)
+		
+		where 1=1 
+		
+		and a.InspectRecord_Id = #recordid#
+		
+		and a.InspectPlanDevice_Id = b.InspectPlanDevice_Id
+		
+		and c.Device_Id = b.Device_Id
+		
+		and c.DeviceModel_Id = d.DeviceModel_Id
+		
+		
+        
+
+        
+    </select>
+    
+    
+    
+    
+      <select id="getRecordInfoItemCount" parameterClass="dto" resultClass="java.lang.Integer">
+    
+			select
+			
+			count(*)
+			
+			
+			
+			from inspectrecorditem a , devicecheckcontent b , devicetype c
+			
+			
+			where 1 = 1
+			
+			and  b.DeviceCheckContent_Id = a.DeviceCheckContent_Id
+			
+			and b.DeviceType_Id = c.DeviceType_Id
+			
+			and a.InspectRecordInfo_Id = #recordinfoid#
+
+
+        
+    </select>
+    
+    
+    
+        <select id="getRecordInfoItem" parameterClass="dto" resultClass="dto">
+    
+			select
+			
+			 a.InspectRecordItem_Id as recorditemid ,
+			
+			 a.InspectRecordInfo_Id as recordinfoid ,
+			
+			 a.DeviceCheckContent_Id as devcheckcontentid ,
+			
+			 a.State as recorditemstate,
+			
+			 a.Remark as recorditemremark ,
+			
+			
+			b.Name as devcheckname ,
+			
+			b.Content as devcheckcontent,
+			
+			b.Remark as devcheckremark ,
+			
+			c.Name as devtypename ,
+			
+			c.Remark as devtyperemark
+			
+			
+			
+			from inspectrecorditem a , devicecheckcontent b , devicetype c
+			
+			
+			where 1 = 1
+			
+			and  b.DeviceCheckContent_Id = a.DeviceCheckContent_Id
+			
+			and b.DeviceType_Id = c.DeviceType_Id
+			
+			and a.InspectRecordInfo_Id = #recordinfoid#
+
+        
+    </select>
+    
+    
+    
+    
+    
+        <select id="getRecordMediaInfoCount" parameterClass="dto" resultClass="java.lang.Integer">
+    
+         select 
+ 
+		 count(*)
+		
+		from releatemediainfo a ,mediainfo b
+		
+		where 1 = 1
+		
+		and  a.Type = #whichtbl#
+		
+		and a.MediaInfo_Id = b.MediaInfo_Id
+		
+		and a.ReleateRecordId = #releateid#
+    
+    </select>
+    
+    
+    
+    
+    <select id="getRecordMediaInfo" parameterClass="dto" resultClass="dto">
+    
+         select 
+ 
+		 a.ReleateMedia_Id as mediaid ,
+		
+		 a.MediaInfo_Id as mediainfoid ,
+		
+		 a.ReleateRecordId as releaterecordid,
+		
+		 a.Remark as releateremark ,
+		
+		 b.Address as mediaaddress ,
+		
+		 date_format((b.Time),'%Y-%m-%d %H:%i:%s') as mediatime,
+		
+		 b.Type as mediatype ,
+			
+		 b.Remark as mediaremark ,
+		
+		 b.HashValue as mediafigure
+		
+		from releatemediainfo a ,mediainfo b
+		
+		where 1 = 1
+		
+		and  a.Type = #whichtbl#
+		
+		and a.MediaInfo_Id = b.MediaInfo_Id
+		
+		and a.ReleateRecordId = #releateid#
+    
+    </select>
+    
+    
+</sqlMap>

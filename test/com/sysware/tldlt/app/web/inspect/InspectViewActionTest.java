@@ -26,9 +26,8 @@ public class InspectViewActionTest extends AppMockStrutsTestCase {
     @Test
     public void testInit_Success() {
         addRequestParameter("reqCode", new String[] {"init"});
-        actionPerform();
-        verifyForward("inspectView");
-        verifyForwardPath("/app/inspectview/inspectview.jsp");
+        actionExecuteAndVerifyForward("inspectView",
+                "/app/inspectview/inspectview.jsp");
     }
 
     /**
@@ -46,7 +45,7 @@ public class InspectViewActionTest extends AppMockStrutsTestCase {
         assertTrue(actual.contains("TOTALCOUNT:"));
         assertTrue(!actual.contains("TOTALCOUNT:0"));
     }
-    
+
     /**
      * 测试查询用户成功.
      */
@@ -63,7 +62,24 @@ public class InspectViewActionTest extends AppMockStrutsTestCase {
         assertTrue(actual.contains("TOTALCOUNT:"));
         assertTrue(!actual.contains("TOTALCOUNT:0"));
     }
-    
+
+    /**
+     * 测试查询错误信息成功.
+     */
+    @Test
+    public void testQueryFaultInfoForManage_Success() {
+        addRequestParameter("reqCode", new String[] {"queryFaultInfoForManage"});
+        addRequestParameter("start", new String[] {"0"});
+        addRequestParameter("limit", new String[] {"50"});
+        addRequestParameter("deptid", new String[] {"001"});
+        addRequestParameter("firstload", new String[] {"true"});
+        addRequestParameter("loginuserid", new String[] {"10000001"});
+        addRequestParameter("faultInfoName", new String[] {"张明"});
+        String actual = getActionExecuteResponseString();
+        assertTrue(actual.contains("TOTALCOUNT:"));
+        assertTrue(!actual.contains("TOTALCOUNT:0"));
+    }
+
     /**
      * 测试查询用户最后GPS成功.
      */
@@ -74,13 +90,14 @@ public class InspectViewActionTest extends AppMockStrutsTestCase {
         String actual = actionExecuteAndAssertRetInfo();
         assertTrue(actual.contains("\"gpsinfoid\":"));
     }
-    
+
     /**
      * 测试查询用户成功正在执行计划.
      */
     @Test
     public void testQueryUserExecutingInspectPlan_Success() {
-        addRequestParameter("reqCode", new String[] {"queryUserExecutingInspectPlan"});
+        addRequestParameter("reqCode",
+                new String[] {"queryUserExecutingInspectPlan"});
         addRequestParameter("userid", new String[] {"10004893"});
         String actual = actionExecuteAndAssertRetInfo();
         assertTrue(actual.contains("\"inspectrecordid\":"));
@@ -96,13 +113,14 @@ public class InspectViewActionTest extends AppMockStrutsTestCase {
         String actual = actionExecuteAndAssertRetInfo();
         assertTrue(actual.contains("\"inspectrecordid\":"));
     }
-    
+
     /**
      * 测试查询用户即将执行计划.
      */
     @Test
     public void testQueryUserSoonExecuteInspectPlan_Success() {
-        addRequestParameter("reqCode", new String[] {"queryUserSoonExecuteInspectPlan"});
+        addRequestParameter("reqCode",
+                new String[] {"queryUserSoonExecuteInspectPlan"});
         addRequestParameter("userid", new String[] {"10004893"});
         String actual = actionExecuteAndAssertRetInfo();
         assertTrue(actual.contains("\"planid\":"));

@@ -1,7 +1,9 @@
 package com.sysware.tldlt.app.utils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
@@ -10,7 +12,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.g4studio.common.dao.Dao;
@@ -132,6 +134,20 @@ public class DtoUtils {
     }
 
     /**
+     * 检查整数信息信息.
+     * @param info 信息.
+     * @return dto
+     */
+    public static Dto checkDtoIntId(Dto info, String checkIdKey) {
+        Integer id = info.getAsInteger(checkIdKey);
+        if ((null == id) || (0 == id.intValue())) {
+            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE,
+                    "记录编号为空");
+        }
+        return null;
+    }
+
+    /**
      * 检查Dto 用户编号.
      * @param dao DAO 对象
      * @param info dto对象
@@ -166,7 +182,6 @@ public class DtoUtils {
         }
         return null;
     }
-
     /**
      * 检查媒体信息.
      * @param dto dto对象
@@ -185,6 +200,28 @@ public class DtoUtils {
     }
 
     /**
+     * 拷贝输入流流到文件.
+     * @param source 流
+     * @param destination 文件.
+     * @throws IOException IO异常
+     */
+    public static void copyInputStreamToFile(InputStream source,
+            File destination) throws IOException {
+        try {
+            FileOutputStream output = openOutputStream(destination);
+            try {
+                IOUtils.copy(source, output);
+                output.close(); // don't swallow close Exception if copy
+                                // completes normally
+            } finally {
+                IOUtils.closeQuietly(output);
+            }
+        } finally {
+            IOUtils.closeQuietly(source);
+        }
+    }
+
+    /**
      * 创建媒体文件.
      * @param path 路径
      * @param fileDto 文件dto
@@ -199,7 +236,7 @@ public class DtoUtils {
         String fileName = fileItem.getFileName();
         String realFileName = path + fileName;
         try {
-            FileUtils.copyInputStreamToFile(fileItem.getInputStream(),
+            copyInputStreamToFile(fileItem.getInputStream(),
                     new File(realFileName));
         } catch (Exception e) {
             log.info(e);
@@ -384,6 +421,47 @@ public class DtoUtils {
     }
 
     /**
+     * 打开文件输出流.
+     * @param file 文件.
+     * @return 输出流.
+     * @throws IOException IO异常
+     */
+    public static FileOutputStream openOutputStream(File file)
+            throws IOException {
+        return openOutputStream(file, false);
+    }
+
+    /**
+     * 打开输出流.
+     * @param file 文件
+     * @param append 是否追加.
+     * @return 输出流.
+     * @throws IOException IO异常
+     */
+    public static FileOutputStream openOutputStream(File file, boolean append)
+            throws IOException {
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new IOException("File '" + file
+                        + "' exists but is a directory");
+            }
+            if (file.canWrite() == false) {
+                throw new IOException("File '" + file
+                        + "' cannot be written to");
+            }
+        } else {
+            File parent = file.getParentFile();
+            if (parent != null) {
+                if (!parent.mkdirs() && !parent.isDirectory()) {
+                    throw new IOException("Directory '" + parent
+                            + "' could not be created");
+                }
+            }
+        }
+        return new FileOutputStream(file, append);
+    }
+
+    /**
      * 给Reponse写Dto信息.
      * @param response Http Response对象
      * @param dto dto对象.
@@ -422,6 +500,19 @@ public class DtoUtils {
     }
 
     /**
+     * 给Reponse写字符串信息.
+     * @param response Http Response对象
+     * @param dto dto对象.
+     * @return ActionForward
+     * @throws IOException 异常
+     */
+    public static ActionForward sendStrActionForward(
+            HttpServletResponse response, String info) throws IOException {
+        writeToResponse(info, response);
+        return null;
+    }
+
+    /**
      * 返回成功数据RetDto信息.
      * @param response response对象
      * @param data 数据
@@ -434,19 +525,6 @@ public class DtoUtils {
         result.put("data", data);
         result.setRetSuccess();
         return sendRetDtoActionForward(response, result);
-    }
-
-    /**
-     * 给Reponse写字符串信息.
-     * @param response Http Response对象
-     * @param dto dto对象.
-     * @return ActionForward
-     * @throws IOException 异常
-     */
-    public static ActionForward sendStrActionForward(
-            HttpServletResponse response, String info) throws IOException {
-        writeToResponse(info, response);
-        return null;
     }
 
     /**

@@ -8,6 +8,12 @@
 
 Ext.onReady(function() {
 	
+	
+	Ext.getDoc().on("contextmenu", function(e)
+			{
+				e.stopEvent();
+			});
+	
 	var root = new Ext.tree.AsyncTreeNode( {
 		text : root_deptname,
 		expanded : true,
@@ -133,11 +139,11 @@ Ext.onReady(function() {
 		header : '部门编号',
 		dataIndex : 'deptid',
 		hidden : true
-	}, {
+	},{
 		header : '设备编号',
 		dataIndex : 'devid',
 		hidden : true
-	}, {
+	},{
 		header : '区域编号',
 		dataIndex : 'regionid',
 		hidden : true,
@@ -643,6 +649,7 @@ Ext.onReady(function() {
 				name : 'devname',
 				allowBlank : false,
 				labelStyle: micolor,
+				maxLength: 50,
 				anchor : '100%'
 			},comboDevmodelType,comboParentDevType,comboRegionType,comboCheckCycleType,
 			{
@@ -650,24 +657,28 @@ Ext.onReady(function() {
 				name : 'longtitude',
 				allowBlank : true,
 				labelStyle: micolor,
+				maxLength: 50,
 				anchor : '100%'
 			}, {
 				fieldLabel : '纬度',
 				name : 'latitude',
 				allowBlank : true,
 				labelStyle: micolor,
+				maxLength: 50,
 				anchor : '100%'
 			}, {
 				fieldLabel : '高度',
 				name : 'height',
 				allowBlank : true,
 				labelStyle: micolor,
+				maxLength: 50,
 				anchor : '100%'
 			},{
 				fieldLabel : 'RF编号',
 				name : 'rfid',
 				allowBlank : true,
 				labelStyle: micolor,
+				maxLength: 50,
 				anchor : '100%'
 			},
 			{
@@ -676,6 +687,7 @@ Ext.onReady(function() {
 				allowBlank : true,
 				labelStyle: micolor,
 				xtype: 'textarea',
+				maxLength: 250,
 				anchor : '100%'
 			}, {
 				id : 'deptid',
@@ -993,6 +1005,7 @@ Ext.onReady(function() {
 				name : 'devname',
 				allowBlank : false,
 				labelStyle: micolor,
+				maxLength: 50,
 				anchor : '100%'
 			},comboEditDevmodelType,comboEditParentDevType,comboEditRegionType,comboEditCheckCycleType,
 			{
@@ -1000,24 +1013,28 @@ Ext.onReady(function() {
 				name : 'longtitude',
 				allowBlank : true,
 				labelStyle: micolor,
+				maxLength: 50,
 				anchor : '100%'
 			}, {
 				fieldLabel : '纬度',
 				name : 'latitude',
 				allowBlank : true,
 				labelStyle: micolor,
+				maxLength: 50,
 				anchor : '100%'
 			}, {
 				fieldLabel : '高度',
 				name : 'height',
 				allowBlank : true,
 				labelStyle: micolor,
+				maxLength: 50,
 				anchor : '100%'
 			},{
 				fieldLabel : 'RF编号',
 				name : 'rfid',
 				allowBlank : true,
 				labelStyle: micolor,
+				maxLength: 50,
 				anchor : '100%'
 			},
 			{
@@ -1026,6 +1043,7 @@ Ext.onReady(function() {
 				allowBlank : true,
 				labelStyle: micolor,
 				xtype: 'textarea',
+				maxLength: 250,
 				anchor : '100%'
 			}, {
 				name : 'devid',

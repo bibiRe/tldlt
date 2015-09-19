@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!-- 业务系统 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
@@ -73,7 +73,7 @@
 			<bean class="com.sysware.tldlt.app.service.user.UserServiceImpl">
 				<property name="g4Dao" ref="g4Dao" />
 				<property name="appDao" ref="appDao" />
-				<property name="mediaPathService" ref="mediaPathService"/>
+				<property name="mediaPathService" ref="mediaPathService" />
 			</bean>
 		</property>
 	</bean>
@@ -110,14 +110,40 @@
 	</bean>
 
 	<bean id="inspectService" parent="baseTransactionProxyApp">
-		<property name="target">			
+		<property name="target">
 			<bean class="com.sysware.tldlt.app.service.inspect.InspectServiceImpl">
 				<property name="g4Dao" ref="g4Dao" />
 				<property name="appDao" ref="appDao" />
-				<property name="mediaPathService" ref="mediaPathService"/>
+				<property name="mediaPathService" ref="mediaPathService" />
+				<property name="mediaUrlService" ref="mediaUrlService"></property>
 			</bean>
 		</property>
 	</bean>
+
+
+	<bean id="inspectRecordService" parent="baseTransactionProxyApp">
+		<property name="target">
+			<bean
+				class="com.sysware.tldlt.app.service.inspectionrecord.InspectionRecordServiceImpl">
+				<property name="g4Dao" ref="g4Dao" />
+				<property name="appDao" ref="appDao" />
+				<property name="mediaUrlService" ref="mediaUrlService"></property>
+			</bean>
+		</property>
+	</bean>
+
+
+
+	<bean id="InspectionRecordMakeupService" parent="baseTransactionProxyApp">
+		<property name="target">
+			<bean
+				class="com.sysware.tldlt.app.service.inspectionrecordmakeup.InspectionRecordMakeupServiceImpl">
+				<property name="g4Dao" ref="g4Dao" />
+				<property name="appDao" ref="appDao" />
+			</bean>
+		</property>
+	</bean>
+
 	<bean id="mediaUrlService"
 		class="com.sysware.tldlt.app.service.media.MediaUrlServiceGlobalParamImpl">
 		<property name="g4Dao" ref="g4Dao" />
@@ -126,6 +152,13 @@
 		class="com.sysware.tldlt.app.service.media.MediaPathServiceGlobalParamImpl">
 		<property name="g4Dao" ref="g4Dao" />
 	</bean>
+
+	<bean id="deviceTypeCheckItemService"
+		class="com.sysware.tldlt.app.service.devicetypecheckitem.DeviceTypeCheckItemServiceImpl">
+		<property name="g4Dao" ref="g4Dao" />
+		<property name="appDao" ref="appDao" />
+	</bean>
+
 	<!-- 业务系统服务组件配置示例 <bean id="***Service" parent="baseTransactionProxyG4"> 
 		<property name="target"> <bean class="com.*.........*ServiceImpl"> <property 
 		name="g4Dao" ref="g4Dao" /> </bean> </property> </bean> -->

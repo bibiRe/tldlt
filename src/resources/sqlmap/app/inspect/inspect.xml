@@ -5,7 +5,7 @@
 	<typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
 	<select id="queryImages" parameterClass="map" resultClass="dto">
 		SELECT a.MediaInfo_Id as mediainfoid, a.Type, UNIX_TIMESTAMP(a.Time) as time,
-		a.address as mediaurl, a.HashValue
+		a.address as mediaurl, a.HashValue, b.ReleateRecordId, b.Type as releatetype
 		FROM mediainfo a, releatemediainfo b
 		WHERE a.MediaInfo_Id = b.MediaInfo_Id
 		<dynamic>
@@ -17,7 +17,7 @@
 			</isNotEmpty>
 		</dynamic>
 	</select>
-	<select id="queryInspectRecordByPlanId" parameterClass="int"
+	<select id="queryInspectRecordIdByPlanId" parameterClass="int"
 		resultClass="int">
 		SELECT a.InspectRecord_Id as inspectrecordid from InspectRecord a where
 		a.InspectPlan_Id = #planID#
@@ -81,4 +81,18 @@
         WHERE a.InspectRecord_Id = c.InspectRecord_Id AND b.InspectPlan_Id=c.InspectPlan_Id 
         AND a.InspectPlanDevice_Id = d.InspectPlanDevice_Id AND e.userid = b.ExecuteUserId AND d.Device_Id = #deviceID#
     </select>
+    
+    <select id="queryInspectRecordByPlanId" parameterClass="int"
+		resultClass="dto">
+		SELECT a.InspectRecord_Id as inspectrecordid,  a.InspectPlan_Id as inspectplanid,  UNIX_TIMESTAMP(a.ExecuteStartTime) as executestarttime, UNIX_TIMESTAMP(a.ExecuteEndTime) as executeendtime 
+		FROM inspectrecord a
+		WHERE a.InspectPlan_Id = #planID#
+	</select>
+	
+	<select id="queryInspectRecordInfoByInspectRecordId" parameterClass="int"
+		resultClass="dto">
+		SELECT a.InspectRecordInfo_Id as inspectrecordinfoid, a.InspectRecord_Id as inspectrecordid, a.InspectPlanDevice_Id as inspectplandeviceid, a.State, UNIX_TIMESTAMP(a.Time) as time, a.Remark, c.Name as devicename
+		FROM inspectrecordinfo a, InspectPlanDevice b, device c 
+		WHERE a.InspectPlanDevice_Id  = b.InspectPlanDevice_Id and b.DEVICE_ID = c.DEVICE_ID AND a.InspectRecord_Id = #inspectreocrdid#
+	</select>
 </sqlMap>

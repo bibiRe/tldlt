@@ -40,9 +40,8 @@ public class MenuAction extends BaseAppAction {
 	@SuppressWarnings("unchecked")
 	public ActionForward queryMenus(ActionMapping mapping, ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		RPCRetDto outDto = RPCUtils.createDto(true, null);
-		Dto data = new BaseDto();
-		outDto.addData(data);
+		RPCRetDto outDto = RPCUtils.createDataSuccessDto();
+		Dto data = outDto.getFirstData();
 		data.put("group_meun_name", "巡检");
 		Collection<Dto> menuList = Lists.newArrayList();
 		data.put("menu", menuList);

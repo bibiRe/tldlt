@@ -6,293 +6,412 @@
 
 
     <select id="getPlanCount" parameterClass="dto" resultClass="java.lang.Integer">
-    
+
         SELECT count(*)
-        
-        
-        FROM InspectPlan a 
-        
+
+
+        FROM InspectPlan a
+
         where 1 = 1
-        
-        and a.applyuserid in (select userid from eauser b where b.deptid like '$deptid$%')
-        
+
+        and a.applyuserid in (select userid from eauser b where b.deptid like
+        '$deptid$%')
+
         <dynamic>
-        
+
 
             <isNotEmpty prepend="AND" property="queryParam">
-                ( 
-                
-                 a.applyuserid in (select userid from eauser c where c.username like '%$queryParam$%')
-                
-                 OR
-                 
-                 a.approvuserid in (select userid from eauser c where c.username like '%$queryParam$%')
-                 
-                 
-                 OR
-                 
-                 a.executeuserid in (select userid from eauser c where c.username like '%$queryParam$%')
-                 
-                 
-                 )
+                (
+
+                a.applyuserid in (select userid from eauser c where c.username like
+                '%$queryParam$%')
+
+                OR
+
+                a.approvuserid in (select userid from eauser c where c.username like
+                '%$queryParam$%')
+
+
+                OR
+
+                a.executeuserid in (select userid from eauser c where c.username like
+                '%$queryParam$%')
+
+
+                )
             </isNotEmpty>
-            
-             <isNotEmpty prepend="AND" property="startdatetime">
-                 
-                  ( 
-                 
-                	  UNIX_TIMESTAMP(a.ExecuteStartTime) <![CDATA[>=]]> UNIX_TIMESTAMP(#startdatetime#)  
-                 	
-                 
-                 )
-                 
+
+            <isNotEmpty prepend="AND" property="startdatetime">
+
+                (
+
+                UNIX_TIMESTAMP(a.ExecuteStartTime) <![CDATA[>=]]>
+                UNIX_TIMESTAMP(#startdatetime#)
+
+
+                )
+
             </isNotEmpty>
-            
-            
+
+
             <isNotEmpty prepend="AND" property="enddatetime">
-                 
-                  ( 
-                 
-                 	    UNIX_TIMESTAMP(a.ExecuteEndTime) <![CDATA[<=]]> UNIX_TIMESTAMP(#enddatetime#)  
-                 
-                 )
-                 
+
+                (
+
+                UNIX_TIMESTAMP(a.ExecuteEndTime) <![CDATA[<=]]>
+                UNIX_TIMESTAMP(#enddatetime#)
+
+                )
+
             </isNotEmpty>
-            
+
         </dynamic>
-        
+
     </select>
-    
-    
-    
+
+
+
     <select id="getPlan" parameterClass="dto" resultClass="dto">
-    
-		 SELECT a.InspectPlan_Id as planid,
-        
-         a.Name as planname,  
-         
-         a.State as state,
-         
-         
-         a.ApplyUserId as applyuserid,
-        
+
+        SELECT a.InspectPlan_Id as planid,
+
+        a.Name as planname,
+
+        a.State as state,
+
+
+        a.ApplyUserId as applyuserid,
+
         (SELECT username FROM eauser WHERE userid = a.ApplyUserId) as applyusername,
-        
+
         date_format((a.ApplyTime),'%Y-%m-%d %H:%i:%s') as applytime,
-        
-       
-        
+
+
+
         a.ExecuteUserId as executeuserid,
-        
-        (SELECT username FROM eauser WHERE userid = a.ExecuteUserId) as executeusername,
-        
-         date_format((a.ExecuteStartTime),'%Y-%m-%d %H:%i:%s') as executestartime,
-        
-         date_format((a.ExecuteEndTime),'%Y-%m-%d %H:%i:%s') as executeendtime ,
-        
-        
-        
+
+        (SELECT username FROM eauser WHERE userid = a.ExecuteUserId) as
+        executeusername,
+
+        date_format((a.ExecuteStartTime),'%Y-%m-%d %H:%i:%s') as executestartime,
+
+        date_format((a.ExecuteEndTime),'%Y-%m-%d %H:%i:%s') as executeendtime
+        ,
+
+
+
         a.ApprovUserId as approvuserid,
-        
-        (SELECT username FROM eauser WHERE userid = a.ApprovUserId) as approveusername,
-        
+
+        (SELECT username FROM eauser WHERE userid = a.ApprovUserId) as
+        approveusername,
+
         a.ApproveContent as approvecontent,
-        
-         date_format((a.ApproveTime),'%Y-%m-%d %H:%i:%s') as approvetime ,
-         
-         
+
+        date_format((a.ApproveTime),'%Y-%m-%d %H:%i:%s') as approvetime ,
+
+
         a.Remark as remark
-        
-        
-        FROM InspectPlan a 
-        
+
+
+        FROM InspectPlan a
+
         where 1 = 1
-        
-        and a.applyuserid in (select userid from eauser b where b.deptid like '$deptid$%')
-        
+
+        and a.applyuserid in (select userid from eauser b where b.deptid like
+        '$deptid$%')
+
         <dynamic>
-        
+
 
             <isNotEmpty prepend="AND" property="queryParam">
-                ( 
-                
-                 a.applyuserid in (select userid from eauser c where c.username like '%$queryParam$%')
-                
-                 OR
-                 
-                 a.approvuserid in (select userid from eauser c where c.username like '%$queryParam$%')
-                 
-                 
-                 OR
-                 
-                 a.executeuserid in (select userid from eauser c where c.username like '%$queryParam$%')
-                 
-                 
-                 )
+                (
+
+                a.applyuserid in (select userid from eauser c where c.username like
+                '%$queryParam$%')
+
+                OR
+
+                a.approvuserid in (select userid from eauser c where c.username like
+                '%$queryParam$%')
+
+
+                OR
+
+                a.executeuserid in (select userid from eauser c where c.username like
+                '%$queryParam$%')
+
+
+                )
             </isNotEmpty>
-            
-             <isNotEmpty prepend="AND" property="startdatetime">
-                 
-                  ( 
-                 
-                	  UNIX_TIMESTAMP(a.ExecuteStartTime) <![CDATA[>=]]> UNIX_TIMESTAMP(#startdatetime#)  
-                 	
-                 
-                 )
-                 
+
+            <isNotEmpty prepend="AND" property="startdatetime">
+
+                (
+
+                UNIX_TIMESTAMP(a.ExecuteStartTime) <![CDATA[>=]]>
+                UNIX_TIMESTAMP(#startdatetime#)
+
+
+                )
+
             </isNotEmpty>
-            
-            
+
+
             <isNotEmpty prepend="AND" property="enddatetime">
-                 
-                  ( 
-                 
-                 	    UNIX_TIMESTAMP(a.ExecuteEndTime) <![CDATA[<=]]> UNIX_TIMESTAMP(#enddatetime#)  
-                 
-                 )
-                 
-            </isNotEmpty>
-            
-        </dynamic>
-        
-    </select>
-    
-    
-    
-           <select id="getUser" parameterClass="dto" resultClass="dto">
 
-		SELECT a.USERID as id, a.USERNAME as value,a.Remark as remark
-		
-		from eauser a where 1 = 1 and a.USERTYPE != '3'
-		
-		and a.enabled = '1'
-		
-		and a.deptid like '$deptid$%'
+                (
+
+                UNIX_TIMESTAMP(a.ExecuteEndTime) <![CDATA[<=]]>
+                UNIX_TIMESTAMP(#enddatetime#)
+
+                )
+
+            </isNotEmpty>
+
+        </dynamic>
+
+    </select>
+
+
+
+    <select id="getUser" parameterClass="dto" resultClass="dto">
+
+        SELECT a.USERID as id, a.USERNAME as value,a.Remark as remark
+
+        from eauser a where 1 = 1 and a.USERTYPE != '3'
+
+        and a.enabled = '1'
+
+        and a.deptid like '$deptid$%'
 
         <dynamic>
             <isNotEmpty prepend="AND" property="queryParam">
-                 a.USERNAME like '%$queryParam$%'
+                a.USERNAME like '%$queryParam$%'
             </isNotEmpty>
         </dynamic>
     </select>
-    
+
     <select id="getUserCount" parameterClass="dto" resultClass="java.lang.Integer">
-        
 
-        
-        SELECT Count(*) from eauser a where 1 = 1 
-        
+
+
+        SELECT Count(*) from eauser a where 1 = 1
+
         and a.USERTYPE != '3'
-		
-		and a.enabled = '1' 
-		
-		and a.deptid like '$deptid$%'
-        
+
+        and a.enabled = '1'
+
+        and a.deptid like '$deptid$%'
+
         <dynamic>
             <isNotEmpty prepend="AND" property="queryParam">
-                 a.USERNAME like '%$queryParam$%'
+                a.USERNAME like '%$queryParam$%'
             </isNotEmpty>
         </dynamic>
     </select>
-    
-    
-    
-     <insert id="AddPlan" parameterClass="dto">
+
+
+
+    <insert id="AddPlan" parameterClass="dto">
         INSERT INTO InspectPlan
         (
-       	  InspectPlan_Id,ApplyUserId,Name,ApplyTime,State,ExecuteUserId,ExecuteStartTime,ExecuteEndTime,Remark
+        InspectPlan_Id,ApplyUserId,Name,ApplyTime,State,ExecuteUserId,ExecuteStartTime,ExecuteEndTime,Remark
         )
-        VALUES (#id#,#loginuserid#,#planname#,now(),#state#,#executeuserid#,#executestartime#,#executeendtime#,#remark#)
+        VALUES
+        (#id#,#loginuserid#,#planname#,now(),#state#,#executeuserid#,#executestartime#,#executeendtime#,#remark#)
     </insert>
-    
-    
-    
-    
-        <select id="getDevice" parameterClass="dto" resultClass="dto">
 
-		select  c.Name as devname, b.Name as regionname , d.Name as devmodelname ,
-		
-		e.Name as parentdevname ,e.Device_Id as parentdevid,
-		
-		c.Longtitude as longtitude, c.Latitude as latitude ,
-		
-		c.Height as height , c.RF_Id as rfid, c.Check_Cycle as checkcycleid,
-		
-		a.DEPTID as deptid, c.Device_Id as devid, b.Region_Id as regionid, 
-		
-		d.DeviceModel_Id as devmodelid ,c.Remark as remark
-		
-		from eadept a, region b  ,devicemodel d ,(device c left join device e on c.Parent_Device_Id = e.Device_Id)
-		
-		where a.DEPTID = b.DEPTID and b.Region_Id = c.Region_Id and c.DeviceModel_Id = d.DeviceModel_Id
+
+
+
+    <select id="getDevice" parameterClass="dto" resultClass="dto">
+
+        select c.Name as devname, b.Name as regionname , d.Name as
+        devmodelname ,
+
+        e.Name as parentdevname ,e.Device_Id as parentdevid,
+
+        c.Longtitude as longtitude, c.Latitude as latitude ,
+
+        c.Height as height , c.RF_Id as rfid, c.Check_Cycle as checkcycleid,
+
+        a.DEPTID as deptid, c.Device_Id as devid, b.Region_Id as regionid,
+
+        d.DeviceModel_Id as devmodelid ,c.Remark as remark
+
+        from eadept a, region b ,devicemodel d ,(device c left join device e on
+        c.Parent_Device_Id = e.Device_Id)
+
+        where a.DEPTID = b.DEPTID and b.Region_Id = c.Region_Id and
+        c.DeviceModel_Id = d.DeviceModel_Id
 
         <dynamic>
-    	     <isNotEmpty prepend="AND" property="deptid">
-                 a.DEPTID like '$deptid$%'
+            <isNotEmpty prepend="AND" property="deptid">
+                a.DEPTID like '$deptid$%'
             </isNotEmpty>
         </dynamic>
     </select>
-    
+
     <select id="getDeviceCount" parameterClass="dto" resultClass="java.lang.Integer">
-        
 
-        
-			select  count(*)
-			
-			from eadept a, region b  ,devicemodel d ,(device c left join device e on c.Parent_Device_Id = e.Device_Id)
-			
-			where a.DEPTID = b.DEPTID and b.Region_Id = c.Region_Id and c.DeviceModel_Id = d.DeviceModel_Id
-        
+
+
+        select count(*)
+
+        from eadept a, region b ,devicemodel d ,(device c left join device e on
+        c.Parent_Device_Id = e.Device_Id)
+
+        where a.DEPTID = b.DEPTID and b.Region_Id = c.Region_Id and
+        c.DeviceModel_Id = d.DeviceModel_Id
+
         <dynamic>
-    	     <isNotEmpty prepend="AND" property="deptid">
-                 a.DEPTID like '$deptid$%'
+            <isNotEmpty prepend="AND" property="deptid">
+                a.DEPTID like '$deptid$%'
             </isNotEmpty>
         </dynamic>
     </select>
-    
-    
-     <select id="getDeviceByInspecDevice" parameterClass="dto" resultClass="dto">
 
-		SELECT b.Device_Id as devid,b.InspectPlan_Id as planid
-		
-		
-		from inspectplandevice b where 1 = 1
-		
+
+    <select id="getDeviceByInspecDevice" parameterClass="dto"
+        resultClass="dto">
+
+        SELECT b.Device_Id as devid,b.InspectPlan_Id as planid
+
+
+        from inspectplandevice b where 1 = 1
+
         <dynamic>
-    	     <isNotEmpty prepend="AND" property="deptid">
-                 b.InspectPlan_Id = #planid#
+            <isNotEmpty prepend="AND" property="planid">
+                b.InspectPlan_Id = #planid#
             </isNotEmpty>
         </dynamic>
 
     </select>
-    
-    
-    
-    <delete id="deleteDeviceByInspecPlan" parameterClass="dto" >
-		 
-		 DELETE FROM inspectplandevice WHERE 1 = 1
-		      
-		     <dynamic>
-		
-				 <isNotEmpty prepend="AND" property="id">
-	                b.InspectPlan_Id = #planid#
-	            </isNotEmpty>
-            
-        	</dynamic>
-        	
-	</delete>
-	
-	
+
+
+
+    <delete id="deleteDeviceByInspecPlan" parameterClass="dto">
+
+        DELETE FROM inspectplandevice WHERE 1 = 1
+
+        <dynamic>
+
+            <isNotEmpty prepend="AND" property="planid">
+                InspectPlan_Id = #planid#
+            </isNotEmpty>
+
+        </dynamic>
+
+    </delete>
+
+
+    <delete id="deleteInspecPlan" parameterClass="dto">
+
+        DELETE FROM InspectPlan
+
+        where 1 = 1
+
+        <dynamic>
+
+            <isNotEmpty prepend="AND" property="planid">
+                InspectPlan_Id = #planid#
+            </isNotEmpty>
+
+        </dynamic>
+
+    </delete>
+
+
     <insert id="AddDeviceForInspectPlan" parameterClass="dto">
         INSERT INTO inspectplandevice
         (
-       	  InspectPlanDevice_Id,Device_Id,InspectPlan_Id
+        InspectPlanDevice_Id,Device_Id,InspectPlan_Id
         )
         VALUES (#id#,#devid#,#planid#)
     </insert>
-    
 
-    <select id="queryPlanDevices00000" parameterClass="string" resultClass="dto">
+
+
+
+
+    <update id="UpdatePlan" parameterClass="dto">
+        UPDATE InspectPlan SET
+
+        ApplyUserId=#loginuserid#,
+        Name=#planname#,
+        State=#state#,
+        ExecuteUserId=#executeuserid#,
+        ExecuteStartTime=#executestartime#,
+        ExecuteEndTime=#executeendtime#,
+        Remark=#remark#
+
+        WHERE InspectPlan_Id = #planid#
+    </update>
+
+
+    <update id="ApprovalPlan" parameterClass="dto">
+        UPDATE InspectPlan SET
+
+        ApprovUserId=#loginuserid#,
+        ApproveContent=#approvecontent#,
+        State=#state#,
+        ApproveTime=now()
+
+        WHERE InspectPlan_Id = #planid#
+    </update>
+
+
+    <select id="getInspectPlanApprovalAuth" parameterClass="dto"
+        resultClass="dto">
+
+
+        select
+
+        a.menuid,
+
+        a.menuname ,
+
+        b.partid,
+
+        b.cmpid,
+
+        b.remark ,
+
+        c.userid,
+
+        d.username
+
+
+        from eamenu a ,eamenupart b , eausermenupart c , eauser d
+
+        where a.menuname = '巡检计划'
+
+        and b.menuid = a.menuid
+
+        and b.cmpid = 'InspectPlanApproval'
+
+        and c.menuid = a.menuid
+
+        and c.partid = b.partid
+
+        and c.partauthtype = '2'
+
+        and d.userid = c.userid
+
+
+        <dynamic>
+            <isNotEmpty prepend="AND" property="userid">
+                c.userid = #userid#
+            </isNotEmpty>
+        </dynamic>
+
+    </select>
+
+
+
+
+    <select id="queryPlanDevices00000" parameterClass="string"
+        resultClass="dto">
         SELECT b.Device_ID as deviceID, b.parent_device_id as parentDeviceId,
         b.Check_Cycle as period, b.Longtitude, b.Latitude, b.Height,
         b.Region_Id as regionId,
@@ -304,20 +423,21 @@
         a.Device_Id=b.Device_Id AND x.DeviceType_Id = y.devicetype_Id AND
         y.devicemodel_id = b.devicemodel_Id AND a.InspectPlan_Id = #planID#
     </select>
+
     <sql id="sqlQueryPlanBasicType">
         SELECT a.InspectPlan_Id as planID, a.Name as planname,
         a.State, a.ExecuteUserId as executoruserid,
         (SELECT username FROM
         eauser WHERE userid = a.ExecuteUserId) as executor,
         UNIX_TIMESTAMP(a.ExecuteStartTime) as ExecuteStartTime,
-        UNIX_TIMESTAMP(a.ExecuteEndTime) as ExecuteEndTime        
+        UNIX_TIMESTAMP(a.ExecuteEndTime) as ExecuteEndTime
     </sql>
     <sql id="sqlQueryPlanBasicTable">
-    	FROM InspectPlan a
+        FROM InspectPlan a
     </sql>
     <sql id="sqlQueryPlanBasic">
-        <include refid="sqlQueryPlanBasicType"/>
-        <include refid="sqlQueryPlanBasicTable"/>
+        <include refid="sqlQueryPlanBasicType" />
+        <include refid="sqlQueryPlanBasicTable" />
     </sql>
     <sql id="sqlQueryExecuteUserPlanOutlineCondition">
         <dynamic prepend="WHERE">
@@ -396,60 +516,68 @@
         y.devicemodel_id =
         b.devicemodel_Id AND a.InspectPlan_Id = #planID#
     </select>
-	<update id="updateInspectPlanFinished" parameterClass="dto">
-		UPDATE InspectPlan SET State = #state# WHERE InspectPlan_Id = #planID#
-    </update>    
+    <update id="updateInspectPlanFinished" parameterClass="dto">
+        UPDATE
+        InspectPlan SET State = #state# WHERE InspectPlan_Id = #planID#
+    </update>
     <sql id="sqlQueryExecutingPlanCondition">
-    	, InspectRecord b WHERE a.InspectPlan_Id = b.InspectPlan_Id AND a.State = 5
+        , InspectRecord b WHERE a.InspectPlan_Id = b.InspectPlan_Id AND
+        a.State = 5
         <dynamic>
             <isNotEmpty prepend="AND" property="userid">
                 a.ExecuteUserId = #userid#
             </isNotEmpty>
             <isNotEmpty prepend="AND" property="datetime">
-                b.ExecuteStartTime <![CDATA[<=]]> '$datetime$' AND a.ExecuteEndTime <![CDATA[>=]]> '$datetime$'              
+                b.ExecuteStartTime <![CDATA[<=]]>
+                '$datetime$' AND a.ExecuteEndTime <![CDATA[>=]]>
+                '$datetime$'
             </isNotEmpty>
         </dynamic>
     </sql>
-	<sql id="sqlQueryExecutingPlanBasic">
-		<include refid="sqlQueryPlanBasicType"/>, b.InspectRecord_Id as inspectrecordid, date_format(b.ExecuteStartTime, '%Y-%m-%d %H:%i:%s') as RealStartTime      	
-    	<include refid="sqlQueryPlanBasicTable"/>		
-	</sql>
-    <select id = "queryExecutingPlan" parameterClass="dto"
+    <sql id="sqlQueryExecutingPlanBasic">
+        <include refid="sqlQueryPlanBasicType" />
+        , b.InspectRecord_Id as inspectrecordid,
+        date_format(b.ExecuteStartTime, '%Y-%m-%d %H:%i:%s') as RealStartTime
+        <include refid="sqlQueryPlanBasicTable" />
+    </sql>
+    <select id="queryExecutingPlan" parameterClass="dto"
         resultClass="dto">
         <include refid="sqlQueryExecutingPlanBasic" />
-    	<include refid="sqlQueryExecutingPlanCondition"/>
+        <include refid="sqlQueryExecutingPlanCondition" />
     </select>
     <sql id="sqlQuerySoonExecutePlanCondition">
-    	WHERE a.State = 4
+        WHERE a.State = 4
         <dynamic>
             <isNotEmpty prepend="AND" property="userid">
                 a.ExecuteUserId = #userid#
             </isNotEmpty>
             <isNotEmpty prepend="AND" property="datetime">
-                a.ExecuteEndTime <![CDATA[>=]]> '$datetime$'
+                a.ExecuteEndTime <![CDATA[>=]]>
+                '$datetime$'
             </isNotEmpty>
         </dynamic>
     </sql>
-    <select id = "querySoonExecutePlan" parameterClass="dto"
+    <select id="querySoonExecutePlan" parameterClass="dto"
         resultClass="dto">
-    	<include refid="sqlQueryPlanBasic"/>
-    	<include refid="sqlQuerySoonExecutePlanCondition"/>
+        <include refid="sqlQueryPlanBasic" />
+        <include refid="sqlQuerySoonExecutePlanCondition" />
     </select>
-    
+
     <sql id="sqlQueryNotFinishedPlanCondition">
-    	WHERE a.State in [4, 5]
+        WHERE a.State in [4, 5]
         <dynamic>
             <isNotEmpty prepend="AND" property="userid">
                 a.ExecuteUserId = #userid#
             </isNotEmpty>
             <isNotEmpty prepend="AND" property="datetime">
-                a.ExecuteEndTime <![CDATA[<]]> '$datetime$'
+                a.ExecuteEndTime <![CDATA[<]]>
+                '$datetime$'
             </isNotEmpty>
         </dynamic>
     </sql>
-    <select id = "queryNotFinishedPlanPlan" parameterClass="dto"
+    <select id="queryNotFinishedPlanPlan" parameterClass="dto"
         resultClass="dto">
-    	<include refid="sqlQueryPlanBasic"/>
-    	<include refid="sqlQueryNotFinishedPlanCondition"/>
+        <include refid="sqlQueryPlanBasic" />
+        <include refid="sqlQueryNotFinishedPlanCondition" />
     </select>
 </sqlMap>

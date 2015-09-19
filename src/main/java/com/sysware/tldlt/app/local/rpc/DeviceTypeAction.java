@@ -43,7 +43,7 @@ public class DeviceTypeAction extends BaseAppAction {
 		if (AppTools.isEmptyString(deviceTypeId)) {
 			return RPCUtils.sendErrorRPCInfoActionForward(response, "设备类型为空");
 		}
-		List<Dto> list = appReader.queryForList("App.DeviceType.queryCheckItems", deviceTypeId);
+		List<Dto> list = appReader.queryForList("App.DeviceTypeCheckItem.queryCheckItems", deviceTypeId);
 		return RPCUtils.sendRPCListDtoActionForward(response, list);
 	}
 }

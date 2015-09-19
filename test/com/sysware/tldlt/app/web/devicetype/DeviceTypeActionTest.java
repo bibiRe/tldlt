@@ -27,11 +27,10 @@ public class DeviceTypeActionTest extends AppMockStrutsTestCase {
     @Test
     public void testInit_Success() {
         addRequestParameter("reqCode", new String[] {"init"});
-        actionPerform();
-        verifyForward("deviceTypeView");
-        verifyForwardPath("/app/devicetype/devicetypeview.jsp");
+        actionExecuteAndVerifyForward("deviceTypeView",
+                "/app/devicetype/devicetypeview.jsp");
     }
-    
+
     /**
      * 测试删除设备类型信息-成功-编号9.
      */
@@ -43,7 +42,7 @@ public class DeviceTypeActionTest extends AppMockStrutsTestCase {
         addRequestParameter("type", new String[] {"1"});
         actionExecuteAndAssertRetInfo();
     }
-    
+
     /**
      * 测试初始化Tree
      */
@@ -68,13 +67,14 @@ public class DeviceTypeActionTest extends AppMockStrutsTestCase {
                 .getWriterBuffer().toString();
         assertTrue(actual.contains("parentid"));
     }
-    
+
     /**
      * 测试查询设备类型管理数据-成功.
      */
     @Test
     public void testQueryDeviceTypesForManage_Success() {
-        addRequestParameter("reqCode", new String[] {"queryDeviceTypesForManage"});
+        addRequestParameter("reqCode",
+                new String[] {"queryDeviceTypesForManage"});
         addRequestParameter("start", new String[] {"0"});
         addRequestParameter("limit", new String[] {"50"});
         actionPerform();
@@ -106,7 +106,7 @@ public class DeviceTypeActionTest extends AppMockStrutsTestCase {
         addRequestParameter("parentid", new String[] {"0"});
         actionExecuteAndAssertRetInfo();
     }
-    
+
     /**
      * 测试更新成功-编号111.
      */
@@ -118,8 +118,7 @@ public class DeviceTypeActionTest extends AppMockStrutsTestCase {
         addRequestParameter("devicetypeid", new String[] {"10"});
         actionExecuteAndAssertRetInfo();
     }
-    
-   
+
     /**
      * 测试删除成功-编号111.
      */

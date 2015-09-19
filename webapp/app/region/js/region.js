@@ -32,10 +32,10 @@ Ext.onReady(function() {
 	regionTree.root.select();
 	regionTree.on('click', function(node) {
 		var regionId = node.attributes.id;
-		regionStore.load({
+		regionGridObj.store.load({
 			params: {
 				start: 0,
-				limit: gridBottomBar.getPageSize(),
+				limit: regionGridObj.gridBottomBar.getPageSize(),
 				regionid: regionId
 			}
 		});
@@ -83,10 +83,10 @@ Ext.onReady(function() {
 		regionname = node.attributes.text;
 		Ext.getCmp('parentregionname').setValue(regionname);
 		Ext.getCmp('parentid').setValue(regionid);
-		regionStore.load({
+		regionGridObj.store.load({
 			params: {
 				start: 0,
-				limit: gridBottomBar.getPageSize(),
+				limit: regionGridObj.gridBottomBar.getPageSize(),
 				regionid: regionid
 			},
 			callback: function(r, options, success) {
@@ -94,7 +94,7 @@ Ext.onReady(function() {
 					var record = r[i];
 					var regionid_g = record.data.regionid;
 					if (regionid_g == regionid) {
-						regionInfoGrid.getSelectionModel().selectRow(i);
+						regionGridObj.grid.getSelectionModel().selectRow(i);
 					}
 				}
 			}
@@ -104,158 +104,156 @@ Ext.onReady(function() {
 	});
 
 	var regionGridSM = new Ext.grid.CheckboxSelectionModel();
-	var regionCM = new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), regionGridSM, {
-		header: '区域编号',
-		dataIndex: 'regionid',
-		hidden: false,
-		hidden: false,
-		width: 130,
-		sortable: true
-	}, {
-		header: '区域名称',
-		dataIndex: 'regionname',
-		width: 130
-	}, {
-		header: '上级区域',
-		dataIndex: 'parentregionname',
-		width: 130
-	}, {
-		header: '类型',
-		dataIndex: 'regiontype',
-		width: 50,
-		renderer: REGIONTYPERender
-	}, {
-		header: '所属部门',
-		dataIndex: 'departmentname',
-		width: 150,
-	}, {
-		id: 'parentid',
-		header: '父节点编号',
-		hidden: true,
-		dataIndex: 'parentid'
-	}, {
-		id: 'remark',
-		header: '备注',
-		dataIndex: 'remark'
-	}]);
 
-	/**
-	 * 数据存储
-	 */
-	var regionStore = new Ext.data.Store({
-		proxy: new Ext.data.HttpProxy({
-			url: './region.do?reqCode=queryRegionsForManage'
-		}),
-		reader: new Ext.data.JsonReader({
-			totalProperty: 'TOTALCOUNT',
-			root: 'ROOT'
-		}, [{
-			name: 'regionid'
+	function createRegionColumnModel() {
+		var result = new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), regionGridSM, {
+			header: '区域编号',
+			dataIndex: 'regionid',
+			hidden: false,
+			hidden: false,
+			width: 130,
+			sortable: true
 		}, {
-			name: 'regionname'
-		}, {
-			name: 'parentregionname'
-		}, {
-			name: 'remark'
-		}, {
-			name: 'regiontype'
-		}, {
-			name: 'parentid'
-		}, {
-			name: 'departmentid'
-		}, {
-			name: 'departmentname'
-		}, {
-			name: 'leaf'
-		}])
-	});
-
-	// 翻页排序时带上查询条件
-	regionStore.on('beforeload', function() {
-		this.baseParams = {
-			regionName: Ext.getCmp('regionName').getValue()
-		};
-	});
-
-
-
-	var gridBottomBar = new Ext.ux.grid.BottomBar(regionStore);
-	var regionInfoGrid = new Ext.grid.GridPanel({
-		title: '<span class="commoncss">区域信息表</span>',
-		height: 500,
-		// width:600,
-		autoScroll: true,
-		region: 'center',
-		store: regionStore,
-		loadMask: {
-			msg: '正在加载表格数据,请稍等...'
-		},
-		stripeRows: true,
-		frame: true,
-		autoExpandColumn: 'remark',
-		cm: regionCM,
-		sm: regionGridSM,
-		tbar: [{
-			text: '新增',
-			iconCls: 'page_addIcon',
-			handler: function() {
-				addInit();
-			}
-		}, '-', {
-			text: '修改',
-			iconCls: 'page_edit_1Icon',
-			handler: function() {
-				editInit();
-			}
-		}, '-', {
-			text: '删除',
-			iconCls: 'page_delIcon',
-			handler: function() {
-				deleteItems('1', '');
-			}
-		}, '->', new Ext.form.TextField({
-			id: 'regionName',
-			name: 'regionName',
-			emptyText: '请输入区域名称',
-			enableKeyEvents: true,
-			listeners: {
-				specialkey: function(field, e) {
-					if (e.getKey() == Ext.EventObject.ENTER) {
-						queryRegionItem();
-					}
-				}
-			},
+			header: '区域名称',
+			dataIndex: 'regionname',
 			width: 130
-		}), {
-			text: '查询',
-			iconCls: 'previewIcon',
-			handler: function() {
-				queryRegionItem();
-			}
-		}, '-', {
-			text: '刷新',
-			iconCls: 'arrow_refreshIcon',
-			handler: function() {
-				regionStore.reload();
-			}
-		}],
-		bbar: gridBottomBar.bbar
-	});
+		}, {
+			header: '上级区域',
+			dataIndex: 'parentregionname',
+			width: 130
+		}, {
+			header: '类型',
+			dataIndex: 'regiontype',
+			width: 50,
+			renderer: REGIONTYPERender
+		}, {
+			header: '所属部门',
+			dataIndex: 'departmentname',
+			width: 150,
+		}, {
+			id: 'parentid',
+			header: '父节点编号',
+			hidden: true,
+			dataIndex: 'parentid'
+		}, {
+			id: 'remark',
+			header: '备注',
+			dataIndex: 'remark'
+		}]);
+		return result;
+	}
 
-	regionStore.load({
-		params: {
-			start: 0,
-			limit: gridBottomBar.getPageSize(),
-			firstload: 'true'
-		}
-	});
+	function createRegionStore() {
+		/**
+		 * 数据存储
+		 */
+		var result = new Ext.data.Store({
+			proxy: new Ext.data.HttpProxy({
+				url: './region.do?reqCode=queryRegionsForManage'
+			}),
+			reader: new Ext.data.JsonReader({
+				totalProperty: 'TOTALCOUNT',
+				root: 'ROOT'
+			}, [{
+				name: 'regionid'
+			}, {
+				name: 'regionname'
+			}, {
+				name: 'parentregionname'
+			}, {
+				name: 'remark'
+			}, {
+				name: 'regiontype'
+			}, {
+				name: 'parentid'
+			}, {
+				name: 'departmentid'
+			}, {
+				name: 'departmentname'
+			}, {
+				name: 'leaf'
+			}])
+		});
 
-	regionInfoGrid.on('rowdblclick', function(regionInfoGrid, rowIndex, event) {
-		editInit();
-	});
-	regionInfoGrid.on('sortchange', function() {
-		// regionInfoGrid.getSelectionModel().selectFirstRow();
-	});
+		// 翻页排序时带上查询条件
+		result.on('beforeload', function() {
+			this.baseParams = {
+				regionName: Ext.getCmp('regionName').getValue()
+			};
+		});
+		return result;
+	}
+
+	function createRegionGrid(store, columnModel, pageToolbar) {
+		var result = new Ext.grid.GridPanel({
+			title: '<span class="commoncss">区域信息表</span>',
+			height: 500,
+			// width:600,
+			autoScroll: true,
+			region: 'center',
+			store: store,
+			loadMask: {
+				msg: '正在加载表格数据,请稍等...'
+			},
+			stripeRows: true,
+			frame: true,
+			autoExpandColumn: 'remark',
+			cm: columnModel,
+			sm: regionGridSM,
+			tbar: [{
+				text: '新增',
+				iconCls: 'page_addIcon',
+				handler: function() {
+					addInit();
+				}
+			}, '-', {
+				text: '修改',
+				iconCls: 'page_edit_1Icon',
+				handler: function() {
+					editInit();
+				}
+			}, '-', {
+				text: '删除',
+				iconCls: 'page_delIcon',
+				handler: function() {
+					deleteItems('1', '');
+				}
+			}, '->', new Ext.form.TextField({
+				id: 'regionName',
+				name: 'regionName',
+				emptyText: '请输入区域名称',
+				enableKeyEvents: true,
+				listeners: {
+					specialkey: function(field, e) {
+						if (e.getKey() == Ext.EventObject.ENTER) {
+							queryRegionItem();
+						}
+					}
+				},
+				width: 130
+			}), {
+				text: '查询',
+				iconCls: 'previewIcon',
+				handler: function() {
+					queryRegionItem();
+				}
+			}, '-', {
+				text: '刷新',
+				iconCls: 'arrow_refreshIcon',
+				handler: function() {
+					regionGridObj.store.reload();
+				}
+			}],
+			bbar: pageToolbar
+		});
+		result.on('rowdblclick', function(grid, rowIndex, event) {
+			editInit();
+		});
+		return result;
+	}
+
+	var regionGridObj = new Ext.ux.app.grid.AppGridObj(createRegionColumnModel, createRegionStore,
+		createRegionGrid);
 
 	var addRegionTreePanel = new Ext.tree.TreePanel({
 		loader: createTreeLoader(),
@@ -358,25 +356,25 @@ Ext.onReady(function() {
 	});
 
 	var regiontypeCombo = new Ext.form.ComboBox({
-		name : 'regiontype',
-		hiddenName : 'regiontype',
-		store : REGIONTYPEStore,
-		mode : 'local',
-		triggerAction : 'all',
-		valueField : 'value',
-		displayField : 'text',
-		readOnly : false,
-		value : '1',
-		fieldLabel : '区域类型',
-		emptyText : '请选择...',
-		labelStyle : micolor,
-		allowBlank : false,
-		forceSelection : true,
-		editable : false,
-		typeAhead : true,
-		anchor : "99%"
+		name: 'regiontype',
+		hiddenName: 'regiontype',
+		store: REGIONTYPEStore,
+		mode: 'local',
+		triggerAction: 'all',
+		valueField: 'value',
+		displayField: 'text',
+		readOnly: false,
+		value: '1',
+		fieldLabel: '区域类型',
+		emptyText: '请选择...',
+		labelStyle: micolor,
+		allowBlank: false,
+		forceSelection: true,
+		editable: false,
+		typeAhead: true,
+		anchor: "99%"
 	});
-	
+
 	var addRegionFormPanel = new Ext.form.FormPanel({
 		id: 'addRegionFormPanel',
 		name: 'addRegionFormPanel',
@@ -425,7 +423,7 @@ Ext.onReady(function() {
 			}
 		]
 	});
-	
+
 	var addRegionWindow = new Ext.Window({
 		layout: 'fit',
 		width: 400,
@@ -503,7 +501,7 @@ Ext.onReady(function() {
 			layout: 'fit',
 			border: false,
 			margins: '3 3 3 3',
-			items: [regionInfoGrid]
+			items: [regionGridObj.grid]
 		}]
 	});
 
@@ -511,10 +509,10 @@ Ext.onReady(function() {
 	 * 根据条件查询区域
 	 */
 	function queryRegionItem() {
-		regionStore.load({
+		regionGridObj.store.load({
 			params: {
 				start: 0,
-				limit: gridBottomBar.getPageSize(),
+				limit: regionGridObj.gridBottomBar.getPageSize(),
 				regionName: Ext.getCmp('regionName').getValue()
 			}
 		});
@@ -562,7 +560,7 @@ Ext.onReady(function() {
 			waitMsg: '正在处理数据,请稍候...',
 			success: function(form, action) {
 				addRegionWindow.hide();
-				regionStore.reload();
+				regionGridObj.store.reload();
 				refreshNode(Ext.getCmp('parentid').getValue());
 				form.reset();
 				Ext.MessageBox.alert('提示', action.result.msg);
@@ -595,13 +593,13 @@ Ext.onReady(function() {
 	 * 修改区域初始化
 	 */
 	function editInit() {
-		var record = regionInfoGrid.getSelectionModel().getSelected();
+		var record = regionGridObj.grid.getSelectionModel().getSelected();
 		if (Ext.isEmpty(record)) {
 			Ext.MessageBox.alert('提示', '请先选择要修改的区域!');
 			return;
 		}
-		addRegionFormPanel.getForm().loadRecord(record);		
-		// record = regionInfoGrid.getSelectionModel().getSelected();
+		addRegionFormPanel.getForm().loadRecord(record);
+		// record = regionGridObj.grid.getSelectionModel().getSelected();
 		if (record.get('regionid') == '0') {
 			var a = Ext.getCmp('parentregionname');
 			a.emptyText = '已经是顶级区域';
@@ -614,7 +612,7 @@ Ext.onReady(function() {
 
 		if (!record.get('parentid')) {
 			parentRegionComboxWithTree.setValue(regionTree.root.attributes.text);
-		}		
+		}
 		addRegionWindow.show();
 		addRegionWindow
 			.setTitle('<span style="font-weight:normal">修改区域</span>');
@@ -647,7 +645,7 @@ Ext.onReady(function() {
 			waitMsg: '正在处理数据,请稍候...',
 			success: function(form, action) {
 				addRegionWindow.hide();
-				regionStore.reload();
+				regionGridObj.store.reload();
 				refreshNode(parentid);
 				if (parentid != parentid_old) {
 					refreshNode(parentid_old);
@@ -674,7 +672,7 @@ Ext.onReady(function() {
 			pRegionid = selectNode.attributes.id;
 			pRegionPath = selectNode.getPath('id');
 		}
-		var rows = regionInfoGrid.getSelectionModel().getSelections();
+		var rows = regionGridObj.grid.getSelectionModel().getSelections();
 		var fields = '';
 		for (var i = 0; i < rows.length; i++) {
 			if (rows[i].get('regionid') == '0') {
@@ -722,14 +720,14 @@ Ext.onReady(function() {
 								success: function(response) {
 									var resultArray = Ext.util.JSON
 										.decode(response.responseText);
-									regionStore.reload();
+									regionGridObj.store.reload();
 									if (!pRegionPath) {
 										regionTree.root.reload();
 									} else {
 										regionTree.getLoader().load(regionTree.getRootNode(),
 											function(treeNode) {
-											regionTree.expandPath(pRegionPath, 'id', function(bSucess, oLastNode) {
-												regionTree.getSelectionModel().select(oLastNode);
+												regionTree.expandPath(pRegionPath, 'id', function(bSucess, oLastNode) {
+													regionTree.getSelectionModel().select(oLastNode);
 												});
 											}, this);
 									}

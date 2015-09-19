@@ -33,10 +33,10 @@ Ext.onReady(function() {
 	deviceTypeTree.root.select();
 	deviceTypeTree.on('click', function(node) {
 		var deviceTypeId = node.attributes.id;
-		deviceTypeStore.load({
+		deviceTypeGridObj.store.load({
 			params: {
 				start: 0,
-				limit: gridBottomBar.getPageSize(),
+				limit: deviceTypeGridObj.gridBottomBar.getPageSize(),
 				devicetypeid: deviceTypeId
 			}
 		});
@@ -82,10 +82,10 @@ Ext.onReady(function() {
 		var deviceTypename = node.attributes.text;
 		Ext.getCmp('parentdevicetypename').setValue(deviceTypename);
 		Ext.getCmp('parentid').setValue(devicetypeid);
-		deviceTypeStore.load({
+		deviceTypeGridObj.store.load({
 			params: {
 				start: 0,
-				limit: gridBottomBar.getPageSize(),
+				limit: deviceTypeGridObj.gridBottomBar.getPageSize(),
 				devicetypeid: devicetypeid
 			},
 			callback: function(r, options, success) {
@@ -93,7 +93,7 @@ Ext.onReady(function() {
 					var record = r[i];
 					var deviceTypeid_g = record.data.devicetypeid;
 					if (deviceTypeid_g == devicetypeid) {
-						deviceTypeInfoGrid.getSelectionModel().selectRow(i);
+						deviceTypeGridObj.grid.getSelectionModel().selectRow(i);
 					}
 				}
 			}
@@ -102,142 +102,156 @@ Ext.onReady(function() {
 		contextMenu.showAt(e.getXY());
 	});
 
-
 	var deviceTypeGridSM = new Ext.grid.CheckboxSelectionModel();
-	var deviceTypeCM = new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), deviceTypeGridSM, {
-		header: '设备类型编号',
-		dataIndex: 'devicetypeid',
-		hidden: false,
-		hidden: false,
-		width: 130,
-		sortable: true
-	}, {
-		header: '设备类型名称',
-		dataIndex: 'devicetypename',
-		width: 130
-	}, {
-		header: '上级设备类型',
-		dataIndex: 'parentdevicetypename',
-		width: 130
-	}, {
-		id: 'parentid',
-		header: '父节点编号',
-		hidden: true,
-		dataIndex: 'parentid'
-	}, {
-		id: 'remark',
-		header: '备注',
-		dataIndex: 'remark'
-	}]);
 
-	/**
-	 * 数据存储
-	 */
-	var deviceTypeStore = new Ext.data.Store({
-		proxy: new Ext.data.HttpProxy({
-			url: './deviceType.do?reqCode=queryDeviceTypesForManage'
-		}),
-		reader: new Ext.data.JsonReader({
-			totalProperty: 'TOTALCOUNT',
-			root: 'ROOT'
-		}, [{
-			name: 'devicetypeid'
-		}, {
-			name: 'devicetypename'
-		}, {
-			name: 'parentdevicetypename'
-		}, {
-			name: 'remark'
-		}, {
-			name: 'parentid'
-		}, {
-			name: 'leaf'
-		}])
-	});
-
-	// 翻页排序时带上查询条件
-	deviceTypeStore.on('beforeload', function() {
-		this.baseParams = {
-			deviceTypeName: Ext.getCmp('deviceTypeName').getValue()
-		};
-	});
-	var gridBottomBar = new Ext.ux.grid.BottomBar(deviceTypeStore);
-	var deviceTypeInfoGrid = new Ext.grid.GridPanel({
-		title: '<span class="commoncss">设备类型信息表</span>',
-		height: 500,
-		// width:600,
-		autoScroll: true,
-		region: 'center',
-		store: deviceTypeStore,
-		loadMask: {
-			msg: '正在加载表格数据,请稍等...'
-		},
-		stripeRows: true,
-		frame: true,
-		autoExpandColumn: 'remark',
-		cm: deviceTypeCM,
-		sm: deviceTypeGridSM,
-		tbar: [{
-			text: '新增',
-			iconCls: 'page_addIcon',
-			handler: function() {
-				addInit();
-			}
-		}, '-', {
-			text: '修改',
-			iconCls: 'page_edit_1Icon',
-			handler: function() {
-				editInit();
-			}
-		}, '-', {
-			text: '删除',
-			iconCls: 'page_delIcon',
-			handler: function() {
-				deleteItems('1');
-			}
-		}, '->', new Ext.form.TextField({
-			id: 'deviceTypeName',
-			name: 'deviceTypeName',
-			emptyText: '请输入设备类型名称',
-			enableKeyEvents: true,
-			listeners: {
-				specialkey: function(field, e) {
-					if (e.getKey() == Ext.EventObject.ENTER) {
-						queryDeviceTypeItem();
-					}
-				}
+	function createDeviceTypeColumnModel() {
+		var result = new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), deviceTypeGridSM, {
+			header: '检查项',
+			renderer: function(value, cellmeta, record) {
+				return '<a href="javascript:void(0);"><img src="' + webContext + '/resource/image/ext/edit1.png"/></a>';
 			},
+			width: 40
+		}, {
+			header: '设备类型编号',
+			dataIndex: 'devicetypeid',
+			hidden: false,
+			hidden: false,
+			width: 130,
+			sortable: true
+		}, {
+			header: '设备类型名称',
+			dataIndex: 'devicetypename',
 			width: 130
-		}), {
-			text: '查询',
-			iconCls: 'previewIcon',
-			handler: function() {
-				queryDeviceTypeItem();
-			}
-		}, '-', {
-			text: '刷新',
-			iconCls: 'arrow_refreshIcon',
-			handler: function() {
-				deviceTypeStore.reload();
-			}
-		}],
-		bbar: gridBottomBar.bbar
-	});
+		}, {
+			header: '上级设备类型',
+			dataIndex: 'parentdevicetypename',
+			width: 130
+		}, {
+			id: 'parentid',
+			header: '父节点编号',
+			hidden: true,
+			dataIndex: 'parentid'
+		}, {
+			id: 'remark',
+			header: '备注',
+			dataIndex: 'remark'
+		}]);
 
-	deviceTypeStore.load({
-		params: {
-			start: 0,
-			limit: gridBottomBar.getPageSize(),
-			firstload: 'true'
-		}
-	});
+		return result;
+	}
 
-	deviceTypeInfoGrid.on('rowdblclick', function(deviceTypeInfoGrid, rowIndex, event) {
-		editInit();
-	});
-	deviceTypeInfoGrid.on('sortchange', function() {
-		// deviceTypeInfoGrid.getSelectionModel().selectFirstRow();
-	});
+
+	function createDeviceTypeStore() {
+		/**
+		 * 数据存储
+		 */
+		var result = new Ext.data.Store({
+			proxy: new Ext.data.HttpProxy({
+				url: './deviceType.do?reqCode=queryDeviceTypesForManage'
+			}),
+			reader: new Ext.data.JsonReader({
+				totalProperty: 'TOTALCOUNT',
+				root: 'ROOT'
+			}, [{
+				name: 'devicetypeid'
+			}, {
+				name: 'devicetypename'
+			}, {
+				name: 'parentdevicetypename'
+			}, {
+				name: 'remark'
+			}, {
+				name: 'parentid'
+			}, {
+				name: 'leaf'
+			}])
+		});
+		result.on('beforeload', function() {
+			this.baseParams = {
+				deviceTypeName: Ext.getCmp('deviceTypeName').getValue()
+			};
+		});
+		return result;
+	}
+
+	function createDeviceTypeGrid(store, columnModel, pageToolbar) {
+		var result = new Ext.grid.GridPanel({
+			title: '<span class="commoncss">设备类型信息表</span>',
+			height: 500,
+			// width:600,
+			autoScroll: true,
+			region: 'center',
+			store: store,
+			loadMask: {
+				msg: '正在加载表格数据,请稍等...'
+			},
+			stripeRows: true,
+			frame: true,
+			autoExpandColumn: 'remark',
+			cm: columnModel,
+			sm: deviceTypeGridSM,
+			tbar: [{
+				text: '新增',
+				iconCls: 'page_addIcon',
+				handler: function() {
+					addInit();
+				}
+			}, '-', {
+				text: '修改',
+				iconCls: 'page_edit_1Icon',
+				handler: function() {
+					editInit();
+				}
+			}, '-', {
+				text: '删除',
+				iconCls: 'page_delIcon',
+				handler: function() {
+					deleteItems('1');
+				}
+			}, '->', new Ext.form.TextField({
+				id: 'deviceTypeName',
+				name: 'deviceTypeName',
+				emptyText: '请输入设备类型名称',
+				enableKeyEvents: true,
+				listeners: {
+					specialkey: function(field, e) {
+						if (e.getKey() == Ext.EventObject.ENTER) {
+							queryDeviceTypeItem();
+						}
+					}
+				},
+				width: 130
+			}), {
+				text: '查询',
+				iconCls: 'previewIcon',
+				handler: function() {
+					queryDeviceTypeItem();
+				}
+			}, '-', {
+				text: '刷新',
+				iconCls: 'arrow_refreshIcon',
+				handler: function() {
+					deviceTypeGridObj.store.reload();
+				}
+			}],
+			bbar: pageToolbar
+		});
+		result.on('rowdblclick', function(grid, rowIndex, event) {
+			editInit();
+		});
+		result.on("cellclick", function(grid, rowIndex, columnIndex, e) {
+			var store = grid.getStore();
+			var record = store.getAt(rowIndex);
+			var header = grid.getColumnModel().getColumnHeader(columnIndex);
+			if ('检查项' == header) {
+				showCheckItemPage(record.data);
+			}
+		});
+		return result;
+	}
+
+	var deviceTypeGridObj = new Ext.ux.app.grid.AppGridObj(createDeviceTypeColumnModel, createDeviceTypeStore,
+		createDeviceTypeGrid);
 
 	var addDeviceTypeTreePanel = new Ext.tree.TreePanel({
 		loader: createTreeLoader(),
@@ -295,7 +309,7 @@ Ext.onReady(function() {
 		frame: false,
 		bodyStyle: 'padding:5 5 0',
 		items: [{
-			    fieldLabel: '编号',
+				fieldLabel: '编号',
 				name: 'devicetypeid',
 				id: 'devicetypeid',
 				allowBlank: false,
@@ -303,7 +317,7 @@ Ext.onReady(function() {
 				maxLength: 100,
 				maxLengthText: '编号不能超过100个字符',
 				anchor: '99%'
-		    },{
+			}, {
 				fieldLabel: '名称',
 				name: 'devicetypename',
 				id: 'devicetypename',
@@ -388,6 +402,7 @@ Ext.onReady(function() {
 			}
 		}]
 	});
+
 	/**
 	 * 布局
 	 */
@@ -417,7 +432,7 @@ Ext.onReady(function() {
 			layout: 'fit',
 			border: false,
 			margins: '3 3 3 3',
-			items: [deviceTypeInfoGrid]
+			items: [deviceTypeGridObj.grid]
 		}]
 	});
 
@@ -425,10 +440,10 @@ Ext.onReady(function() {
 	 * 根据条件查询设备类型
 	 */
 	function queryDeviceTypeItem() {
-		deviceTypeStore.load({
+		deviceTypeGridObj.store.load({
 			params: {
 				start: 0,
-				limit: gridBottomBar.getPageSize(),
+				limit: deviceTypeGridObj.gridBottomBar.getPageSize(),
 				deviceTypeName: Ext.getCmp('deviceTypeName').getValue()
 			}
 		});
@@ -474,7 +489,7 @@ Ext.onReady(function() {
 			waitMsg: '正在处理数据,请稍候...',
 			success: function(form, action) {
 				addDeviceTypeWindow.hide();
-				deviceTypeStore.reload();
+				deviceTypeGridObj.store.reload();
 				refreshNode(Ext.getCmp('parentid').getValue());
 				form.reset();
 				Ext.MessageBox.alert('提示', action.result.msg);
@@ -507,7 +522,7 @@ Ext.onReady(function() {
 	 * 修改设备类型初始化
 	 */
 	function editInit() {
-		var record = deviceTypeInfoGrid.getSelectionModel().getSelected();
+		var record = deviceTypeGridObj.grid.getSelectionModel().getSelected();
 		if (Ext.isEmpty(record)) {
 			Ext.MessageBox.alert('提示', '请先选择要修改的设备类型!');
 			return;
@@ -557,7 +572,7 @@ Ext.onReady(function() {
 			waitMsg: '正在处理数据,请稍候...',
 			success: function(form, action) {
 				addDeviceTypeWindow.hide();
-				deviceTypeStore.reload();
+				deviceTypeGridObj.store.reload();
 				refreshNode(parentid);
 				if (parentid != parentid_old) {
 					refreshNode(parentid_old);
@@ -573,6 +588,51 @@ Ext.onReady(function() {
 	}
 
 	/**
+	 * 显示检查项主页面
+	 */
+	function showCheckItemPage(record) {
+		if (!record) {
+			return;
+		}
+		if (!record.devicetypeid) {
+			return;
+		}
+		var checkItemPanel = new Ext.ux.app.DeviceTypeCheckItemPanel({
+			devicetypeid: record.devicetypeid,
+			devicetypename: record.devicetypename
+		});
+		var checkItemWindow = new Ext.Window({
+			layout: 'border',
+			width: 600,
+			height: document.body.clientHeight - 6,
+			resizable: true,
+			draggable: true,
+			closeAction: 'close',
+			closable: true,
+			title: '<span class="commoncss">检查项</span>',
+			iconCls: 'group_linkIcon',
+			modal: true,
+			pageY: 15,
+			pageX: document.body.clientWidth / 2 - 420 / 2,
+			collapsible: true,
+			maximizable: false,
+			// animateTarget: document.body,
+			// //如果使用autoLoad,建议不要使用动画效果
+			buttonAlign: 'right',
+			constrain: true,
+			items: [checkItemPanel],
+			buttons: [{
+				text: '关闭',
+				iconCls: 'deleteIcon',
+				handler: function() {
+					checkItemWindow.close();
+				}
+			}]
+		});
+		checkItemWindow.show();
+	}
+
+	/**
 	 * 删除设备类型
 	 */
 	function deleteItems(pType) {
@@ -584,7 +644,7 @@ Ext.onReady(function() {
 			pDeviceTypeid = selectNode.attributes.id;
 			pDeviceTypePath = selectNode.getPath('id');
 		}
-		var rows = deviceTypeInfoGrid.getSelectionModel().getSelections();
+		var rows = deviceTypeGridObj.grid.getSelectionModel().getSelections();
 		var fields = '';
 		for (var i = 0; i < rows.length; i++) {
 			if (rows[i].get('devicetypeid') == '0') {
@@ -613,54 +673,43 @@ Ext.onReady(function() {
 			}
 		}
 		var strChecked = jsArray2JsString(rows, 'devicetypeid');
-		Ext.Msg
-			.confirm(
-				'请确认',
-				'<span style="color:red"><b>提示:</b>删除设备类型将同时删除设备类型相关信息,请慎重.</span><br>继续删除吗?',
-				function(btn, text) {
-					if (btn == 'yes') {
-						if (runMode == '0') {
-							Ext.Msg
-								.alert('提示',
-									'系统正处于演示模式下运行,您的操作被取消!该模式下只能进行查询操作!');
-							return;
-						}
-						showWaitMsg();
-						Ext.Ajax
-							.request({
-								url: './deviceType.do?reqCode=delete',
-								success: function(response) {
-									var resultArray = Ext.util.JSON
-										.decode(response.responseText);
-									deviceTypeStore.reload();
-
-									if (!pDeviceTypePath) {
-										deviceTypeTree.root.reload();
-									} else {
-										deviceTypeTree.getLoader().load(deviceTypeTree.getRootNode(),
-											function(treeNode) {
-												deviceTypeTree.expandPath(pDeviceTypePath, 'id', function(bSucess, oLastNode) {
-													deviceTypeTree.getSelectionModel().select(oLastNode);
-												});
-											}, this);
-									}
-									Ext.Msg.alert('提示',
-										resultArray.msg);
-								},
-								failure: function(response) {
-									var resultArray = Ext.util.JSON
-										.decode(response.responseText);
-									Ext.Msg.alert('提示',
-										resultArray.msg);
-								},
-								params: {
-									ids: strChecked,
-									type: pType,
-									devicetypeid: pDeviceTypeid
-								}
-							});
+		Ext.Msg.confirm('请确认', '<span style="color:red"><b>提示:</b>删除设备类型将同时删除设备类型相关信息,请慎重.</span><br>继续删除吗?',
+			function(btn, text) {
+				if (btn == 'yes') {
+					if (runMode == '0') {
+						Ext.Msg.alert('提示',
+							'系统正处于演示模式下运行,您的操作被取消!该模式下只能进行查询操作!');
+						return;
 					}
-				});
+					showWaitMsg();
+					Ext.Ajax.request({
+						url: './deviceType.do?reqCode=delete',
+						success: function(response) {
+							var resultArray = Ext.util.JSON.decode(response.responseText);
+							deviceTypeGridObj.store.reload();
+							if (!pDeviceTypePath) {
+								deviceTypeTree.root.reload();
+							} else {
+								deviceTypeTree.getLoader().load(deviceTypeTree.getRootNode(),
+									function(treeNode) {
+										deviceTypeTree.expandPath(pDeviceTypePath, 'id', function(bSucess, oLastNode) {
+											deviceTypeTree.getSelectionModel().select(oLastNode);
+										});
+									}, this);
+							}
+							Ext.Msg.alert('提示', resultArray.msg);
+						},
+						failure: function(response) {
+							var resultArray = Ext.util.JSON.decode(response.responseText);
+							Ext.Msg.alert('提示', resultArray.msg);
+						},
+						params: {
+							ids: strChecked,
+							type: pType,
+							devicetypeid: pDeviceTypeid
+						}
+					});
+				}
+			});
 	}
-
 });

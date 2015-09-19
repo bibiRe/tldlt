@@ -2,6 +2,7 @@ package com.sysware.tldlt.app.service.inspect;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.greaterThan;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ import com.google.common.collect.Lists;
 import com.sysware.tldlt.app.core.metatype.impl.BaseRetDto;
 import com.sysware.tldlt.app.service.common.BaseAppServiceImpl;
 import com.sysware.tldlt.app.service.media.MediaPathService;
+import com.sysware.tldlt.app.service.media.MediaUrlService;
 import com.sysware.tldlt.app.utils.AppCommon;
 
 /**
@@ -35,10 +37,14 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
      * 路径服务类.
      */
     private MediaPathService mediaPathService;
-
+    /**
+     * 媒体链接服务接口.
+     */
+    private MediaUrlService mediaUrlService;
     @Override
     public void setUp() {
         mediaPathService = Mockito.mock(MediaPathService.class);
+        mediaUrlService = Mockito.mock(MediaUrlService.class);
         super.setUp();
 
     }
@@ -93,6 +99,7 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
     protected BaseAppServiceImpl createService() {
         inspectServiceImpl = new InspectServiceImpl();
         inspectServiceImpl.setMediaPathService(mediaPathService);
+        inspectServiceImpl.setMediaUrlService(mediaUrlService);
         return inspectServiceImpl;
     }
 
@@ -132,9 +139,10 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
      * mock 巡检记录通过巡检计划编号.
      * @return 对象
      */
-    private int mockInspectRecordByPlanId() {
+    private int mockInspectRecordIdByPlanId() {
         Mockito.when(
-                appDao.queryForObject("App.Inspect.queryInspectRecordByPlanId",
+                appDao.queryForObject(
+                        "App.Inspect.queryInspectRecordIdByPlanId",
                         INSPECT_PLAN_ID)).thenReturn(INSPECT_RECORD_ID);
         return INSPECT_RECORD_ID;
     }
@@ -419,7 +427,7 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                 appDao.queryForObject(
                         "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
                         INSPECT_PLAN_DEVICE_ID)).thenReturn(null);
-        mockInspectRecordByPlanId();
+        mockInspectRecordIdByPlanId();
         mockAddInspectRecord(dto);
         mockAddInspectRecordInfo(dto);
         Mockito.when(
@@ -448,7 +456,8 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                         "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
                         INSPECT_PLAN_DEVICE_ID)).thenReturn(null);
         Mockito.when(
-                appDao.queryForObject("App.Inspect.queryInspectRecordByPlanId",
+                appDao.queryForObject(
+                        "App.Inspect.queryInspectRecordIdByPlanId",
                         INSPECT_PLAN_ID)).thenReturn(null);
         mockAddInspectRecord(dto);
         mockAddInspectRecordInfo(dto);
@@ -478,7 +487,8 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                         "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
                         INSPECT_PLAN_DEVICE_ID)).thenReturn(null);
         Mockito.when(
-                appDao.queryForObject("App.Inspect.queryInspectRecordByPlanId",
+                appDao.queryForObject(
+                        "App.Inspect.queryInspectRecordIdByPlanId",
                         INSPECT_PLAN_ID)).thenReturn(null);
         mockAddInspectRecord(dto);
         mockAddInspectRecordInfo(dto);
@@ -513,7 +523,7 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                 appDao.queryForObject(
                         "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
                         INSPECT_PLAN_DEVICE_ID)).thenReturn(null);
-        mockInspectRecordByPlanId();
+        mockInspectRecordIdByPlanId();
         mockAddInspectRecord(dto);
         mockAddInspectRecordInfo(dto);
         Mockito.when(
@@ -530,7 +540,7 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                 dto.put("devicefaultinfoid", 1);
                 return null;
             }
-        }).when(appDao).insert("App.Inspect.App.DeviceFault", dto);
+        }).when(appDao).insert("App.DeviceFault.addInfo", dto);
         BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }
@@ -557,7 +567,7 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                 appDao.queryForObject(
                         "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
                         INSPECT_PLAN_DEVICE_ID)).thenReturn(null);
-        mockInspectRecordByPlanId();
+        mockInspectRecordIdByPlanId();
         mockAddInspectRecord(dto);
         mockAddInspectRecordInfo(dto);
         Mockito.when(
@@ -593,7 +603,7 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                 appDao.queryForObject(
                         "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
                         INSPECT_PLAN_DEVICE_ID)).thenReturn(null);
-        mockInspectRecordByPlanId();
+        mockInspectRecordIdByPlanId();
         mockAddInspectRecord(dto);
         mockAddInspectRecordInfo(dto);
         Mockito.when(
@@ -633,7 +643,8 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                         "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
                         INSPECT_PLAN_DEVICE_ID)).thenReturn(null);
         Mockito.when(
-                appDao.queryForObject("App.Inspect.queryInspectRecordByPlanId",
+                appDao.queryForObject(
+                        "App.Inspect.queryInspectRecordIdByPlanId",
                         INSPECT_PLAN_ID)).thenReturn(null);
         mockAddInspectRecord(dto);
         mockAddInspectRecordInfo(dto);
@@ -702,7 +713,8 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
         Dto inspectRecordInfoDto = new BaseDto();
         inspectRecordInfoDto.put("inspectrecordinfoid",
                 dto.getAsInteger("inspectrecordinfoid").intValue());
-        Mockito.when(mediaPathService.getPath(Mockito.anyString())).thenReturn("e:/temp");
+        Mockito.when(mediaPathService.getPath(Mockito.anyString())).thenReturn(
+                "e:/temp");
         Mockito.when(
                 appDao.queryForObject("App.Inspect.queryInspectRecordInfoById",
                         dto.getAsInteger("inspectrecordinfoid"))).thenReturn(
@@ -729,4 +741,25 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }
 
+    /**
+     * 测试查询巡检记录信息图片列表成功.
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testQueryInspectRecordInfoImages_Success() throws Exception {
+        List<Dto> images = Lists.newArrayList();
+        Dto imageDto = new BaseDto();
+        imageDto.put("releaterecordid", INSPECT_RECORD_INFO_ID);
+        imageDto.put("releatetype", 1);
+        imageDto.put("mediaurl", "05/1.jpg");
+        images.add(imageDto);
+        Mockito.when(
+                appDao.queryForList(Mockito.eq("App.Inspect.queryImages"), Mockito.any(Dto.class))
+                        ).thenReturn(images);
+        Mockito.when(mediaUrlService.getUrl(imageDto.getAsString("mediaurl"))).thenReturn("http://192.168.128.250/05/1.jpg");
+        List<Dto> actual = inspectServiceImpl
+                .queryInspectRecordInfoImages(INSPECT_RECORD_INFO_ID);
+        assertThat(actual.size(), greaterThan(0));
+    }
 }

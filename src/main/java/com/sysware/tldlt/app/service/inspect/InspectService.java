@@ -1,5 +1,7 @@
 package com.sysware.tldlt.app.service.inspect;
 
+import java.util.List;
+
 import org.g4studio.common.service.BaseService;
 import org.g4studio.core.metatype.Dto;
 
@@ -21,4 +23,10 @@ public interface InspectService extends BaseService, AddInfoService {
      */
     Dto saveUploadInspectRecordMedia(Dto dto);
 
+    /**
+     * 得到巡检记录图片.
+     * @param inspectRecordInfoId 巡检记录编号.
+     * @return 图片列表
+     */
+    List<Dto> queryInspectRecordInfoImages(int inspectRecordInfoId);
 }

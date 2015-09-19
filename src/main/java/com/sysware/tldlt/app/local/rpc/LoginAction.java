@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.g4studio.core.metatype.Dto;
-import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.mvc.xstruts.action.ActionForm;
 import org.g4studio.core.mvc.xstruts.action.ActionForward;
 import org.g4studio.core.mvc.xstruts.action.ActionMapping;
@@ -68,9 +67,8 @@ public class LoginAction extends BaseAppAction {
         if (null == userInfo) {
             return RPCUtils.sendErrorRPCInfoActionForward(response, "用户名或密码无效");
         }
-        outDto = RPCUtils.createDto(true, null);
-        Dto data = new BaseDto();
-        outDto.addData(data);
+        outDto = RPCUtils.createDataSuccessDto();
+        Dto data = outDto.getFirstData();
         data.put("user_name", userInfo.getUsername());
         data.put("userid", userInfo.getUserid());
         String key = "key-" + userInfo.getUserid();
@@ -101,6 +99,6 @@ public class LoginAction extends BaseAppAction {
             throws Exception {
         RPCUserManage.logout(request.getParameter("key"));
         return RPCUtils.sendRPCDtoActionForward(response,
-                RPCUtils.createDto(true, null));
+                RPCUtils.createSuccessDto());
     }
 }

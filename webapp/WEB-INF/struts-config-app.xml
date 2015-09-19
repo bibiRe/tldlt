@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://struts.apache.org/dtds/struts-config_1_3.dtd">
 <struts-config>
 	<!-- 配置ActionFormBean -->
@@ -14,6 +14,10 @@
 		<action name="baseActionForm" path="/deviceType" scope="request"
 			parameter="reqCode" type="com.sysware.tldlt.app.web.devicetype.DeviceTypeAction">
 			<forward name="deviceTypeView" path="/devicetype/devicetypeview.jsp" />
+		</action>
+		<!-- 设备类型检查项 -->
+		<action name="baseActionForm" path="/deviceTypeCheckItem" scope="request"
+			parameter="reqCode" type="com.sysware.tldlt.app.web.devicetypecheckitem.DeviceTypeCheckItemAction">
 		</action>
 		<!-- 区域管理 -->
 		<action name="baseActionForm" path="/region" scope="request"
@@ -52,6 +56,21 @@
 			parameter="reqCode"
 			type="com.sysware.tldlt.app.web.inspect.InspectViewAction">
 			<forward name="inspectView" path="/inspectview/inspectview.jsp" />
+		</action>
+
+
+
+	     <action name="baseActionForm" path="/inspectionRecordView" scope="request"
+			parameter="reqCode"
+			type="com.sysware.tldlt.app.web.inspectionrecord.InspectionRecordAction">
+			<forward name="InspectionRecordView" path="/inspectionrecord/inspectionrecordview.jsp" />
+		</action>
+		
+		
+	    <action name="baseActionForm" path="/inspectionRecordMakeupView" scope="request"
+			parameter="reqCode"
+			type="com.sysware.tldlt.app.web.inspectionrecordmakeup.InspectionRecordMakeupAction">
+			<forward name="InspectionRecordMakeupView" path="/inspectionrecordmakeup/inspectionrecordmakeupview.jsp" />
 		</action>
 
 	</action-mappings>

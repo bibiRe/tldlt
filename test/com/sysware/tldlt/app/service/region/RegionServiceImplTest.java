@@ -12,6 +12,8 @@ import org.g4studio.system.admin.service.OrganizationService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import utils.BaseAppServiceImplTest;
 
@@ -74,7 +76,9 @@ public class RegionServiceImplTest extends BaseAppServiceImplTest {
     private Dto createInDto(int id, String name, int parentId,
             String departmentId) {
         Dto result = new BaseDto();
-        result.put("regionid", id);
+        if (id > 0) {
+            result.put("regionid", id);
+        }
         result.put("regionname", name);
         result.put("parentid", parentId);
         result.put("departmentid", departmentId);
@@ -86,6 +90,22 @@ public class RegionServiceImplTest extends BaseAppServiceImplTest {
     protected BaseAppServiceImpl createService() {
         regionServiceImpl = new RegionServiceImpl();
         return regionServiceImpl;
+    }
+
+    /**
+     * mock新增信息成功.
+     * @param inDto 输入dto
+     */
+    private void mockAddInfoSuccess(Dto inDto) {
+        Mockito.doAnswer(new Answer<Object>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Dto inDto = (Dto) invocation.getArguments()[1];
+                inDto.put("regionid", REGION_ID_3);
+                return null;
+            }
+        }).when(appDao).insert("App.Region.addInfo", inDto);
     }
 
     /**
@@ -245,7 +265,7 @@ public class RegionServiceImplTest extends BaseAppServiceImplTest {
         String departmentId = "001";
         Dto inDto = createInDto(0, "2", 0, departmentId);
         mockQueryDepartmentId(departmentId);
-        Mockito.doNothing().when(appDao).insert("App.Region.addInfo", inDto);
+        mockAddInfoSuccess(inDto);
         BaseRetDto outDto = (BaseRetDto) regionServiceImpl.addInfo(inDto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }
@@ -260,7 +280,7 @@ public class RegionServiceImplTest extends BaseAppServiceImplTest {
         Dto inDto = createInDto(0, "2", 1, departmentId);
         mockQueryDepartmentId(departmentId);
         mockQueryRegionId(parentId);
-        Mockito.doNothing().when(appDao).insert("App.Region.addInfo", inDto);
+        mockAddInfoSuccess(inDto);
         BaseRetDto outDto = (BaseRetDto) regionServiceImpl.addInfo(inDto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }

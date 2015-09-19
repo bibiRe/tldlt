@@ -16,6 +16,7 @@ import org.g4studio.system.admin.service.OrganizationService;
 import org.g4studio.system.common.dao.vo.UserInfoVo;
 
 import com.google.common.collect.Maps;
+import com.sysware.tldlt.app.service.device.DeviceService;
 import com.sysware.tldlt.app.service.inspect.InspectViewService;
 import com.sysware.tldlt.app.utils.AppCommon;
 import com.sysware.tldlt.app.utils.AppTools;
@@ -35,6 +36,11 @@ public class InspectViewAction extends BaseAppAction {
      */
     private static final int DIFFCOUNT_SEC = AppCommon.HOUR_SEC * -2400000;
     /**
+     * 设备服务接口.
+     */
+    private DeviceService deviceService;
+
+    /**
      * 组织机构模型模型业务接口.
      */
     private OrganizationService organizationService;
@@ -47,6 +53,7 @@ public class InspectViewAction extends BaseAppAction {
                 .getService("inspectViewService");
         organizationService = (OrganizationService) super
                 .getService("organizationService");
+        deviceService = (DeviceService) super.getService("deviceService");
     }
 
     /**
@@ -66,6 +73,57 @@ public class InspectViewAction extends BaseAppAction {
                 outDto.put("executeendtime",
                         AppTools.unixTime2DateStr(v.longValue()));
             }
+        }
+    }
+
+    /**
+     * 将信息字符串转为dto对象.
+     * @param data 数据
+     * @param deviceLong 设备经纬度列表.
+     * @return dto对象
+     */
+    @SuppressWarnings("unchecked")
+    private Dto convertInfoStrToDto(Dto data, Map<String, Dto> devicesLong) {
+        Dto result = null;
+        String info = data.getAsString("info");
+        if (!AppTools.isEmptyString(info)) {
+            result = JsonHelper.parseSingleJson2Dto(info);
+            data.put("info", result);
+            getInfoDeviceLongLatInfo(data.getAsInteger("type").intValue(),
+                    result, devicesLong);
+        }
+        return result;
+    }
+
+    /**
+     * 创建用户时间Dto.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param unixTime unix时间
+     * @return Dto对象
+     */
+    @SuppressWarnings("unchecked")
+    private Dto createRequestUserTimeDto(ActionForm form,
+            HttpServletRequest request, long unixTime) {
+        Dto dto = getRequestDto(form, request);
+        UserInfoVo userInfo = super.getSessionContainer(request).getUserInfo();
+        if (null != userInfo) {
+            dto.put("deptid", userInfo.getDeptid());
+        }
+        dto.put("datetime", AppTools.unixTime2DateStr(unixTime));
+        return dto;
+    }
+
+    /**
+     * 得到信息中设备的经纬度信息.
+     * @param type 数据类.
+     * @param info 信息.
+     * @param devicesLongMap 设备经纬度列表.
+     */
+    private void getInfoDeviceLongLatInfo(int type, Dto info, Map<String, Dto> devicesLongMap) {
+        if (AppCommon.INSPECT_REAL_VIEW_DATA_TYPE_INSPECT_DEVICE == type
+                || AppCommon.INSPECT_REAL_VIEW_DATA_TYPE_DEVICESUGGEST == type) {
+            setDeviceLongLatInfo(info, devicesLongMap);
         }
     }
 
@@ -117,6 +175,34 @@ public class InspectViewAction extends BaseAppAction {
     }
 
     /**
+     * 实时查看用户.
+     * @param mapping struts mapping对象.
+     * @param form struts数据form对象.
+     * @param request http request对象.
+     * @param response http response对象.
+     * @return struts跳转地址.
+     * @throws Exception 异常对象.
+     */
+    @SuppressWarnings({"unchecked"})
+    public ActionForward queryFaultInfoForManage(ActionMapping mapping,
+            ActionForm form, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        Dto dto = createRequestUserTimeDto(
+                form,
+                request,
+                AppTools.diffUnixTime(AppTools.currentUnixTime(), DIFFCOUNT_SEC));
+        List<Dto> outDtos = appReader.queryForPage(
+                "App.InspectView.queryFaultInfoForManage", dto);
+        Map<String, Dto> deviceLongMap = Maps.newHashMap();
+        for(Dto dto1: outDtos) {
+            setDeviceLongLatInfo(dto1, deviceLongMap);
+        }
+        Integer count = (Integer) appReader.queryForObject(
+                "App.InspectView.queryFaultInfoForManageForPageCount", dto);                
+        return DtoUtils.sendStrActionForward(response, encodeList2PageJson(outDtos, count, null));
+    }
+
+    /**
      * 实时查看信息.
      * @param mapping struts mapping对象.
      * @param form struts数据form对象.
@@ -129,22 +215,15 @@ public class InspectViewAction extends BaseAppAction {
     public ActionForward queryInfoForManage(ActionMapping mapping,
             ActionForm form, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        Dto dto = getRequestDto(form, request);
-        UserInfoVo userInfo = super.getSessionContainer(request).getUserInfo();
-        if (null != userInfo) {
-            dto.put("deptid", userInfo.getDeptid());
-        }
-        dto.put("datetime",
-                AppTools.unixTime2DateStr(AppTools.diffUnixTime(
-                        AppTools.currentUnixTime(), DIFFCOUNT_SEC)));
+        Dto dto = createRequestUserTimeDto(
+                form,
+                request,
+                AppTools.diffUnixTime(AppTools.currentUnixTime(), DIFFCOUNT_SEC));
         List<Dto> outDtos = appReader.queryForPage(
                 "App.InspectView.queryInfoForManage", dto);
+        Map<String, Dto> devicesLong = Maps.newHashMap();
         for (Dto dto1 : outDtos) {
-            String info = dto1.getAsString("info");
-            if (!AppTools.isEmptyString(info)) {
-                Dto d = JsonHelper.parseSingleJson2Dto(info);
-                dto1.put("info", d);
-            }
+            convertInfoStrToDto(dto1, devicesLong);
         }
         String jsonString = encodeList2PageJson(outDtos,
                 (Integer) appReader.queryForObject(
@@ -203,18 +282,14 @@ public class InspectViewAction extends BaseAppAction {
      * @return struts跳转地址.
      * @throws Exception 异常对象.
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"rawtypes"})
     public ActionForward queryUserForManage(ActionMapping mapping,
             ActionForm form, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        Dto dto = getRequestDto(form, request);
-        UserInfoVo userInfo = super.getSessionContainer(request).getUserInfo();
-        if (null != userInfo) {
-            dto.put("deptid", userInfo.getDeptid());
-        }
-        dto.put("datetime",
-                AppTools.unixTime2DateStr(AppTools.diffUnixTime(
-                        AppTools.currentUnixTime(), DIFFCOUNT_SEC)));
+        Dto dto = createRequestUserTimeDto(
+                form,
+                request,
+                AppTools.diffUnixTime(AppTools.currentUnixTime(), DIFFCOUNT_SEC));
         List outDtos = appReader.queryForPage(
                 "App.InspectView.queryUserForManage", dto);
         String jsonString = encodeList2PageJson(outDtos,
@@ -254,13 +329,10 @@ public class InspectViewAction extends BaseAppAction {
     public ActionForward queryUserLastGPSInfo(ActionMapping mapping,
             ActionForm form, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        Dto dto = getRequestDto(form, request);
-        if (AppTools.isEmptyString(dto.getAsString("userid"))) {
-            dto.put("userid", dto.getAsString("userID"));
-        }
-        dto.put("datetime",
-                AppTools.unixTime2DateStr(AppTools.diffUnixTime(
-                        AppTools.currentUnixTime(), DIFFCOUNT_SEC)));
+        Dto dto = createRequestUserTimeDto(
+                form,
+                request,
+                AppTools.diffUnixTime(AppTools.currentUnixTime(), DIFFCOUNT_SEC));
         List<Dto> outDtos = appReader
                 .queryForList("App.User.queryGPSInfo", dto);
 
@@ -293,5 +365,32 @@ public class InspectViewAction extends BaseAppAction {
             HttpServletResponse response) throws Exception {
         return queryUserInspectPlanAndSendForward(
                 "App.InspectPlan.querySoonExecutePlan", form, request, response);
+    }
+
+    /**
+     * 设置设备经纬度信息.
+     * @param dto dto对象
+     * @param devicesLongMap 设备经纬度列表.
+     */
+    @SuppressWarnings("unchecked")
+    private void setDeviceLongLatInfo(Dto dto, Map<String, Dto> devicesLongMap) {
+        String deviceId = dto.getAsString("deviceid");
+        if (AppTools.isEmptyString(deviceId)) {
+            return;
+        }
+        Dto longInfo = null;
+        if (devicesLongMap.containsKey(deviceId)) {
+            longInfo = devicesLongMap.get(deviceId);
+
+        } else {
+            longInfo = deviceService.getLongLatInfo(deviceId);
+            if (null != longInfo) {
+                devicesLongMap.put(deviceId, longInfo);
+            }
+        }
+        if (null != longInfo) {
+            dto.put("longtitude", longInfo.get("longtitude"));
+            dto.put("latitude", longInfo.get("latitude"));
+        }
     }
 }

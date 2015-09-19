@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 演示与教程手工映射SQL语句 -->
+<sqlMap namespace="App.DeviceTypeCheckItem">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+
+    <sql id="sqlQueryCheckItemsForManage">
+        SELECT a.DeviceCheckContent_Id as devicecheckcontentid, a.DeviceType_Id as
+        devicetypeid, a.Name as checkitemname, a.Action, a.Content, a.State, a.Remark
+    </sql>
+    <sql id="sqlQueryCheckItemsForManageCount">
+        SELECT count(*) as count
+    </sql>
+    <sql id="sqlQueryCheckItemsTable">
+    	FROM devicecheckcontent a
+    </sql>
+    <sql id="sqlQueryCheckItemsForManageCondition">
+        <include refid="sqlQueryCheckItemsTable"/>
+        <dynamic prepend="WHERE">
+            <isNotEmpty prepend="AND" property="devicetypeid">
+                a.DeviceType_Id = #devicetypeid#
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="checkItemName">
+                a.name like '%$checkItemName$%'
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+    <select id="queryCheckItemsForManage" parameterClass="map"
+        resultClass="dto">
+        <include refid="sqlQueryCheckItemsForManage" />
+        <include refid="sqlQueryCheckItemsForManageCondition" />
+    </select>
+
+    <select id="queryCheckItemsForManageForPageCount"
+        parameterClass="map" resultClass="java.lang.Integer">
+        <include refid="sqlQueryCheckItemsForManageCount" />
+        <include refid="sqlQueryCheckItemsForManageCondition" />
+    </select>
+
+    <select id="queryCheckItems" parameterClass="string"
+        resultClass="dto">
+        SELECT a.DeviceCheckContent_Id as checkId, a.Name as itemname, a.Action,
+        a.Content
+        <include refid="sqlQueryCheckItemsTable"/>
+        WHERE a.State = 1 AND a.DeviceType_ID = #devicetypeid#
+    </select>
+
+    <!-- 插入一条记录 -->
+    <insert id="addInfo" parameterClass="dto">
+        INSERT INTO DeviceCheckContent (devicetype_Id, Name, Action, Content, State, Remark)
+        VALUES (#devicetypeid#, #checkitemname#, #action#, #content#, #state#, #remark#)
+        <selectKey resultClass="int"  keyProperty="devicecheckcontentid" >    
+             SELECT last_insert_id() as devicecheckcontentid;   
+        </selectKey>
+    </insert>
+    
+    <!-- 更新一条记录 -->
+    <update id="updateInfo" parameterClass="dto">
+        UPDATE DeviceCheckContent SET DEVICETYPE_ID = #devicetypeid#, Name = #checkitemname#, Action = #action#, Content = #content#, State = #state#, Remark = #remark#
+        WHERE DeviceCheckContent_Id = #devicecheckcontentid#
+    </update>
+    <update id="updateStateDisableInfo" parameterClass="int">
+        UPDATE DeviceCheckContent SET State = 0 WHERE DeviceCheckContent_Id = #devicecheckcontentid#
+    </update>
+    <!-- 删除记录 -->
+    <delete id="deleteInfo" parameterClass="int">
+        DELETE FROM DeviceCheckContent WHERE DeviceCheckContent_Id = #devicecheckcontentid#
+    </delete>
+    <select id="queryCheckItemById" parameterClass="int"
+        resultClass="dto">
+		<include refid="sqlQueryCheckItemsForManage"/>
+		<include refid="sqlQueryCheckItemsTable"/>
+        WHERE a.DeviceCheckContent_Id = #devicecheckcontentid#
+    </select>
+    
+    <select id="queryCountInspectPlanDeviceById" parameterClass="int"
+        resultClass="int">
+		SELECT count(*) from device a, inspectplandevice b, devicemodel c, DeviceCheckContent d
+        WHERE a.DEVICE_ID = a.DEVICE_ID and a.devicemodel_id = c.devicemodel_id and c.devicetype_id = d.devicetype_id and d.DeviceCheckContent_Id = #devicecheckcontentid#
+    </select>
+</sqlMap>

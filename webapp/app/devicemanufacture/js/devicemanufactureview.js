@@ -5,6 +5,12 @@
  * @since now
  */
 Ext.onReady(function() {
+	
+	Ext.getDoc().on("contextmenu", function(e)
+			{
+				e.stopEvent();
+			});
+	
 	var sm = new Ext.grid.CheckboxSelectionModel();
 	var cm = new Ext.grid.ColumnModel([new Ext.grid.RowNumberer({header : '序号',width : 40}), sm, 
 	        {
@@ -267,30 +273,35 @@ function fnMenuDel()
 							name : 'nickname',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						}, {
 							fieldLabel : '全称',
 							name : 'realname',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						}, {
 							fieldLabel : '地址',
 							name : 'address',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						},{
 							fieldLabel : '联系电话',
 							name : 'phonenumber',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						}, {
 							fieldLabel : '联系人',
 							name : 'contactperson',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						},{
 							fieldLabel : '备注',
@@ -298,6 +309,7 @@ function fnMenuDel()
 							anchor : '100%',
 							labelStyle : micolor,
 							allowBlank : true,
+							maxLength: 250,
 							xtype: 'textarea'
 						}]
 			});
@@ -377,30 +389,35 @@ function fnMenuDel()
 							name : 'nickname',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						}, {
 							fieldLabel : '全称',
 							name : 'realname',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						}, {
 							fieldLabel : '地址',
 							name : 'address',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						},{
 							fieldLabel : '联系电话',
 							name : 'phonenumber',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						}, {
 							fieldLabel : '联系人',
 							name : 'contactperson',
 							anchor : '100%',
 							labelStyle : micolor,
+							maxLength: 50,
 							allowBlank : false
 						},{
 							fieldLabel : '备注',
@@ -408,6 +425,7 @@ function fnMenuDel()
 							anchor : '100%',
 							allowBlank : true,
 							labelStyle : micolor,
+							maxLength: 250,
 							xtype: 'textarea'
 						},{
 							fieldLabel : '编号',

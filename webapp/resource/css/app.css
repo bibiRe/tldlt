@@ -1,0 +1,29 @@
+@CHARSET "UTF-8";
+
+.stateColorWriting {
+	color: #00FFFF;
+}
+
+.stateColorApproving {
+	color: #0000FF;
+}
+
+.stateDisable,.stateColorApproveFail {
+	color: #FF0000;
+}
+
+.stateColorApproveSuccess {
+	color: #00FF00;
+}
+
+.stateColorInspecting {
+	color: #FF8000;
+}
+
+.stateEnable,.stateColorInspectFinished {
+	color: #008000;
+}
+
+.stateColorUnknown {
+	color: #000000;
+}

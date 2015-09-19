@@ -119,4 +119,47 @@ public class InspectionPlanAction  extends BaseAppAction
         return mapping.findForward(null);
     }
     
+    
+    public ActionForward deleteplan(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response)
+                    throws Exception
+    {
+        String delkeys = request.getParameter("delkeys");
+        Dto inDto = new BaseDto();
+        String[] arrChecked = delkeys.split(",");
+        inDto.put("ids", Lists.newArrayList(arrChecked));
+        Dto outDto = accessService.deletePlan(inDto);
+        setRetDtoTipMsg(response, outDto);
+        return mapping.findForward(null);
+    }
+    
+    public ActionForward updateplan(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response)
+            throws Exception 
+    {
+        Dto dto = ((BaseActionForm) form).getParamAsDto(request);
+    	
+        Dto outDto = accessService.updatePlan(dto);
+        
+        String jsonString = JsonHelper.encodeObject2Json(outDto);
+        write(jsonString, response);
+        
+        return mapping.findForward(null);
+    }
+    
+    public ActionForward approvalplan(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response)
+            throws Exception 
+    {
+        Dto dto = ((BaseActionForm) form).getParamAsDto(request);
+    	
+        Dto outDto = accessService.approvalPlan(dto);
+        
+        String jsonString = JsonHelper.encodeObject2Json(outDto);
+        write(jsonString, response);
+        
+        return mapping.findForward(null);
+    }
+    
+    
 }
