@@ -1,6 +1,6 @@
 @CHARSET "UTF-8";
 
-.stateColorWriting {
+.stateHandling,.stateColorWriting {
 	color: #00FFFF;
 }
 
@@ -8,11 +8,11 @@
 	color: #0000FF;
 }
 
-.stateDisable,.stateColorApproveFail {
+.stateNoHandle,.stateDisable,.stateColorApproveFail {
 	color: #FF0000;
 }
 
-.stateColorApproveSuccess {
+.stateHandled,.stateColorApproveSuccess {
 	color: #00FF00;
 }
 

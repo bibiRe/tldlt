@@ -12,6 +12,7 @@
 	<sqlMap resource="sqlmap/app/inspect/inspect.xml" />
 	<sqlMap resource="sqlmap/app/inspectrecord/inspectrecord.xml" />
 	<sqlMap resource="sqlmap/app/inspectrecordmakeup/inspectrecordmakeup.xml" />
+	<sqlMap resource="sqlmap/app/inspectrecordmakeupfill/inspectrecordmakeupfill.xml" />
 	<sqlMap resource="sqlmap/app/inspect/inspectview.xml" />
 	<sqlMap resource="sqlmap/app/usergroup/usergroup.xml" />
 	<sqlMap resource="sqlmap/app/devmgr/devmgr.xml" />

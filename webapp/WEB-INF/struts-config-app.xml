@@ -16,8 +16,9 @@
 			<forward name="deviceTypeView" path="/devicetype/devicetypeview.jsp" />
 		</action>
 		<!-- 设备类型检查项 -->
-		<action name="baseActionForm" path="/deviceTypeCheckItem" scope="request"
-			parameter="reqCode" type="com.sysware.tldlt.app.web.devicetypecheckitem.DeviceTypeCheckItemAction">
+		<action name="baseActionForm" path="/deviceTypeCheckItem"
+			scope="request" parameter="reqCode"
+			type="com.sysware.tldlt.app.web.devicetypecheckitem.DeviceTypeCheckItemAction">
 		</action>
 		<!-- 区域管理 -->
 		<action name="baseActionForm" path="/region" scope="request"
@@ -53,26 +54,38 @@
 		</action>
 		<!-- 巡检 -->
 		<action name="baseActionForm" path="/inspectView" scope="request"
-			parameter="reqCode"
-			type="com.sysware.tldlt.app.web.inspect.InspectViewAction">
+			parameter="reqCode" type="com.sysware.tldlt.app.web.inspect.InspectViewAction">
 			<forward name="inspectView" path="/inspectview/inspectview.jsp" />
 		</action>
 
 
 
-	     <action name="baseActionForm" path="/inspectionRecordView" scope="request"
-			parameter="reqCode"
+		<action name="baseActionForm" path="/inspectionRecordView"
+			scope="request" parameter="reqCode"
 			type="com.sysware.tldlt.app.web.inspectionrecord.InspectionRecordAction">
 			<forward name="InspectionRecordView" path="/inspectionrecord/inspectionrecordview.jsp" />
 		</action>
-		
-		
-	    <action name="baseActionForm" path="/inspectionRecordMakeupView" scope="request"
-			parameter="reqCode"
+
+
+		<action name="baseActionForm" path="/inspectionRecordMakeupView"
+			scope="request" parameter="reqCode"
 			type="com.sysware.tldlt.app.web.inspectionrecordmakeup.InspectionRecordMakeupAction">
-			<forward name="InspectionRecordMakeupView" path="/inspectionrecordmakeup/inspectionrecordmakeupview.jsp" />
+			<forward name="InspectionRecordMakeupView"
+				path="/inspectionrecordmakeup/inspectionrecordmakeupview.jsp" />
 		</action>
 
+		<action name="baseActionForm" path="/inspectionRecordMakeupFillView"
+			scope="request" parameter="reqCode"
+			type="com.sysware.tldlt.app.web.inspectionrecordmakeupfill.InspectionRecordMakeupFillAction">
+			<forward name="InspectionRecordMakeupFillView"
+				path="/inspectionrecordmakeupfill/inspectionrecordmakeupfillview.jsp" />
+		</action>
+		
+		<!-- 故障管理 -->
+		<action name="baseActionForm" path="/deviceFault" scope="request"
+			parameter="reqCode" type="com.sysware.tldlt.app.web.devicefault.DeviceFaultAction">
+			<forward name="deviceFaultView" path="/devicefault/devicefaultview.jsp" />
+		</action>
 	</action-mappings>
 
 </struts-config>

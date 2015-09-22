@@ -34,22 +34,6 @@ import com.sysware.tldlt.app.utils.AppCommon;
  */
 public class InspectServiceImplTest extends BaseAppServiceImplTest {
     /**
-     * 路径服务类.
-     */
-    private MediaPathService mediaPathService;
-    /**
-     * 媒体链接服务接口.
-     */
-    private MediaUrlService mediaUrlService;
-    @Override
-    public void setUp() {
-        mediaPathService = Mockito.mock(MediaPathService.class);
-        mediaUrlService = Mockito.mock(MediaUrlService.class);
-        super.setUp();
-
-    }
-
-    /**
      * 巡检计划设备信息编号.
      */
     private static int INSPECT_PLAN_DEVICE_ID = 1;
@@ -62,6 +46,7 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
      * 巡检记录编号.
      */
     private static int INSPECT_RECORD_ID = 1;
+
     /**
      * 巡检记录信息编号.
      */
@@ -70,6 +55,15 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
      * 巡检服务对象.
      */
     private InspectServiceImpl inspectServiceImpl;
+
+    /**
+     * 路径服务类.
+     */
+    private MediaPathService mediaPathService;
+    /**
+     * 媒体链接服务接口.
+     */
+    private MediaUrlService mediaUrlService;
 
     /**
      * 创建Dto对象.
@@ -196,6 +190,14 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                         "App.Inspect.queryInspectRecordInfoByPlanDeviceId",
                         planDeviceId)).thenReturn(inspectRecordInfoDto);
         return inspectRecordInfoDto;
+    }
+
+    @Override
+    public void setUp() {
+        mediaPathService = Mockito.mock(MediaPathService.class);
+        mediaUrlService = Mockito.mock(MediaUrlService.class);
+        super.setUp();
+
     }
 
     /**
@@ -541,6 +543,19 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
                 return null;
             }
         }).when(appDao).insert("App.DeviceFault.addInfo", dto);
+
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Dto dto = invocation.getArgumentAt(1, BaseDto.class);
+                dto.put("releatedevicefaultinfoid", 1);
+                return null;
+            }
+        })
+                .when(appDao)
+                .insert(Mockito.eq("App.DeviceFault.addReleateDeviceFaultInfo"),
+                        Mockito.any(BaseDto.class));
+
         BaseRetDto outDto = (BaseRetDto) inspectServiceImpl.addInfo(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
     }
@@ -660,6 +675,29 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
     }
 
     /**
+     * 测试查询巡检记录信息图片列表成功.
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testQueryInspectRecordInfoImages_Success() throws Exception {
+        List<Dto> images = Lists.newArrayList();
+        Dto imageDto = new BaseDto();
+        imageDto.put("releaterecordid", INSPECT_RECORD_INFO_ID);
+        imageDto.put("releatetype", 1);
+        imageDto.put("mediaurl", "05/1.jpg");
+        images.add(imageDto);
+        Mockito.when(
+                appDao.queryForList(Mockito.eq("App.Inspect.queryImages"),
+                        Mockito.any(Dto.class))).thenReturn(images);
+        Mockito.when(mediaUrlService.getUrl(imageDto.getAsString("mediaurl")))
+                .thenReturn("http://192.168.128.250/05/1.jpg");
+        List<Dto> actual = inspectServiceImpl
+                .queryInspectRecordInfoImages(INSPECT_RECORD_INFO_ID);
+        assertThat(actual.size(), greaterThan(0));
+    }
+
+    /**
      * 测试上传巡检记录媒体失败-巡检记录信息编号为3无效.
      */
     @SuppressWarnings("unchecked")
@@ -739,27 +777,5 @@ public class InspectServiceImplTest extends BaseAppServiceImplTest {
         BaseRetDto outDto = (BaseRetDto) inspectServiceImpl
                 .saveUploadInspectRecordMedia(dto);
         assertThat(outDto.getRetCode(), is(AppCommon.RET_CODE_SUCCESS));
-    }
-
-    /**
-     * 测试查询巡检记录信息图片列表成功.
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testQueryInspectRecordInfoImages_Success() throws Exception {
-        List<Dto> images = Lists.newArrayList();
-        Dto imageDto = new BaseDto();
-        imageDto.put("releaterecordid", INSPECT_RECORD_INFO_ID);
-        imageDto.put("releatetype", 1);
-        imageDto.put("mediaurl", "05/1.jpg");
-        images.add(imageDto);
-        Mockito.when(
-                appDao.queryForList(Mockito.eq("App.Inspect.queryImages"), Mockito.any(Dto.class))
-                        ).thenReturn(images);
-        Mockito.when(mediaUrlService.getUrl(imageDto.getAsString("mediaurl"))).thenReturn("http://192.168.128.250/05/1.jpg");
-        List<Dto> actual = inspectServiceImpl
-                .queryInspectRecordInfoImages(INSPECT_RECORD_INFO_ID);
-        assertThat(actual.size(), greaterThan(0));
     }
 }

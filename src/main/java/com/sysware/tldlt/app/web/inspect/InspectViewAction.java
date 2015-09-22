@@ -13,7 +13,6 @@ import org.g4studio.core.mvc.xstruts.action.ActionForm;
 import org.g4studio.core.mvc.xstruts.action.ActionForward;
 import org.g4studio.core.mvc.xstruts.action.ActionMapping;
 import org.g4studio.system.admin.service.OrganizationService;
-import org.g4studio.system.common.dao.vo.UserInfoVo;
 
 import com.google.common.collect.Maps;
 import com.sysware.tldlt.app.service.device.DeviceService;
@@ -105,11 +104,7 @@ public class InspectViewAction extends BaseAppAction {
     @SuppressWarnings("unchecked")
     private Dto createRequestUserTimeDto(ActionForm form,
             HttpServletRequest request, long unixTime) {
-        Dto dto = getRequestDto(form, request);
-        UserInfoVo userInfo = super.getSessionContainer(request).getUserInfo();
-        if (null != userInfo) {
-            dto.put("deptid", userInfo.getDeptid());
-        }
+        Dto dto = createRequestCurrentUserDepartmentDto(form, request);
         dto.put("datetime", AppTools.unixTime2DateStr(unixTime));
         return dto;
     }

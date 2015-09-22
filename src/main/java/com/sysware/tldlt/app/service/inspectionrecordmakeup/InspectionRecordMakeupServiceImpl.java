@@ -39,7 +39,7 @@ public class InspectionRecordMakeupServiceImpl     extends BaseAppServiceImpl im
 			approitem.put("userid", pDto.getAsString("loginuserid"));
 			
 			
-			List  approvalist = appDao.queryForList("App.InspectPlan.getInspectPlanApprovalAuth", approitem);
+			List  approvalist = appDao.queryForList("App.InspectRecordMakeup.getInspectPlanMakeupApprovalAuth", approitem);
 			
 			boolean canapproval = false;
 			

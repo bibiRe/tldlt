@@ -79,6 +79,26 @@ public class DtoUtils {
     }
 
     /**
+     * 新增并检查返回Id是否存在.
+     * @param appDao dao对象
+     * @param statementName 新增语句名称.
+     * @param inDto 输入dto
+     * @param checkIdKey 检查Id键值
+     * @param errorInfo 错误信息.
+     * @return dto
+     */
+    public static Dto
+            addItemInfoAndCheckIntIdFail(Dao appDao, String statementName,
+                    Dto inDto, String checkIdKey, String errorInfo) {
+        appDao.insert(statementName, inDto);
+        if (null == inDto.getAsInteger(checkIdKey)) {
+            return getErrorRetDto(AppCommon.RET_CODE_ADD_FAIL, "新增" + errorInfo
+                    + "失败");
+        }
+        return null;
+    }
+
+    /**
      * 检查字典代码是否存在.
      * @param fieldName 字段
      * @param code 编码
@@ -136,7 +156,8 @@ public class DtoUtils {
     /**
      * 检查整数信息信息.
      * @param info 信息.
-     * @return dto
+     * @param checkIdKey 检查编号.
+     * @return dto dto对象
      */
     public static Dto checkDtoIntId(Dto info, String checkIdKey) {
         Integer id = info.getAsInteger(checkIdKey);
@@ -145,6 +166,33 @@ public class DtoUtils {
                     "记录编号为空");
         }
         return null;
+    }
+
+    /**
+     * 检查整数信息信息.
+     * @param info 信息.
+     * @return dto
+     */
+    /**
+     * 检查整数信息信息是否存在.
+     * @param appDao dao对象.
+     * @param statementName
+     * @param info
+     * @param checkIdKey
+     * @return
+     */
+    public static Dto checkDtoIntIdExist(Dao appDao, String statementName,
+            Dto info, String checkIdKey) {
+        Dto result = checkDtoIntId(info, checkIdKey);
+        if (null != result) {
+            return result;
+        }
+        if (null == appDao.queryForObject(statementName,
+                info.getAsInteger(checkIdKey).intValue())) {
+            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_INVALID_VALUE,
+                    "记录编号无效");
+        }
+        return result;
     }
 
     /**
@@ -182,6 +230,7 @@ public class DtoUtils {
         }
         return null;
     }
+
     /**
      * 检查媒体信息.
      * @param dto dto对象
@@ -236,8 +285,8 @@ public class DtoUtils {
         String fileName = fileItem.getFileName();
         String realFileName = path + fileName;
         try {
-            copyInputStreamToFile(fileItem.getInputStream(),
-                    new File(realFileName));
+            copyInputStreamToFile(fileItem.getInputStream(), new File(
+                    realFileName));
         } catch (Exception e) {
             log.info(e);
             getErrorRetDto(AppCommon.RET_CODE_CREATE_FILE_FAIL, e.getMessage());
@@ -275,6 +324,33 @@ public class DtoUtils {
                         + fileItem.getFileName());
         fileDto.put("hash", AppTools.getFileMD5CheckSum(fileDto
                 .getAsString("realFileName")));
+        return addInfoAndCheckIntIdFail(appDao, "App.Media.addInfo", fileDto,
+                "mediainfoid", "媒体记录");
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Dto createMediaItemInfo(Dao appDao, Dto dto, Dto fileDto)
+            throws NoSuchAlgorithmException, IOException {
+        fileDto.put("time", dto.getAsString("time"));
+        FormFile fileItem = (FormFile) fileDto.get("file");
+        if (null == fileItem) {
+            return getErrorRetDto(AppCommon.RET_CODE_NULL_VALUE, "文件为空");
+        }
+        Dto result = createMediaFile(
+                AppTools.addPathEndSeprator(dto.getAsString("savePath")),
+                fileDto);
+        if (null != result) {
+            return result;
+        }
+        fileDto.put("type", AppCommon.MEDIA_TYPE_IMAGE);
+        fileDto.put("address",
+                AppTools.addPathEndSeprator(dto.getAsString("savePartPath"))
+                        + fileItem.getFileName());
+        fileDto.put("hash", AppTools.getFileMD5CheckSum(fileDto
+                .getAsString("realFileName")));
+
+        fileDto.put("uploadremark", dto.getAsString("uploadremark"));
+
         return addInfoAndCheckIntIdFail(appDao, "App.Media.addInfo", fileDto,
                 "mediainfoid", "媒体记录");
     }

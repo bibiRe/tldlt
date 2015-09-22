@@ -9,13 +9,19 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.codehaus.plexus.util.FileUtils;
 import org.g4studio.common.dao.Dao;
+import org.g4studio.common.util.SessionContainer;
 import org.g4studio.core.metatype.Dto;
 import org.g4studio.core.metatype.impl.BaseDto;
 import org.g4studio.core.mvc.xstruts.upload.FormFile;
+import org.g4studio.core.util.G4Utils;
+import org.g4studio.system.common.dao.vo.UserInfoVo;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -77,8 +83,8 @@ public class TestUtils {
      * @throws IOException IO异常
      */
     @SuppressWarnings("unchecked")
-    public static List<Dto> createFileDtoList(Dto dto) throws FileNotFoundException,
-            IOException {
+    public static List<Dto> createFileDtoList(Dto dto)
+            throws FileNotFoundException, IOException {
         List<Dto> fileList = Lists.newArrayList();
         DiskFileItemFactory factory = new DiskFileItemFactory();
         String uploadFilePath = "E:/";
@@ -131,6 +137,39 @@ public class TestUtils {
     }
 
     /**
+     * 获取一个Session属性对象.
+     * @param request http request对象
+     * @param sessionName session名称
+     * @return 对象
+     */
+    private static Object getSessionAttribute(HttpServletRequest request,
+            String sessionKey) {
+        Object objSessionAttribute = null;
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            objSessionAttribute = session.getAttribute(sessionKey);
+        }
+        return objSessionAttribute;
+    }
+
+    /**
+     * 获取一个SessionContainer容器,如果为null则创建之.
+     * @param request http request对象
+     * @return SessionContainer容器
+     */
+    private static SessionContainer getSessionContainer(
+            HttpServletRequest request) {
+        SessionContainer sessionContainer = (SessionContainer) getSessionAttribute(
+                request, "SessionContainer");
+        if (sessionContainer == null) {
+            sessionContainer = new SessionContainer();
+            HttpSession session = request.getSession(true);
+            session.setAttribute("SessionContainer", sessionContainer);
+        }
+        return sessionContainer;
+    }
+
+    /**
      * 登录用户编号.
      * @return 用户编号
      */
@@ -141,12 +180,41 @@ public class TestUtils {
     }
 
     /**
+     * 登录用户.
+     * @param request http request对象.
+     * @param userid 用户编号
+     * @param account 账号
+     * @param deptId 部门
+     */
+    private static void loginUser(HttpServletRequest request, String userid,
+            String account, String deptId) {
+        UserInfoVo userInfo = new UserInfoVo();
+        userInfo.setUserid(userid);
+        userInfo.setAccount(account);
+        userInfo.setDeptid(deptId);
+        userInfo.setSessionID(request.getSession().getId());
+        userInfo.setSessionCreatedTime(G4Utils.getCurrentTime());
+        userInfo.setLoginIP(request.getRemoteAddr());
+        userInfo.setExplorer(G4Utils.getClientExplorerType(request));
+        getSessionContainer(request).setUserInfo(userInfo);
+    }
+
+    /**
+     * 登录用户编号.
+     * @param request http request对象
+     * @return 用户编号
+     */
+    public static void loginWebUser(HttpServletRequest request) {
+        loginUser(request, "10004895", "lming", "001001");
+    }
+
+    /**
      * mock 增加gps信息.
      * @param appDao app Dao
      * @param dto dto对象
      */
     public static void mockAddGPSInfo(Dao appDao, Dto dto) {
-        Mockito.doAnswer(new Answer<Object>(){
+        Mockito.doAnswer(new Answer<Object>() {
             @SuppressWarnings("unchecked")
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -155,7 +223,7 @@ public class TestUtils {
                 return null;
             }
         }).when(appDao).insert("App.GPS.addInfo", dto);
-        Mockito.doAnswer(new Answer<Object>(){
+        Mockito.doAnswer(new Answer<Object>() {
             @SuppressWarnings("unchecked")
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -177,8 +245,9 @@ public class TestUtils {
         deviceDto.put("deviceID", deviceId);
         deviceDto.put("parentDeviceId", null);
         deviceDto.put("devicename", "测试设备");
-        Mockito.when(dao.queryForObject("App.Device.queryDeviceInfoByDeviceId", deviceId))
-                .thenReturn(deviceDto);
+        Mockito.when(
+                dao.queryForObject("App.Device.queryDeviceInfoByDeviceId",
+                        deviceId)).thenReturn(deviceDto);
         return deviceDto;
     }
 
@@ -199,7 +268,7 @@ public class TestUtils {
                 .thenReturn(userDto);
         return userDto;
     }
-    
+
     /**
      * 设置Dto GPS信息.
      * @param dto dto信息.

@@ -96,6 +96,13 @@ public class IDHelper {
 	
 	private static DefaultIDGenerator defaultIDGenerator_idGenerator_inspecrecordmakeupid = null;
 	
+	private static DefaultIDGenerator defaultIDGenerator_idGenerator_inspecrecordid = null;
+	
+	private static DefaultIDGenerator defaultIDGenerator_idGenerator_inspecrecordinfoid = null;
+	
+	private static DefaultIDGenerator defaultIDGenerator_idGenerator_inspecrecorditemid = null;
+	
+	
 	static {
 		IdGenerator idGenerator_eventid = new IdGenerator();
 		idGenerator_eventid.setFieldname("DEVICE");
@@ -230,6 +237,28 @@ public class IDHelper {
 		defaultIDGenerator_idGenerator_inspecrecordmakeupid = idGenerator_tmp.getDefaultIDGenerator();
 	}
 	
+	static
+	{
+		IdGenerator idGenerator_tmp= new IdGenerator();
+		idGenerator_tmp.setFieldname("INSPECTRECORDID");
+		defaultIDGenerator_idGenerator_inspecrecordid = idGenerator_tmp.getDefaultIDGenerator();
+	}
+	
+	
+	static
+	{
+		IdGenerator idGenerator_tmp= new IdGenerator();
+		idGenerator_tmp.setFieldname("INSPECTRECORDINFOID");
+		defaultIDGenerator_idGenerator_inspecrecordinfoid = idGenerator_tmp.getDefaultIDGenerator();
+	}
+	
+	
+	static
+	{
+		IdGenerator idGenerator_tmp= new IdGenerator();
+		idGenerator_tmp.setFieldname("INSPECTRECORDITEMID");
+		defaultIDGenerator_idGenerator_inspecrecorditemid = idGenerator_tmp.getDefaultIDGenerator();
+	}
 	
 	public static String NewInspectRecordMakeupID()
 	{
@@ -240,6 +269,34 @@ public class IDHelper {
 		return id;
 	}
 	
+	
+	public static String NewInspectRecordID()
+	{
+		String id = defaultIDGenerator_idGenerator_inspecrecordid.create();
+		
+		id = id.trim();
+		
+		return id;
+	}
+	
+	
+	public static String NewInspectRecordInfoID()
+	{
+		String id = defaultIDGenerator_idGenerator_inspecrecordinfoid.create();
+		
+		id = id.trim();
+		
+		return id;
+	}
+	
+	public static String NewInspectRecordItemID()
+	{
+		String id = defaultIDGenerator_idGenerator_inspecrecorditemid.create();
+		
+		id = id.trim();
+		
+		return id;
+	}
 	
 	public static String NewInspectPlanDeviceID()
 	{

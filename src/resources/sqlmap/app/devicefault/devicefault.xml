@@ -2,12 +2,67 @@
 <!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 <!-- 演示与教程手工映射SQL语句 -->
 <sqlMap namespace="App.DeviceFault">
-    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />	
+	<typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+	<sql id="sqlQueryDeviceFaultsForManage">
+        SELECT c.DeviceFaultInfo_Id as devicefaultinfoid, d.Name as devicename, c.reporter, a.USERNAME as reportername, b.deptname, DATE_FORMAT(c.time, '%Y-%m-%d %H:%i:%S') as time, c.state, c.faultinfo, c.DEVICE_ID as deviceid,
+        c.handler, (select b.USERNAME FROM eauser b where c.Handler = b.USERID) as handlername,  DATE_FORMAT(c.HandleTime, '%Y-%m-%d %H:%i:%S') as handletime, c.remark
+    </sql>
+    <sql id="sqlQueryDeviceFaultsForManageCount">
+        SELECT count(*) as count
+    </sql>
+    <sql id="sqlQueryDeviceFaultsForManageTable">
+    	FROM eauser a, eadept b, device d, (devicefaultinfo c LEFT JOIN eauser f on c.handler = f.userid) left join eadept g on f.DEPTID = g.DEPTID 
+        WHERE c.Reporter = a.USERID AND a.DEPTID = b.DEPTID and c.DEVICE_ID=d.DEVICE_ID
+    </sql>
+    <sql id="sqlQueryDeviceFaultsForManageCondition">
+        <include refid="sqlQueryDeviceFaultsForManageTable"/> 
+        <dynamic>
+			<isNotEmpty prepend="AND" property="deptid">
+				b.DEPTID like '$deptid$%'
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="faultInfoName">
+				((a.USERNAME like '%$faultInfoName$%')  OR (d.Name like '%$faultInfoName$%') OR (c.FaultInfo like '%$faultInfoName$%'))  
+			</isNotEmpty>
+		</dynamic> 
+    </sql>
+    <sql id="sqlQueryDeviceFaultsForManageOrder">
+    	order by c.time desc
+    </sql>
+    <select id="queryDeviceFaultsForManage" parameterClass="map"
+        resultClass="dto">
+        <include refid="sqlQueryDeviceFaultsForManage" />
+        <include refid="sqlQueryDeviceFaultsForManageCondition" />
+        <include refid="sqlQueryDeviceFaultsForManageOrder" />
+    </select>
+
+    <select id="queryDeviceFaultsForManageForPageCount"
+        parameterClass="map" resultClass="java.lang.Integer">
+        <include refid="sqlQueryDeviceFaultsForManageCount" />
+        <include refid="sqlQueryDeviceFaultsForManageCondition" />
+    </select>
+    <select id="queryDeviceFaultById" parameterClass="int"
+        resultClass="dto">
+		<include refid="sqlQueryDeviceFaultsForManage" />
+		<include refid="sqlQueryDeviceFaultsForManageTable"/> 
+        AND c.DeviceFaultInfo_Id = #devicefaultinfoid#
+    </select>
 	<insert id="addInfo" parameterClass="dto">
-		INSERT INTO devicefaultinfo (Reporter, DEVICE_ID, Time, FaultInfo, State)
-        VALUES (#userid#,  #deviceID#, '$time$', #checkdesc#, 0)
-        <selectKey resultClass="int"  keyProperty="devicefaultinfoid" >    
-             SELECT last_insert_id() as devicefaultinfoid;   
-        </selectKey>
-    </insert>    
+		INSERT INTO devicefaultinfo (Reporter, DEVICE_ID, Time, FaultInfo,
+		State)
+		VALUES (#userid#, #deviceID#, '$time$', #checkdesc#, 0)
+		<selectKey resultClass="int" keyProperty="devicefaultinfoid">
+			SELECT last_insert_id() as devicefaultinfoid;
+		</selectKey>
+	</insert>
+	<insert id="addReleateDeviceFaultInfo" parameterClass="dto">
+		INSERT INTO ReleateDeviceFaultInfo (DeviceFaultInfo_Id, Type, ReleateRecordId, Remark)
+		VALUES (#devicefaultinfoid#, #type#, #releaterecordid#, #remark#)
+		<selectKey resultClass="int" keyProperty="releatedevicefaultinfoid">
+			SELECT last_insert_id() as releatedevicefaultinfoid;
+		</selectKey>
+	</insert>
+	<update id="updateStateInfo" parameterClass="dto">
+		UPDATE devicefaultinfo SET State=#state#, HandleTime='$time$', Handler=#handler#, Remark=#remark#
+		WHERE DeviceFaultInfo_Id = #devicefaultinfoid#
+	</update>
 </sqlMap>

@@ -137,17 +137,11 @@ public class DeviceTypeCheckItemServiceImpl extends BaseAppServiceImpl
      * @return 返回信息，当检查成功返回空
      */
     private Dto checkUpdateInfo(Dto inDto) {
-        Dto outDto = DtoUtils.checkDtoIntId(inDto, "devicecheckcontentid");
+        Dto outDto = DtoUtils.checkDtoIntIdExist(appDao,
+                "App.DeviceTypeCheckItem.queryCheckItemById", inDto,
+                "devicecheckcontentid");
         if (null != outDto) {
             return outDto;
-        }
-        int devicecheckcontentid = inDto.getAsInteger("devicecheckcontentid")
-                .intValue();
-        if (null == appDao.queryForObject(
-                "App.DeviceTypeCheckItem.queryCheckItemById",
-                devicecheckcontentid)) {
-            return DtoUtils.getErrorRetDto(AppCommon.RET_CODE_INVALID_VALUE,
-                    "检查项编号无效");
         }
         outDto = checkInfo(inDto);
         if (null != outDto) {

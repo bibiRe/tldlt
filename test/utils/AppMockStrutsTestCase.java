@@ -48,6 +48,19 @@ public class AppMockStrutsTestCase extends MockStrutsTestCase {
     }
 
     /**
+     * 校验路径.
+     * @param forwardName forward名称
+     * @param forwardPath forward路径
+     * @throws AssertionFailedError assert异常.
+     */
+    protected void actionExecuteAndVerifyForward(String forwardName,
+            String forwardPath) throws AssertionFailedError {
+        actionPerform();
+        verifyForward(forwardName);
+        verifyForwardPath(forwardPath);
+    }
+
+    /**
      * 得到Action执行Response返回字符串.
      * @return 字符串
      */
@@ -64,21 +77,10 @@ public class AppMockStrutsTestCase extends MockStrutsTestCase {
     @Before
     protected void setUp() throws Exception {
         super.setUp();
+        request.setHeader("USER-AGENT", "IE9");
         setContextDirectory(new File("webapp"));
         setConfigFile("app", "/WEB-INF/struts-config-app.xml");
         setConfigFile("rpc", "/WEB-INF/struts-config-rpc.xml");
     }
-    
-    /**
-     * 校验路径.
-     * @param forwardName forward名称
-     * @param forwardPath forward路径
-     * @throws AssertionFailedError assert异常.
-     */
-    protected void actionExecuteAndVerifyForward(String forwardName,
-            String forwardPath) throws AssertionFailedError {
-        actionPerform();
-        verifyForward(forwardName);
-        verifyForwardPath(forwardPath);
-    }
+
 }

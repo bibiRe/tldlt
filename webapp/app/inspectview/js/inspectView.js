@@ -246,17 +246,6 @@ Ext.onReady(function() {
 		return result;
 	}
 	
-	function faultInfoStateColumnRender(value, meta, record) {
-		var result = '';
-		if (value == 1) {
-			result = '已修复';
-		} else {
-			result = '故障'
-		}
-			
-		return result;
-	}
-	
 	function createFaultInfoColumnModel() {
 		return new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), {
 			header: '上报人',			
@@ -276,11 +265,11 @@ Ext.onReady(function() {
 			header: '状态',
 			dataIndex: 'state',
 			width: 50,
-			renderer: faultInfoStateColumnRender
+			renderer: EXTUXAPP.AppTools.DeviceFaultStateRender
 		}, {
-			id: 'faultInfo',
+			id: 'faultinfo',
 			header: '信息',
-			dataIndex: 'faultInfo'			
+			dataIndex: 'faultinfo'			
 		}]);
 	}
 	
@@ -332,7 +321,7 @@ Ext.onReady(function() {
 			},
 			stripeRows: true,
 			frame: true,
-			autoExpandColumn: 'faultInfo',
+			autoExpandColumn: 'faultinfo',
 			cm: columnModel,
 			tbar: [new Ext.form.TextField({
 				id: 'faultInfoName',

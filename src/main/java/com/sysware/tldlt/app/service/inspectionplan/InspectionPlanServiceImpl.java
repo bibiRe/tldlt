@@ -32,10 +32,6 @@ public class InspectionPlanServiceImpl   extends BaseAppServiceImpl implements I
 		try
 		{
 			
-			Integer count = (Integer)appDao.queryForObject("App.InspectPlan.getPlanCount", pDto);
-			List items = appDao.queryForPage("App.InspectPlan.getPlan", pDto);
-			
-			
 			Dto approitem = new BaseDto();
 			
 			approitem.put("userid", pDto.getAsString("loginuserid"));
@@ -49,6 +45,14 @@ public class InspectionPlanServiceImpl   extends BaseAppServiceImpl implements I
 			{
 				canapproval = true;
 			}
+			
+			if(canapproval)
+			{
+				pDto.remove("deptid");
+			}
+			
+			Integer count = (Integer)appDao.queryForObject("App.InspectPlan.getPlanCount", pDto);
+			List items = appDao.queryForPage("App.InspectPlan.getPlan", pDto);
 			
 			Dto item = new BaseDto();
 			for (int i = 0; i < items.size(); i++) 

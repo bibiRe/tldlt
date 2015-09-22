@@ -61,7 +61,7 @@ Ext.ux.app.DeviceTypeCheckItemPanel = Ext.extend(Ext.Panel, {
 		}, {
 			header: '状态',
 			dataIndex: 'state',
-			renderer: Ext.ux.app.AppTools.EnabledSpanRender
+			renderer: EXTUXAPP.AppTools.EnabledSpanRender
 		}, {
 			id: 'content',
 			header: '内容',

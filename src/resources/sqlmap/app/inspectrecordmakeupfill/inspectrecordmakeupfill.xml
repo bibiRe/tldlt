@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 演示与教程手工映射SQL语句 -->
+<sqlMap namespace="App.InspectRecordMakeupFill">
+    <typeAlias alias="dto" type="org.g4studio.core.metatype.impl.BaseDto" />
+
+
+    <select id="getRecordMakeupCount" parameterClass="dto" resultClass="java.lang.Integer">
+    
+        SELECT count(*)
+        
+		from inspectrecordmakeup a , InspectPlan b
+		
+		where 1 = 1
+		
+		and  a.InspectPlan_Id = b.InspectPlan_Id
+		
+		and (b.State = '4' or b.State = '5' or b.State = '6')
+
+        and (a.State = '4' or a.State = '5' or a.State = '6')
+		
+        
+        <dynamic>
+        
+
+
+            <isNotEmpty prepend="AND" property="loginuserid">
+                ( 
+                
+
+                    b.ExecuteUserId = #loginuserid#
+
+                 )
+            </isNotEmpty>
+            
+ 
+             <isNotEmpty prepend="AND" property="queryParam">
+                ( 
+                
+                 
+                 b.ExecuteUserId in (select userid from eauser c where c.username like '%$queryParam$%')
+                 
+                 
+                 )
+            </isNotEmpty>
+            
+             <isNotEmpty prepend="AND" property="startdatetime">
+                 
+                  ( 
+                 
+                	  UNIX_TIMESTAMP(a.ApplyTime) <![CDATA[>=]]> UNIX_TIMESTAMP(#startdatetime#)  
+                 	
+                 
+                 )
+                 
+            </isNotEmpty>
+            
+            
+            <isNotEmpty prepend="AND" property="enddatetime">
+                 
+                  ( 
+                 
+                 	    UNIX_TIMESTAMP(a.ApplyTime) <![CDATA[<=]]> UNIX_TIMESTAMP(#enddatetime#)  
+                 
+                 )
+                 
+            </isNotEmpty>
+            
+        </dynamic>
+        
+    </select>
+    
+    
+    
+    <select id="getRecordMakeup" parameterClass="dto" resultClass="dto">
+    
+		select 
+		
+		a.InspectRecordMarkup_Id as recordmakeupid ,
+		
+		a.InspectPlan_Id as inspecplanid ,
+		
+		
+		b.ExecuteUserId as recordmakeupapplyuserid,
+		
+		(SELECT username FROM eauser WHERE userid =  b.ExecuteUserId) as recordmakeupapplyusername,
+			
+		a.ApplyContent as recordmakeupapplycontent ,
+		
+		date_format((a.ApplyTime),'%Y-%m-%d %H:%i:%s') as   recordmakeupapplytime ,
+		
+		
+		
+		
+		
+		a.ApproveUserId as recordmakeupapproveuserid ,
+		
+		(SELECT username FROM eauser WHERE userid =  a.ApproveUserId) as recordmakeupapproveusername,
+		
+		a.ApproveContent as recordmakeupapprovecontent ,
+		
+		date_format((a.ApproveTime),'%Y-%m-%d %H:%i:%s') as   recordmakeupapprovetime ,
+		
+		
+		
+		a.State as recordmakeupstate ,
+		
+		b.Name as planname ,
+		
+		b.Remark as planremark 
+		
+		from inspectrecordmakeup a , InspectPlan b
+		
+		where 1 = 1
+		
+		and  a.InspectPlan_Id = b.InspectPlan_Id
+		
+		and (b.State = '4' or b.State = '5' or b.State = '6')
+
+        and (a.State = '4' or a.State = '5' or a.State = '6')
+		
+        
+        <dynamic>
+        
+
+
+            <isNotEmpty prepend="AND" property="loginuserid">
+                ( 
+                
+
+                    b.ExecuteUserId = #loginuserid#
+
+                 )
+            </isNotEmpty>
+
+             <isNotEmpty prepend="AND" property="queryParam">
+                ( 
+                
+                 
+                 b.ExecuteUserId in (select userid from eauser c where c.username like '%$queryParam$%')
+                 
+                 
+                 )
+            </isNotEmpty>
+            
+             <isNotEmpty prepend="AND" property="startdatetime">
+                 
+                  ( 
+                 
+                	  UNIX_TIMESTAMP(a.ApplyTime) <![CDATA[>=]]> UNIX_TIMESTAMP(#startdatetime#)  
+                 	
+                 
+                 )
+                 
+            </isNotEmpty>
+            
+            
+            <isNotEmpty prepend="AND" property="enddatetime">
+                 
+                  ( 
+                 
+                 	    UNIX_TIMESTAMP(a.ApplyTime) <![CDATA[<=]]> UNIX_TIMESTAMP(#enddatetime#)  
+                 
+                 )
+                 
+            </isNotEmpty>
+            
+        </dynamic>
+        
+    </select>
+    
+    
+    
+     <select id="getInspecPlanDeviceCount" parameterClass="dto" resultClass="java.lang.Integer">
+    
+            SELECT count(*)
+        
+            from  inspectplan x , inspectplandevice y , region b  ,devicemodel d ,(device c left join device e on c.Parent_Device_Id = e.Device_Id)
+			
+			where 1 = 1 
+			
+			and b.Region_Id = c.Region_Id and c.DeviceModel_Id = d.DeviceModel_Id
+			
+			and c.Device_Id = y.Device_Id
+			
+			and x.InspectPlan_Id = y.InspectPlan_Id
+			
+			and x.InspectPlan_Id = #inspecplanid#
+        
+      </select>
+        
+     <select id="getInspecPlanDevice" parameterClass="dto" resultClass="dto">
+
+			  select 
+
+			  x.InspectPlan_Id as planid,
+			
+			  x.Name as planname ,
+			
+			  y.InspectPlanDevice_Id as plandevid ,
+			
+			  y.Device_Id as devid ,
+			
+			
+			    c.Name as devname, b.Name as regionname , d.Name as devmodelname ,
+					
+					e.Name as parentdevname ,e.Device_Id as parentdevid,
+					
+					c.Longtitude as longtitude, c.Latitude as latitude ,
+					
+					c.Height as height , c.RF_Id as rfid, c.Check_Cycle as checkcycleid,
+			
+			     b.Region_Id as regionid, 
+					
+					d.DeviceModel_Id as devmodelid ,c.Remark as devremark
+			
+			
+			from  inspectplan x , inspectplandevice y , region b  ,devicemodel d ,(device c left join device e on c.Parent_Device_Id = e.Device_Id)
+			
+			where 1 = 1 
+			
+			and b.Region_Id = c.Region_Id and c.DeviceModel_Id = d.DeviceModel_Id
+			
+			and c.Device_Id = y.Device_Id
+			
+			and x.InspectPlan_Id = y.InspectPlan_Id
+			
+			and x.InspectPlan_Id = #inspecplanid#
+
+			
+			
+
+
+    </select>
+    
+    
+    
+    <select id="getInspecRecord" parameterClass="dto" resultClass="dto">
+    
+		select 
+
+		a.InspectRecord_Id as recordid,
+		
+		a.InspectPlan_Id  as planid,
+		
+		date_format((a.ExecuteStartTime),'%Y-%m-%d %H:%i:%s') as recordexecutestarttime,
+		
+		date_format((a.ExecuteEndTime),'%Y-%m-%d %H:%i:%s') as recordexecuteendtime ,
+		
+        
+         b.Name as planname,  
+         
+         b.State as planstate,
+         
+         
+         b.ApplyUserId as planapplyuserid,
+        
+        (SELECT username FROM eauser WHERE userid = b.ApplyUserId) as planapplyusername,
+        
+        date_format((b.ApplyTime),'%Y-%m-%d %H:%i:%s') as planapplytime,
+        
+       
+        
+        b.ExecuteUserId as planexecuteuserid,
+        
+        (SELECT username FROM eauser WHERE userid = b.ExecuteUserId) as planexecuteusername,
+        
+         date_format((b.ExecuteStartTime),'%Y-%m-%d %H:%i:%s') as planexecutestartime,
+        
+         date_format((b.ExecuteEndTime),'%Y-%m-%d %H:%i:%s') as   planexecuteendtime ,
+        
+        
+        
+        b.ApprovUserId as planapprovuserid,
+        
+        (SELECT username FROM eauser WHERE userid = b.ApprovUserId) as planapproveusername,
+        
+        b.ApproveContent as approvecontent,
+        
+         date_format((b.ApproveTime),'%Y-%m-%d %H:%i:%s') as planapprovetime ,
+         
+         
+        b.Remark as planremark
+
+        from inspectrecord a ,InspectPlan b
+
+        where 1 = 1
+        
+        
+          and a.InspectPlan_Id = b.InspectPlan_Id
+
+          and a.InspectPlan_Id = #inspecplanid#
+        
+   
+        
+    </select>
+    
+    
+
+    
+    <insert id="AddInspecRecord" parameterClass="dto">
+        INSERT INTO inspectrecord
+        (
+       	  InspectRecord_Id,InspectPlan_Id,ExecuteStartTime,ExecuteEndTime
+        )
+        VALUES (#id#,#inspecplanid#,now(),null)
+    </insert>
+    
+    
+    
+    <update id="UpdateInspecRecord" parameterClass="dto">
+    
+        UPDATE inspectrecord SET
+       
+        ExecuteEndTime=now()
+
+        WHERE InspectRecord_Id = #recordid#
+        
+    </update>
+    
+    
+    
+    <select id="getInspecRecordInfo" parameterClass="dto" resultClass="dto">
+    
+    
+    	 select 
+
+
+		 a.InspectRecordInfo_Id as recordinfoid ,
+		
+		 a.InspectRecord_Id as recordid,
+		
+		 a.InspectPlanDevice_Id as plandevid ,
+		
+		 a.State as devstate,
+		
+		 date_format((a.Time),'%Y-%m-%d %H:%i:%s') as   operationtime ,
+		
+		 a.Remark as devcheckremark
+		
+		
+		from inspectrecordinfo a 
+		
+		where 1 = 1
+		
+		and  a.InspectRecord_Id = #recordid#
+		
+		
+		 <dynamic>
+
+            <isNotEmpty prepend="AND" property="plandevid">
+                ( 
+                
+
+                  a.InspectPlanDevice_Id = #plandevid#
+
+                 )
+            </isNotEmpty>
+            
+            
+        </dynamic>
+
+    
+    
+    
+    </select>
+    
+    
+    
+    
+    
+    <insert id="AddInspecRecordInfo" parameterClass="dto">
+        INSERT INTO inspectrecordinfo
+        (
+       	  InspectRecordInfo_Id,InspectRecord_Id,InspectPlanDevice_Id,State,Time,Remark
+        )
+        VALUES (#id#,#recordid#,#plandevid#,#devstate#,now(),#devcheckremark#)
+    </insert>
+    
+    
+    <update id="UpdateInspecRecordInfo" parameterClass="dto">
+    
+        UPDATE inspectrecordinfo SET
+       
+        State = #devstate# ,
+         
+        Time=now() ,
+        
+        Remark = #devcheckremark#
+
+		where 1 = 1
+		
+		and  InspectRecord_Id = #recordid#
+		
+		and  InspectPlanDevice_Id = #plandevid#
+        
+    </update>
+    
+    
+    
+    <select id="getDeviceCheckContentCount" parameterClass="dto" resultClass="java.lang.Integer">
+    
+		select 
+		
+		count(*)
+		
+		
+		from devicecheckcontent a , device b , devicemodel c , devicetype d, inspectplan e , inspectplandevice f
+		
+		where 1 = 1
+		
+		and a.State = '1'
+		
+		and a.DeviceType_Id = d.DeviceType_Id
+		
+		and c.DeviceType_Id = d.DeviceType_Id
+		
+		and b.DeviceModel_Id = c.DeviceModel_Id
+		
+		and b.Device_Id = f.Device_Id
+		
+		and e.InspectPlan_Id = f.InspectPlan_Id
+		
+		and f.InspectPlanDevice_Id = #plandevid#
+
+    </select>
+    
+    
+    
+    <select id="getDeviceCheckContent" parameterClass="dto" resultClass="dto">
+    
+		select 
+		
+		a.DeviceCheckContent_Id as devcheckcontentid ,
+		a.Name as devcheckname ,
+		a.Content as devcheckcontent ,
+		a.Remark as devcheckremark,
+		a.Action as devcheckaction ,
+		
+		b.Device_Id as devid ,
+		b.Name as devname ,
+		b.Remark as devremark ,
+		
+		c.Name as devmodelname ,
+		c.Remark as devmodelremark ,
+		
+		d.Name as devtypename ,
+		d.Remark as devtyperemark ,
+		
+		e.InspectPlan_Id as planid ,
+		e.Name as planname ,
+		e.Remark as planremark ,
+		e.State as planstate ,
+		
+		f.InspectPlanDevice_Id as plandevid
+		
+		
+		from devicecheckcontent a , device b , devicemodel c , devicetype d, inspectplan e , inspectplandevice f
+		
+		where 1 = 1
+		
+		and a.State = '1'
+		
+		and a.DeviceType_Id = d.DeviceType_Id
+		
+		and c.DeviceType_Id = d.DeviceType_Id
+		
+		and b.DeviceModel_Id = c.DeviceModel_Id
+		
+		and b.Device_Id = f.Device_Id
+		
+		and e.InspectPlan_Id = f.InspectPlan_Id
+		
+		and f.InspectPlanDevice_Id = #plandevid#
+
+
+    </select>
+    
+    
+    
+        <select id="getInspecRecordItem" parameterClass="dto" resultClass="dto">
+    
+
+
+			select 
+			
+			a.InspectRecordItem_Id as recorditemid ,
+			a.DeviceCheckContent_Id as devcheckcontentid ,
+			a.InspectRecordInfo_Id as recordinfoid ,
+			a.State as recorditemstate ,
+			a.Remark as recorditemremark
+			
+			
+			from inspectrecorditem a
+			
+			where 1 = 1
+			
+			and a.DeviceCheckContent_Id = #devcheckcontentid#
+			
+			and a.InspectRecordInfo_Id = #recordinfoid#
+
+
+
+
+    </select>
+    
+    
+     <insert id="AddInspecRecordItem" parameterClass="dto">
+        INSERT INTO inspectrecorditem
+        (
+       	  InspectRecordItem_Id,DeviceCheckContent_Id,InspectRecordInfo_Id,State,Remark
+        )
+        VALUES (#id#,#devcheckcontentid#,#recordinfoid#,#recorditemstate#,#recorditemremark#)
+    </insert>
+    
+    
+    <update id="UpdateInspecRecordItem" parameterClass="dto">
+    
+        UPDATE inspectrecorditem SET
+       
+        State = #recorditemstate# ,
+        
+        Remark = #recorditemremark#
+
+		where 1 = 1
+		
+		and  DeviceCheckContent_Id = #devcheckcontentid#
+		
+		and  InspectRecordInfo_Id = #recordinfoid#
+        
+    </update>
+        
+    
+</sqlMap>

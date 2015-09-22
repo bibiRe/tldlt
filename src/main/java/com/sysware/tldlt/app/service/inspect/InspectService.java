@@ -22,7 +22,9 @@ public interface InspectService extends BaseService, AddInfoService {
      * @return 
      */
     Dto saveUploadInspectRecordMedia(Dto dto);
-
+    
+    Dto saveUploadInspectRecordItemMedia(Dto dto);
+    
     /**
      * 得到巡检记录图片.
      * @param inspectRecordInfoId 巡检记录编号.
